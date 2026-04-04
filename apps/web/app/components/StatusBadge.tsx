@@ -5,6 +5,7 @@ interface StatusBadgeProps {
   status: string;
   type?: 'status' | 'risk' | 'trust';
   label?: string;
+  riskType?: string;
 }
 
 const statusMap: Record<string, { className: string; defaultLabel: string }> = {

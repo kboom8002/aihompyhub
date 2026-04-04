@@ -13,32 +13,21 @@ export async function GET(request: Request) {
     const context = getRequestContext(request);
 
     const snapshotData: IncidentBridgeSnapshotDTO = {
-      snapshotId: crypto.randomUUID(),
-      snapshotType: 'incident_bridge_snapshot',
-      snapshotVersion: 'v1',
-      context: { tenantId: context.tenantId },
-      asOf: new Date().toISOString(),
-      freshness: { status: 'fresh', sourceLagSeconds: 0 },
-      actions: [],
-      warnings: [],
-      criticalFlags: ['SEV2_ONGOING'],
-      data: {
-        activeIncidents: [
-          {
-            id: '77777777-0000-0000-0000-000000000001',
-            alertId: '99999999-0000-0000-0000-000000000001',
-            severity: 'sev2',
-            status: 'active',
-            mitigationState: { current_step: 'Awaiting C-Level approval', blocks_applied: ['EU_GEO_KILLSWITCH'] },
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-          }
-        ],
-        ongoingMitigations: {
-          '77777777-0000-0000-0000-000000000001': {
-             killSwitchEnabled: true,
-             projectionPaused: false
-          }
+      activeIncidents: [
+        {
+          id: '77777777-0000-0000-0000-000000000001',
+          alertId: '99999999-0000-0000-0000-000000000001',
+          severity: 'sev2',
+          status: 'active',
+          mitigationState: { current_step: 'Awaiting C-Level approval', blocks_applied: ['EU_GEO_KILLSWITCH'] },
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        }
+      ],
+      ongoingMitigations: {
+        '77777777-0000-0000-0000-000000000001': {
+            killSwitchEnabled: true,
+            projectionPaused: false
         }
       }
     };

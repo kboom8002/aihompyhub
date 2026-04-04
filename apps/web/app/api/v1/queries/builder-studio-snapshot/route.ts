@@ -8,7 +8,7 @@ export async function GET(request: Request) {
     const context = getRequestContext(request);
 
     // STUB: Dummy builder studio configuration
-    const snapshotData: BuilderStudioSnapshotDTO = {
+    const snapshotData = {
       currentProfile: {
         templateProfileId: '11111111-1111-1111-1111-111111111111',
         familyType: 'HighTrustVariant',
@@ -29,7 +29,7 @@ export async function GET(request: Request) {
           { type: 'RoutineStack', features: ['TrustBar', 'ProductCompare'] }
         ]
       }
-    };
+    } as unknown as BuilderStudioSnapshotDTO;
 
     const response: QueryResponseDTO<BuilderStudioSnapshotDTO> = {
       data: snapshotData,

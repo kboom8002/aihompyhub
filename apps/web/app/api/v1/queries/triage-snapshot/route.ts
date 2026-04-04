@@ -31,8 +31,8 @@ export async function GET(request: Request) {
       asOf: new Date().toISOString(),
       freshness: { status: 'fresh', sourceLagSeconds: 0 },
       actions: [],
-      warnings: dlqs?.filter(d => d.status === 'unresolved').map(d => ({ code: 'DLQ_WARNING', severity: 'medium', message: `Unresolved DLQ in ${d.source_queue}` })) || [],
-      criticalFlags: backups?.filter(b => b.status === 'failed').map(b => ({ code: 'BACKUP_FAILED', severity: 'high', message: `Backup failed: ${b.backup_name}` })) || [],
+      warnings: dlqs?.filter(d => d.status === 'unresolved').map(d => ({ code: 'DLQ_WARNING', message: `Unresolved DLQ in ${d.source_queue}` })) || [],
+      criticalFlags: backups?.filter(b => b.status === 'failed').map(b => `Backup failed: ${b.backup_name}`) || [],
       data: { 
          recentAudits: (audits || []).map(a => ({
              id: a.id, tenantId: a.tenant_id, actorId: a.actor_id, actionType: a.action_type, resourceType: a.resource_type, resourceId: a.resource_id, payload: a.payload, createdAt: a.created_at

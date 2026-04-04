@@ -13,7 +13,7 @@ const AcceptOutputSchema = z.object({
     outputId: z.string().uuid(),
     targetObjectType: z.enum(['AnswerCard', 'Topic', 'BrandProfile', 'Routine', 'CompareCard', 'BrandFoundation']).optional(),
     decision: z.enum(['accepted', 'rejected', 'partially_accepted']),
-    modifiedContent: z.record(z.any()).optional()
+    modifiedContent: z.record(z.string(), z.any()).optional()
   })
 });
 
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
         commandId: crypto.randomUUID(),
         status: 'accepted',
         targetRef: {
-          type: targetRefType,
+          type: targetRefType as any,
           id: targetRefId
         }
       }

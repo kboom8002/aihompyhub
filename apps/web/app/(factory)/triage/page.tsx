@@ -45,8 +45,8 @@ export default function FactoryTriageView() {
               ⚠️ ACTIVE INCIDENTS
            </h3>
            <ul style={{ color: '#fecaca', margin: 0, paddingLeft: '1.5rem', lineHeight: 1.6 }}>
-             {data.criticalFlags?.map((flag: any, i) => <li key={`c-${i}`}><strong>CRITICAL</strong>: {flag.message || flag}</li>)}
-             {data.warnings?.map((warn: any, i) => <li key={`w-${i}`}>WARNING: {warn.message || warn}</li>)}
+             {data.criticalFlags?.map((flag, i) => <li key={`c-${i}`}><strong>CRITICAL</strong>: {flag.message}</li>)}
+             {data.warnings?.map((warn, i) => <li key={`w-${i}`}>WARNING: {warn.message}</li>)}
            </ul>
         </div>
       )}

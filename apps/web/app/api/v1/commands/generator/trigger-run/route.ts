@@ -15,7 +15,7 @@ const TriggerRunSchema = z.object({
     targetObjectType: z.string().optional(),
     contextId: z.string().uuid().optional(),
     templateProfileId: z.string().uuid().optional(),
-    inputContextOverrides: z.record(z.any()).optional()
+    inputContextOverrides: z.record(z.string(), z.any()).optional()
   })
 });
 
