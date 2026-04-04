@@ -1,0 +1,31 @@
+{
+  "name": "@aihompyhub/database",
+  "version": "1.0.0",
+  "exports": {
+    "./client": "./src/client.ts",
+    "./auth": "./src/auth.ts",
+    "./server": "./src/server.ts",
+    "./dto/shared": "./src/dto/shared.ts",
+    "./dto/ops": "./src/dto/ops.ts",
+    "./dto/generator": "./src/dto/generator.ts",
+    "./dto/factory": "./src/dto/factory.ts",
+    "./dto/automation": "./src/dto/automation.ts",
+    "./dto/optimization": "./src/dto/optimization.ts",
+    "./dto/autonomy": "./src/dto/autonomy.ts",
+    "./dto/commercial": "./src/dto/commercial.ts",
+    "./dto/triage": "./src/dto/triage.ts",
+    "./feature-gates": "./src/feature-gates.ts",
+    "./validations": "./src/validations.ts",
+    "./repositories/clusters": "./src/repositories/clusters.ts",
+    "./repositories/reviews": "./src/repositories/reviews.ts",
+    "./repositories/objects": "./src/repositories/objects.ts"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@aihompyhub/config": "*",
+    "typescript": "^5.0.0"
+  }
+}
