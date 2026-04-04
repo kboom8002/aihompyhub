@@ -1,19 +1,21 @@
-import { ReactNode } from 'react';
+import React from 'react';
 
-export default function TenantLayout({ children }: { children: ReactNode }) {
+export default function TenantLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="tenant-shell" style={{ display: 'flex', minHeight: '100vh', flexDirection: 'column' }}>
-      <header style={{ padding: '1rem', borderBottom: '1px solid #ccc', backgroundColor: '#f9f9f9', display: 'flex', alignItems: 'center' }}>
-        <strong>Brand Tenant Workspace</strong>
-        <nav style={{ marginLeft: '2rem', display: 'inline-flex', gap: '1.5rem', fontWeight: 500, fontSize: '0.9rem' }}>
-          <a href="/home">홈</a>
-          <a href="/questions/clusters">질문 자산</a>
-          <a href="/studio/foundation">브랜드 설정</a>
+    <div style={{ display: 'grid', gridTemplateColumns: '250px 1fr', minHeight: '100vh', background: '#f9fafb' }}>
+      <aside style={{ background: '#ffffff', borderRight: '1px solid #e5e7eb', padding: '2rem 1rem' }}>
+        <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '2rem', color: '#111827' }}>브랜드 관리(Tenant)</h2>
+        <nav style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <a href="/tenant/home" style={{ color: '#4b5563', textDecoration: 'none', fontWeight: '500' }}>홈</a>
+          <a href="/tenant/questions/clusters" style={{ color: '#4b5563', textDecoration: 'none', fontWeight: '500' }}>질문 자산 (Clusters)</a>
+          <a href="/tenant/studio/foundation" style={{ color: '#4b5563', textDecoration: 'none', fontWeight: '500' }}>브랜드 설정 (SSoT)</a>
+          <a href="/tenant/studio/content" style={{ color: '#4b5563', textDecoration: 'none', fontWeight: '500' }}>콘텐츠 스튜디오</a>
+          <a href="/tenant/publish" style={{ color: '#4b5563', textDecoration: 'none', fontWeight: '500' }}>배포 (Publish)</a>
         </nav>
-      </header>
-      <main style={{ padding: '2rem', flex: 1 }}>
+      </aside>
+      <div style={{ padding: '2rem' }}>
         {children}
-      </main>
+      </div>
     </div>
   );
 }

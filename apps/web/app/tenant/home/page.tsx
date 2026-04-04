@@ -32,7 +32,7 @@ export default async function TenantHomePage() {
             {data.priorityClusterGaps?.items?.length > 0 ? (
               data.priorityClusterGaps.items.map((c: any) => (
                 <li key={c.clusterId} style={{ marginBottom: '0.5rem' }}>
-                  <a href={`/questions/clusters`}>{c.clusterName}</a>
+                  <a href={`/tenant/questions/clusters`}>{c.clusterName}</a>
                   <span style={{ marginLeft: '1rem' }}>
                     <StatusBadge status="draft" label="Uncovered" />
                   </span>

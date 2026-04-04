@@ -26,16 +26,16 @@ export default async function QuestionClustersPage() {
             </tr>
           </thead>
           <tbody>
-            {clusters.map((c: any) => (
-              <tr key={c.clusterId} style={{ borderBottom: '1px solid var(--color-border)' }}>
-                <td style={{ padding: '1rem 0', fontWeight: 500 }}>{c.clusterName}</td>
-                <td>{c.intentType}</td>
-                <td>{c.priorityScore}</td>
-                <td><StatusBadge status="draft" label={c.coverageStatus} /></td>
-                <td><a href={`/objects/Topic/new?clusterId=${c.clusterId}`} className="button-primary" style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem' }}>토픽 생성</a></td>
-              </tr>
-            ))}
-            {clusters.length === 0 && (
+              {clusters.map((c: any) => (
+                <tr key={c.id}>
+                  <td style={{ padding: '1rem', borderBottom: '1px solid #e5e7eb' }}>{c.cluster_name}</td>
+                  <td style={{ padding: '1rem', borderBottom: '1px solid #e5e7eb', color: '#4b5563' }}>{c.intent_type}</td>
+                  <td style={{ padding: '1rem', borderBottom: '1px solid #e5e7eb', textAlign: 'right', fontWeight: 'bold' }}>{c.priority_score}</td>
+                  <td style={{ padding: '1rem', borderBottom: '1px solid #e5e7eb', textAlign: 'right' }}>
+                    <a href={`/tenant/objects/Topic/new?clusterId=${c.id}`} className="button-primary" style={{ padding: '0.25rem 0.5rem', fontSize: '0.8rem' }}>토픽 생성</a>
+                  </td>
+                </tr>
+              ))}{clusters.length === 0 && (
               <tr><td colSpan={5} style={{ padding: '2rem 0', textAlign: 'center' }}>데이터가 없습니다.</td></tr>
             )}
           </tbody>
