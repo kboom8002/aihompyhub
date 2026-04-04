@@ -1,0 +1,33 @@
+name: "Quiet Clinical Premium"
+description: "피부과/에스테틱 브랜드에 어울리는 정갈하고 신뢰를 주는 디자인"
+author: "AI Homepage Design System"
+
+colors:
+  bg: "#F9F8F6"          # 미세하게 따뜻한 회백색
+  surface: "#FFFFFF"     # 깔끔한 백색 카드
+  text: "#111111"        # 극강의 대비를 피한 진한 먹색
+  border: "#EAEAEA"      # 은은한 1px 실선
+  primary: "#141414"     # 무게를 잡아주는 블랙 (버튼 등)
+
+fonts:
+  body: "System-ui, -apple-system, sans-serif"
+  heading: "Georgia, 'Times New Roman', serif"  # 전문적인 매거진 느낌의 세리프
+
+radii:
+  sm: "2px"
+  md: "6px"              # 약간의 부드러움만 준 모서리
+  lg: "12px"
+  card: "24px"           # Hero 블록이나 거대한 카드용 반경
+
+layout:
+  homepage:
+    - type: "BrandHero"
+      props:
+        alignment: "split"
+    - type: "BlockHeading"
+      props:
+        title: "Canonical Answers"
+        subtitle: "Live Trust Sync Active"
+    - type: "AnswerCardGrid"
+      props:
+        columns: 3

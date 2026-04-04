@@ -1,0 +1,33 @@
+name: "Modern Vivid Tech"
+description: "스타트업 / IT 솔루션 타겟의 강렬하고 시각적인 경험"
+author: "AI Homepage Design System"
+
+colors:
+  bg: "#FAFAFA"          # 차갑고 선명한 흰색톤 베이스
+  surface: "#FFFFFF"     # 흰색 표면
+  text: "#0A0A0A"        # 강렬한 블랙 텍스트
+  border: "#E2E8F0"      # 약간 블루톤이 섞인 서늘한 보더
+  primary: "#3B82F6"     # 강렬한 블루 액센트
+
+fonts:
+  body: "'Inter', sans-serif"
+  heading: "'Inter', sans-serif"
+
+radii:
+  sm: "4px"
+  md: "8px"              
+  lg: "16px"
+  card: "32px"           # 파격적인 라운딩
+
+layout:
+  homepage:
+    - type: "BrandHero"
+      props:
+        alignment: "center"
+    - type: "BlockHeading"
+      props:
+        title: "Trending Solutions"
+        subtitle: "Real-time Insights"
+    - type: "AnswerCardGrid"
+      props:
+        columns: 2

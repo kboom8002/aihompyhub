@@ -1,0 +1,33 @@
+name: "Soft Minimalist"
+description: "편안함과 마이크로 인터랙션을 강조하는 친근한 테마"
+author: "AI Homepage Design System"
+
+colors:
+  bg: "#FDFCFA"          # 크림 베이지
+  surface: "#FFFFFF"     # 카드 표면
+  text: "#333333"        # 부드러운 다크 그레이
+  border: "#F1EEE8"      # 눈에 거의 띄지 않는 베이지 보더
+  primary: "#F4A261"     # 따뜻한 샌드 오렌지 포인트
+
+fonts:
+  body: "'Nunito', 'Quicksand', sans-serif" 
+  heading: "'Nunito', sans-serif"
+
+radii:
+  sm: "8px"
+  md: "16px"              
+  lg: "32px"
+  card: "48px"           # 극단적으로 둥글고 부드러운 카드 엣지
+
+layout:
+  homepage:
+    - type: "BrandHero"
+      props:
+        alignment: "split"
+    - type: "BlockHeading"
+      props:
+        title: "Essential Care"
+        subtitle: "Minimalist Routine"
+    - type: "AnswerCardGrid"
+      props:
+        columns: 3

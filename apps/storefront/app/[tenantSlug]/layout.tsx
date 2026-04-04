@@ -1,0 +1,38 @@
+import { StoreHeader } from '../../components/store/StoreHeader';
+
+import { getTenantDesignConfig } from '../../lib/designConfig';
+import { ThemeProvider } from '../../components/store/ThemeProvider';
+
+import { supabaseAdmin } from '../../lib/supabase';
+import { resolveTenantId } from '../../lib/tenant';
+
+export const revalidate = 0;
+
+export default async function TenantLayout(props: { children: React.ReactNode, params: Promise<{ tenantSlug: string }> }) {
+  const params = await props.params;
+  const tenantSlug = params.tenantSlug;
+  const designConfig = await getTenantDesignConfig(tenantSlug);
+  const tenantName = designConfig.brand_name;
+
+  const tenantId = await resolveTenantId(tenantSlug);
+  
+  let iaNodes = null;
+  if (tenantId) {
+     const { data } = await supabaseAdmin.from('universal_content_assets').select('json_payload').eq('tenant_id', tenantId).eq('type', 'ia_config').single();
+     if (data && data.json_payload?.nodes) {
+         iaNodes = data.json_payload.nodes;
+     }
+  }
+
+  return (
+    <ThemeProvider config={designConfig}>
+      {/* Global GNB Navigation for Storefront */}
+      <StoreHeader tenantName={tenantName} tenantSlug={tenantSlug} customNodes={iaNodes} />
+      
+      {/* Page Content */}
+      <div className="flex-1">
+        {props.children}
+      </div>
+    </ThemeProvider>
+  );
+}
