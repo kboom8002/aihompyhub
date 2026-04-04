@@ -44,7 +44,7 @@ CREATE TABLE systemic_rca_candidates (
 CREATE TABLE systemic_rca_evidence_links (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   systemic_id UUID NOT NULL REFERENCES systemic_rca_candidates(id),
-  local_rca_id UUID NOT NULL REFERENCES rcas(id), -- Links back to observatory_ops local RCAs
+  local_rca_id UUID NOT NULL REFERENCES rca_records(id), -- Links back to observatory_ops local RCAs
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 

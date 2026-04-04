@@ -3,7 +3,9 @@
 
 -- 1. Tenant & Identity
 INSERT INTO tenants (id, name) VALUES 
-('00000000-0000-0000-0000-000000000001', 'Lumiere Skincare');
+('00000000-0000-0000-0000-000000000001', 'Lumiere Skincare'),
+('00000000-0000-0000-0000-000000000002', 'DermaCore Labs'),
+('00000000-0000-0000-0000-000000000003', 'Botanica Basics');
 
 INSERT INTO brands (id, tenant_id, name) VALUES 
 ('11111111-1111-1111-1111-111111111111', '00000000-0000-0000-0000-000000000001', 'Lumiere Official');

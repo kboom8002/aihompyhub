@@ -30,15 +30,11 @@ CREATE TABLE template_families (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE template_profiles (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  tenant_id UUID NOT NULL REFERENCES tenants(id),
-  family_id TEXT NOT NULL REFERENCES template_families(id),
-  name TEXT NOT NULL,
-  overrides JSONB, -- Brand specific colors, fonts, tone
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
+ALTER TABLE template_profiles 
+  RENAME COLUMN family_type TO family_id;
+
+ALTER TABLE template_profiles
+  ADD COLUMN name TEXT DEFAULT 'Default Profile';
 
 CREATE TABLE template_modules (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
