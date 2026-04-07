@@ -1,9 +1,13 @@
 import React from 'react';
-import { PageHeader } from '../../components/PageHeader';
-import { StatusBadge } from '../../components/StatusBadge';
+import { PageHeader } from '../../../components/PageHeader';
+import { StatusBadge } from '../../../components/StatusBadge';
+import { PublishActions } from './PublishActions';
 
-export default async function PublishManagerPage() {
-  const res = await fetch('http://localhost:3000/api/v1/queries/publish-bundle-snapshot', { cache: 'no-store', headers: { 'x-tenant-id': '00000000-0000-0000-0000-000000000001' } })
+export default async function PublishManagerPage(props: { params: Promise<{ tenantId: string }> }) {
+  const params = await props.params;
+  const tenantId = params.tenantId;
+
+  const res = await fetch('http://localhost:3000/api/v1/queries/publish-bundle-snapshot', { cache: 'no-store', headers: { 'x-tenant-id': tenantId } })
     .catch(() => null);
   const snapshot = res ? await res.json() : null;
   const bundles = snapshot?.data?.bundles || [];
@@ -15,11 +19,15 @@ export default async function PublishManagerPage() {
         subtitle="생성완료 및 검증된 Canonical Object 들을 실제 외부 경로로 투영(Projection)하기 위한 패키지들입니다." 
       />
       <div className="surface" style={{ marginTop: '2rem' }}>
+        
+        <PublishActions tenantId={tenantId} />
+
         <div style={{ paddingBottom: '1rem', marginBottom: '1rem', borderBottom: '1px solid var(--color-border)' }}>
           <span style={{ fontWeight: 600 }}>Total Bundles:</span> {snapshot?.data?.totalBundles || 0} |  
           <span style={{ marginLeft: '1rem', fontWeight: 600 }}>Health:</span> 
           <StatusBadge status={snapshot?.data?.healthStatus || 'degraded'} riskType="none" />
         </div>
+
         <table style={{ width: '100%', textAlign: 'left', borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ borderBottom: '2px solid var(--color-border)', color: 'var(--color-secondary)' }}>

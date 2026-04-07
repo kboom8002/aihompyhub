@@ -1,34 +1,36 @@
 import { NextResponse } from 'next/server';
 import { getRequestContext } from '@aihompyhub/database/auth';
-import type { QueryResponseDTO, PublishBundleSnapshotDTO } from '@aihompyhub/database/dto/shared';
+import type { QueryResponseDTO, PublishBundleSnapshotDTO, PublishBundleDTO } from '@aihompyhub/database/dto/shared';
+import { createServerSupabaseAdminClient } from '@aihompyhub/database/server';
 
-// API Route: Publish Bundle Snapshot
 export async function GET(request: Request) {
   try {
     const context = getRequestContext(request);
+    const supabase = createServerSupabaseAdminClient();
 
-    // STUB: Dummy publish bundles
+    const { data: bundles, error } = await supabase
+      .from('publish_bundles')
+      .select('*')
+      .eq('tenant_id', context.tenantId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      throw new Error(`DB Error: ${error.message}`);
+    }
+
+    const mappedBundles: PublishBundleDTO[] = (bundles || []).map((b: any) => ({
+      bundleId: b.id,
+      templateProfileId: b.template_profile_id || 'unassigned',
+      status: b.status,
+      targetLocale: b.target_locale || 'en-US',
+      targetMarket: b.target_market || 'Global',
+      createdAt: b.created_at
+    }));
+
     const snapshotData: PublishBundleSnapshotDTO = {
-      totalBundles: 2,
+      totalBundles: mappedBundles.length,
       healthStatus: 'healthy',
-      bundles: [
-        {
-          bundleId: '22222222-2222-2222-2222-222222222222',
-          templateProfileId: '11111111-1111-1111-1111-111111111111',
-          status: 'published',
-          targetLocale: 'en-US',
-          targetMarket: 'Global',
-          createdAt: new Date().toISOString()
-        },
-        {
-          bundleId: '33333333-3333-3333-3333-333333333333',
-          templateProfileId: '11111111-1111-1111-1111-111111111111',
-          status: 'draft',
-          targetLocale: 'fr-FR',
-          targetMarket: 'EU',
-          createdAt: new Date().toISOString()
-        }
-      ]
+      bundles: mappedBundles
     };
 
     const response: QueryResponseDTO<PublishBundleSnapshotDTO> = {

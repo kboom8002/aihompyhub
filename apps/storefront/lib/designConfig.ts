@@ -27,20 +27,51 @@ export async function getTenantDesignConfig(tenantSlug: string): Promise<DesignC
   let overrides: any = {};
 
   try {
-     const tenantId = await resolveTenantId(tenantSlug);
-     if (tenantId) {
-        const { data } = await supabaseAdmin
-           .from('universal_content_assets')
-           .select('json_payload')
-           .eq('tenant_id', tenantId)
-           .eq('type', 'design_config')
-           .eq('category', 'system')
-           .single();
-           
-        if (data && data.json_payload) {
-           themeName = data.json_payload.base_theme || themeName;
-           overrides = data.json_payload.overrides || {};
-        }
+     if (tenantSlug === 'vegan-root') {
+        overrides = {
+           primary_color: "#2f5c40", 
+           bg: "#f8fdf9",
+           text: "#1c3826",
+           layout: {
+             homepage: [
+               {
+                 type: "BrandHero",
+                 props: {
+                   heroImage: "/vegan_root_hero.png"
+                 }
+               },
+               {
+                 type: "BlockHeading",
+                 props: {
+                   title: "100% 비건 처방 라인업",
+                   subtitle: "두피 열감을 식혀주는 식물성 루틴 베스트셀러"
+                 }
+               },
+               {
+                 type: "AnswerCardGrid",
+                 props: {
+                   columns: 3
+                 }
+               }
+             ]
+           }
+        };
+     } else {
+         const tenantId = await resolveTenantId(tenantSlug);
+         if (tenantId) {
+            const { data } = await supabaseAdmin
+               .from('universal_content_assets')
+               .select('json_payload')
+               .eq('tenant_id', tenantId)
+               .eq('type', 'design_config')
+               .eq('category', 'system')
+               .single();
+               
+            if (data && data.json_payload) {
+               themeName = data.json_payload.base_theme || themeName;
+               overrides = data.json_payload.overrides || {};
+            }
+         }
      }
   } catch (e) {
      console.warn('No active DB theme mapping found for tenant, falling back to defaults.');

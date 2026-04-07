@@ -1,8 +1,11 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { PageHeader } from '../../../components/PageHeader';
+import { PageHeader } from '../../../../components/PageHeader';
+import { useParams } from 'next/navigation';
 
 export default function QuestionClustersPage() {
+  const params = useParams();
+  const tenantId = params.tenantId as string;
   const [clusters, setClusters] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
@@ -14,7 +17,7 @@ export default function QuestionClustersPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const loadClusters = () => {
-    fetch('/api/v1/tenant/clusters', { headers: { 'x-tenant-id': '00000000-0000-0000-0000-000000000001' } }) // Using default Lumiere ID
+    fetch('/api/v1/tenant/clusters', { headers: { 'x-tenant-id': tenantId } }) 
       .then(res => res.json())
       .then(payload => {
         if (payload?.data) {
@@ -35,7 +38,7 @@ export default function QuestionClustersPage() {
     try {
       const res = await fetch('/api/v1/tenant/clusters', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-tenant-id': '00000000-0000-0000-0000-000000000001' },
+        headers: { 'Content-Type': 'application/json', 'x-tenant-id': tenantId },
         body: JSON.stringify({ cluster_name: newClusterName, intent_type: newIntent, priority_score: newPriority })
       });
       if (res.ok) {
@@ -143,7 +146,7 @@ export default function QuestionClustersPage() {
                     <span style={{ color: '#ef4444', fontSize: '0.8rem', fontWeight: 600 }}>Uncovered</span>
                   </td>
                   <td style={{ padding: '1rem', borderBottom: '1px solid #e5e7eb', textAlign: 'right', display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', alignItems: 'center' }}>
-                    <a href={`/tenant/questions/clusters/${c.id}`} className="button-primary" style={{ padding: '0.35rem 0.7rem', fontSize: '0.8rem', textDecoration: 'none' }}>질문 관리 🔍</a>
+                    <a href={`/tenant/${tenantId}/questions/clusters/${c.id}`} className="button-primary" style={{ padding: '0.35rem 0.7rem', fontSize: '0.8rem', textDecoration: 'none' }}>질문 관리 🔍</a>
                     <button onClick={() => handleDelete(c.id)} title="삭제" style={{ padding: '0.35rem', background: '#fee2e2', color: '#ef4444', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                     </button>

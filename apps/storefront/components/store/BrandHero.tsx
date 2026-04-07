@@ -9,15 +9,16 @@ interface BrandHeroProps {
   voice: string;
   skinTheme?: string;
   tenantSlug?: string;
+  heroImage?: string;
 }
 
-export function BrandHero({ summary, voice, skinTheme, tenantSlug }: BrandHeroProps) {
+export function BrandHero({ summary, voice, skinTheme, tenantSlug, heroImage }: BrandHeroProps) {
   return (
     <div className="relative w-full h-[650px] flex items-center justify-center overflow-hidden">
       {/* Background Image */}
       <Image
-        src="/skincare_hero_1775271155116.png"
-        alt="Lumiere Hero"
+        src={heroImage || "/skincare_hero_1775271155116.png"}
+        alt="Brand Hero"
         fill
         sizes="100vw"
         className="object-cover object-center scale-105 animate-in fade-in zoom-in duration-1000"

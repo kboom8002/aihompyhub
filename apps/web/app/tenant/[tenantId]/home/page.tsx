@@ -1,9 +1,11 @@
 import React from 'react';
-import { CriticalStrip } from '../../components/CriticalStrip';
-import { PageHeader } from '../../components/PageHeader';
-import { StatusBadge } from '../../components/StatusBadge';
+import { CriticalStrip } from '../../../components/CriticalStrip';
+import { PageHeader } from '../../../components/PageHeader';
+import { StatusBadge } from '../../../components/StatusBadge';
 
-export default async function TenantHomePage() {
+export default async function TenantHomePage(props: { params: Promise<{ tenantId: string }> }) {
+  const params = await props.params;
+  const tenantId = params.tenantId;
   const res = await fetch('http://localhost:3000/api/v1/queries/tenant-home-snapshot', { cache: 'no-store' })
     .catch(() => null);
   
@@ -32,7 +34,7 @@ export default async function TenantHomePage() {
             {data.priorityClusterGaps?.items?.length > 0 ? (
               data.priorityClusterGaps.items.map((c: any) => (
                 <li key={c.clusterId} style={{ marginBottom: '0.5rem' }}>
-                  <a href={`/tenant/questions/clusters`}>{c.clusterName}</a>
+                  <a href={`/tenant/${tenantId}/questions/clusters`}>{c.clusterName}</a>
                   <span style={{ marginLeft: '1rem' }}>
                     <StatusBadge status="draft" label="Uncovered" />
                   </span>

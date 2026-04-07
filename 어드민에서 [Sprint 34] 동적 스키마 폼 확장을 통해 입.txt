@@ -1,0 +1,33 @@
+어드민에서 [Sprint 34] 동적 스키마 폼 확장을 통해 입력된 데이터는 퍼블릭 프론트엔드(스토어프론트)에서 즉시 읽어 들여 렌더링되도록 구현되어 있습니다. 그 작동 방식을 간략히 설명해 드릴게요.
+
+1. 어드민에서의 데이터 저장 (Dynamic Form)
+어드민 에디터 폼에서 profileA.name, profileB.targetFit 같은 동적 칸에 값을 입력하고 저장하면, 백엔드 저장 로직(new/page.tsx 및 edit/page.tsx)이 알아서 이 값들을 묶어 다음과 같은 트리 형태의 **json_payload**에 때려 넣습니다.
+
+json
+{
+  "profileA": {
+    "name": "메디텐션 하이드로겔",
+    "targetFit": "즉각적인 탄력 리프팅",
+    "description": "..."
+  },
+  "profileB": {
+    "name": "메디글로우 모델링",
+    "targetFit": "...",
+    "description": "..."
+  },
+  "body": "<p>비교 본문 내용...</p>"
+}
+2. 스토어프론트에서의 렌더링 (Public Frontend)
+스토어프론트의 compare/[id]/page.tsx 라우트는 DB에서 이 콘텐츠를 꺼내옵니다. 이때 작성해 둔 코드를 보시면:
+
+typescript
+const payload = content.json_payload || {};
+// 어드민에서 입력한 profileA 객체가 있으면 그대로 가져오고, 없으면 mock/에러 문구를 띄움
+const pA = payload.profileA || {
+   name: pA_Name,
+   targetFit: '해당 정보 없음',
+   description: '상세 데이터가 누락되었습니다.'
+};
+이렇게 페이로드에 존재하는 profileA와 profileB 객체를 그대로 추출하여, 실제 화면을 그리는 <CompareQuickDecision /> 컴포넌트에 즉시 주입합니다.
+
+결과적으로, 어드민에서 스키마에 따라 칸을 채우기만 하면 -> 별도의 변환이나 추가 배포 없이 곧바로 스토어프론트의 A/B 비교 매트릭스 UI에 해당 값들이 꽂혀서 예쁘게 출력되도록 엔드투엔드(End-to-End) 파이프라인이 정상 구축되어 있습니다!
