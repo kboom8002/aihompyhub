@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '../../../../lib/supabase';
-import { resolveTenantId } from '../../../../lib/tenant';
+import { supabaseAdmin } from '../../../lib/supabase';
+import { resolveTenantId } from '../../../lib/tenant';
 
 export const revalidate = 600; // Cache for 10 minutes (edge)
 
