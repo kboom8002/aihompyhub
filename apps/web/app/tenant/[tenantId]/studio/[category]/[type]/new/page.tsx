@@ -5,7 +5,7 @@ import { PageHeader } from '../../../../../../components/PageHeader';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { RichTextEditor } from '../../../../../../../components/RichTextEditor';
-import { CONTENT_TYPE_SCHEMAS } from '../../../../DynamicFormSchema';
+import { CONTENT_TYPE_SCHEMAS } from '../../../DynamicFormSchema';
 import { TopicRelationMultiSelect } from '../../../../../../../components/TopicRelationMultiSelect';
 
 export default function UniversalContentNewView() {
@@ -132,7 +132,7 @@ export default function UniversalContentNewView() {
                       {field.type === 'text' && (
                         <input 
                            type="text"
-                           {...register(field.name, { required: field.required })}
+                           {...register(field.name as any, { required: field.required })}
                            placeholder={field.placeholder}
                            style={{ width: '100%', padding: '0.75rem', border: '1px solid #cbd5e1', borderRadius: '4px' }}
                         />
@@ -140,7 +140,7 @@ export default function UniversalContentNewView() {
                       
                       {field.type === 'textarea' && (
                         <textarea 
-                           {...register(field.name, { required: field.required })}
+                           {...register(field.name as any, { required: field.required })}
                            placeholder={field.placeholder}
                            style={{ width: '100%', padding: '0.75rem', border: '1px solid #cbd5e1', borderRadius: '4px', minHeight: '80px' }}
                         />

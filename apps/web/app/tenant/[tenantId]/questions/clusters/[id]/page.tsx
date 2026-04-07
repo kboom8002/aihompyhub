@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { PageHeader } from '../../../../components/PageHeader';
+import { PageHeader } from '../../../../../components/PageHeader';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 

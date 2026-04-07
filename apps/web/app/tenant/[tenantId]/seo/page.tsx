@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect, use } from 'react';
-import { PageHeader } from '../../../../components/PageHeader';
+import { PageHeader } from '../../../components/PageHeader';
 import { useParams } from 'next/navigation';
 
 export default function TenantSeoPage() {

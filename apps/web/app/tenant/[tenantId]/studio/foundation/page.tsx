@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SaveBrandProfileSchema } from '@aihompyhub/database/validations';
-import { PageHeader } from '../../../components/PageHeader';
-import { GeneratorAssistPanel } from '../../../components/GeneratorAssistPanel';
+import { PageHeader } from '../../../../components/PageHeader';
+import { GeneratorAssistPanel } from '../../../../components/GeneratorAssistPanel';
 
 export default function BrandFoundationStudio() {
   const [submitStatus, setSubmitStatus] = useState<string | null>(null);

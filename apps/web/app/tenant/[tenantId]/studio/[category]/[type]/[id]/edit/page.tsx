@@ -5,7 +5,7 @@ import { PageHeader } from '../../../../../../../components/PageHeader';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { RichTextEditor } from '../../../../../../../../components/RichTextEditor';
-import { CONTENT_TYPE_SCHEMAS } from '../../../../../DynamicFormSchema';
+import { CONTENT_TYPE_SCHEMAS } from '../../../../DynamicFormSchema';
 import { TopicRelationMultiSelect } from '../../../../../../../../components/TopicRelationMultiSelect';
 
 export default function UniversalContentEditView() {

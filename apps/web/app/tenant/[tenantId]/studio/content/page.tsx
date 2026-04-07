@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { PageHeader } from '../../../components/PageHeader';
-import { GeneratorAssistPanel } from '../../../components/GeneratorAssistPanel';
+import { PageHeader } from '../../../../components/PageHeader';
+import { GeneratorAssistPanel } from '../../../../components/GeneratorAssistPanel';
 
 export default function ContentTrustStudio() {
   const [submitStatus, setSubmitStatus] = useState<string | null>(null);

@@ -1,6 +1,6 @@
 import React from 'react';
-import { PageHeader } from '../../../../components/PageHeader';
-import { StatusBadge } from '../../../../components/StatusBadge';
+import { PageHeader } from '../../../../../components/PageHeader';
+import { StatusBadge } from '../../../../../components/StatusBadge';
 
 export default async function ObjectWorkspacePage({ params }: { params: { objectType: string; id: string } }) {
   const { objectType, id } = params;
