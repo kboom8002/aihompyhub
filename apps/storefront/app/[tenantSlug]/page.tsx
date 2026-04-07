@@ -44,7 +44,7 @@ export default async function TenantB2CHomepage({ params }: { params: { tenantSl
   }
 
   const { data: dbBrandProfile } = await supabaseAdmin.from('brand_profiles').select('*').eq('tenant_id', tenantId).single();
-  const { data: dbAnswerCards } = await supabaseAdmin.from('answer_cards').select('*').eq('tenant_id', tenantId);
+  const { data: dbAnswerCards } = await supabaseAdmin.from('answer_cards').select('*, topics(title)').eq('tenant_id', tenantId);
 
   let brandProfile = dbBrandProfile;
   let answerCards = dbAnswerCards;

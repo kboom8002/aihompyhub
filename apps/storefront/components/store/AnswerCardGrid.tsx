@@ -55,11 +55,17 @@ export function AnswerCardGrid({ cards }: AnswerCardGridProps) {
             </div>
             
             <h3 className="text-2xl font-semibold text-slate-900 leading-snug mb-3">
-              {card.structured_body?.title || 'Unknown SSoT Object'}
+              {card.structured_body?.title || card.topics?.title || 'Unknown SSoT Object'}
             </h3>
             
             <div className="flex-1 text-slate-600 font-light leading-relaxed mb-6">
-              {card.structured_body?.content || JSON.stringify(card.structured_body)}
+              {card.structured_body?.content 
+                 ? card.structured_body.content 
+                 : (Array.isArray(card.structured_body?.blocks) 
+                      ? card.structured_body.blocks.map((b: any) => b.content).join('\n') 
+                      : JSON.stringify(card.structured_body)
+                   )
+              }
             </div>
 
             <div className="mt-auto">
