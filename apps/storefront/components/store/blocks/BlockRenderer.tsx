@@ -23,17 +23,25 @@ export function BlockRenderer({ layoutSettings, context }: BlockRendererProps) {
         const { type, props } = block;
         
         switch (type) {
-          case 'BrandHero':
+          case 'BrandHero': {
+            let voiceStr = 'Authentic';
+            const dbVoice = context.brandProfile?.brand_voice;
+            if (typeof dbVoice === 'string') {
+               voiceStr = dbVoice;
+            } else if (typeof dbVoice === 'object' && dbVoice !== null) {
+               voiceStr = dbVoice.tone || 'Authentic';
+            }
             return (
               <BrandHero 
                 key={index}
                 summary={context.brandProfile?.positioning_summary || 'Global Aesthetics Foundation'} 
-                voice={context.brandProfile?.brand_voice || 'Authentic'} 
+                voice={voiceStr} 
                 tenantSlug={context.tenantSlug}
                 // future-proofing: passing alignment via props
                 {...props}
               />
             );
+          }
           case 'BlockHeading':
             return (
               <main key={`heading-${index}`} className="container mx-auto px-4 mt-16">
