@@ -10,9 +10,13 @@ interface BrandHeroProps {
   skinTheme?: string;
   tenantSlug?: string;
   heroImage?: string;
+  description?: string;
+  textMode?: 'dark' | 'light';
 }
 
-export function BrandHero({ summary, voice, skinTheme, tenantSlug, heroImage }: BrandHeroProps) {
+export function BrandHero({ summary, voice, skinTheme, tenantSlug, heroImage, description, textMode = 'dark' }: BrandHeroProps) {
+  const isLightText = textMode === 'dark'; // 'dark' mode means dark background -> needs light text
+
   return (
     <div className="relative w-full h-[450px] md:h-[500px] min-h-[45vh] flex items-center justify-center overflow-hidden">
       {/* Background Image */}
@@ -25,19 +29,18 @@ export function BrandHero({ summary, voice, skinTheme, tenantSlug, heroImage }: 
         priority
       />
       {/* Dynamic Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 mix-blend-multiply" />
+      <div className={`absolute inset-0 bg-gradient-to-b ${isLightText ? 'from-black/40 via-transparent to-black/60 mix-blend-multiply' : 'from-white/40 via-transparent to-white/60 mix-blend-overlay'}`} />
       
       {/* Hero Content (Glassmorphism) */}
-      <div className="relative z-10 p-10 md:p-14 text-center border border-white/20 rounded-2xl bg-white/10 backdrop-blur-md shadow-2xl max-w-4xl mx-4 transition-all hover:bg-white/15">
-        <span className="inline-block px-4 py-1.5 rounded-full bg-white/20 text-white text-xs font-semibold tracking-[0.2em] uppercase mb-6 shadow-sm">
+      <div className={`relative z-10 p-10 md:p-14 text-center border rounded-2xl backdrop-blur-md shadow-2xl max-w-4xl mx-4 transition-all ${isLightText ? 'border-white/20 bg-white/10 hover:bg-white/15' : 'border-black/10 bg-white/40 hover:bg-white/50'}`}>
+        <span className={`inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-[0.2em] uppercase mb-6 shadow-sm ${isLightText ? 'bg-white/20 text-white' : 'bg-black/10 text-gray-900 border border-gray-900/20'}`}>
           {voice} Voice
         </span>
-        <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight text-white leading-tight drop-shadow-2xl" style={{ fontFamily: 'var(--theme-font, inherit)' }}>
+        <h1 className={`text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight leading-tight ${isLightText ? 'text-white drop-shadow-2xl' : 'text-gray-900 drop-shadow-md'}`} style={{ fontFamily: 'var(--theme-font, inherit)' }}>
           {summary || 'Premium Botanical Skincare'}
         </h1>
-        <p className="mt-6 text-lg md:text-xl text-white/90 font-light max-w-2xl mx-auto tracking-wide">
-          AI-Crafted canonical answers and routines for absolute trust and transparency. 
-          Discover the verified difference.
+        <p className={`mt-6 text-lg md:text-xl font-medium max-w-2xl mx-auto tracking-wide whitespace-pre-line ${isLightText ? 'text-white/90 font-light' : 'text-gray-700 font-medium'}`}>
+          {description || 'AI-Crafted canonical answers and routines for absolute trust and transparency.\nDiscover the verified difference.'}
         </p>
         <div className="mt-10 flex gap-4 justify-center">
           <Link href={`/${tenantSlug || 'skincare-brand'}/routines`}>
