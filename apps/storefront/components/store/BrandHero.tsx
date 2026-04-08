@@ -14,7 +14,7 @@ interface BrandHeroProps {
 
 export function BrandHero({ summary, voice, skinTheme, tenantSlug, heroImage }: BrandHeroProps) {
   return (
-    <div className="relative w-full h-[650px] flex items-center justify-center overflow-hidden">
+    <div className="relative w-full h-[450px] md:h-[500px] min-h-[45vh] flex items-center justify-center overflow-hidden">
       {/* Background Image */}
       <Image
         src={heroImage || "/skincare_hero_1775271155116.png"}

@@ -2,6 +2,8 @@ import React from 'react';
 import { BrandHero } from '../BrandHero';
 import { AnswerCardGrid } from '../AnswerCardGrid';
 import { BlockHeading } from './BlockHeading';
+import { CompareQuickDecision } from '../CompareQuickDecision';
+import { RoutineStepCard } from '../RoutineStepCard';
 
 interface BlockRendererProps {
   layoutSettings: { type: string; props?: any }[];
@@ -52,6 +54,20 @@ export function BlockRenderer({ layoutSettings, context }: BlockRendererProps) {
             return (
               <main key={`grid-${index}`} className="container mx-auto px-4 mb-16">
                  <AnswerCardGrid cards={context.answerCards || []} tenantSlug={context.tenantSlug} />
+              </main>
+            );
+          case 'CompareQuickDecision':
+            if(!props?.profileA || !props?.profileB) return null;
+            return (
+              <main key={`compare-${index}`} className="container mx-auto px-4 mb-16">
+                 <CompareQuickDecision profileA={props.profileA} profileB={props.profileB} />
+              </main>
+            );
+          case 'RoutineStepCard':
+            if(!props?.steps) return null;
+            return (
+              <main key={`routine-${index}`} className="container mx-auto px-4 mb-16 max-w-5xl">
+                 <RoutineStepCard steps={props.steps} />
               </main>
             );
           default:
