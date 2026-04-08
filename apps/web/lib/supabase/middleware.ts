@@ -43,8 +43,15 @@ export async function updateSession(request: NextRequest) {
   // If user is authenticated, we need to apply RBAC
   if (user && (pathname.startsWith('/tenant') || pathname.startsWith('/factory') || pathname.startsWith('/pending'))) {
     
-    // Fetch the user_profile. 
-    const { data: profile, error } = await supabase
+    // Create a strict admin client that bypasses RLS (avoids infinite recursion bugs in user_profiles DB policies)
+    const { createClient } = require('@supabase/supabase-js');
+    const supabaseAdmin = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+    
+    // Fetch the user_profile using Admin client
+    const { data: profile, error } = await supabaseAdmin
       .from('user_profiles')
       .select('role, tenant_id')
       .eq('id', user.id)

@@ -4,18 +4,24 @@ import { approveUserAction } from './actions';
 import Link from 'next/link';
 
 export default async function FactoryDashboardPage() {
-  const supabase = await createClient();
+  const supabaseAuth = await createClient(); // For auth only
 
   // Validate we are Super Admin (Double Check)
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await supabaseAuth.auth.getUser();
   if (!user) return <div>Access Denied</div>;
 
-  const { data: profile } = await supabase.from('user_profiles').select('role').eq('id', user.id).single();
+  const { createClient: createSupabaseClient } = require('@supabase/supabase-js');
+  const supabaseAdmin = createSupabaseClient(
+     process.env.NEXT_PUBLIC_SUPABASE_URL!,
+     process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+
+  const { data: profile } = await supabaseAdmin.from('user_profiles').select('role').eq('id', user.id).single();
   if (profile?.role !== 'super_admin') return <div>Unauthorized: Super Admin Only</div>;
 
   // Fetch pending users
-  // Note: RLS allows Super Admin to view all user_profiles
-  const { data: allUsers } = await supabase.from('user_profiles').select('*').order('created_at', { ascending: false });
+  // Note: RLS allows Super Admin to view all user_profiles, but we bypass RLS due to Postgres infinite recursion bug
+  const { data: allUsers } = await supabaseAdmin.from('user_profiles').select('*').order('created_at', { ascending: false });
 
   const pendingUsers = allUsers?.filter(u => u.role === 'pending_admin') || [];
   const activeUsers = allUsers?.filter(u => u.role !== 'pending_admin') || [];
