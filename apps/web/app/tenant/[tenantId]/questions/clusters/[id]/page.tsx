@@ -7,6 +7,7 @@ import { useParams } from 'next/navigation';
 export default function ClusterTopicsPage() {
   const params = useParams();
   const clusterId = params.id as string;
+  const tenantId = params.tenantId as string;
   
   const [topics, setTopics] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -41,8 +42,8 @@ export default function ClusterTopicsPage() {
     try {
       const res = await fetch('/api/v1/tenant/topics', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-tenant-id': '00000000-0000-0000-0000-000000000001' },
-        body: JSON.stringify({ cluster_id: clusterId, canonical_question: newQuestion })
+        headers: { 'Content-Type': 'application/json', 'x-tenant-id': tenantId || '00000000-0000-0000-0000-000000000001' },
+        body: JSON.stringify({ cluster_id: clusterId, title: newQuestion })
       });
       if (res.ok) {
          setNewQuestion('');
@@ -74,7 +75,7 @@ export default function ClusterTopicsPage() {
   return (
     <>
       <div style={{ marginBottom: '1.5rem' }}>
-         <Link href="/tenant/questions/clusters" style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem' }}>
+         <Link href={`/tenant/${tenantId}/questions/clusters`} style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem' }}>
             &larr; 상위 클러스터 목록으로 돌아가기
          </Link>
       </div>
@@ -107,7 +108,7 @@ export default function ClusterTopicsPage() {
                 style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '4px', resize: 'vertical' }} 
                 placeholder="예: 지성 피부인데 여름에 선크림 수시로 덧발라야 하나요?" 
               />
-              <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.5rem' }}>* 상태(Status)는 기본 '활성화(active)'로 즉시 고정됩니다.</p>
+              <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.5rem' }}>* 상태(Status)는 기본 '초안(draft)' 상태로 등록됩니다.</p>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
@@ -137,15 +138,27 @@ export default function ClusterTopicsPage() {
               topics.map((t: any) => (
                 <tr key={t.id}>
                   <td style={{ padding: '1.25rem 0', borderBottom: '1px solid #e5e7eb', fontWeight: 500, color: '#111827', paddingRight: '1rem' }}>
-                    {t.canonical_question}
+                    {t.title}
                   </td>
                   <td style={{ padding: '1.25rem 0', borderBottom: '1px solid #e5e7eb' }}>
-                     <span style={{ background: '#dcfce7', color: '#166534', padding: '0.2rem 0.6rem', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 600 }}>Active</span>
+                     <span style={{ 
+                        background: t.content_status === 'published' ? '#dcfce7' : (t.content_status === 'ready_for_review' ? '#fef3c7' : '#f1f5f9'), 
+                        color: t.content_status === 'published' ? '#166534' : (t.content_status === 'ready_for_review' ? '#b45309' : '#475569'), 
+                        padding: '0.2rem 0.6rem', borderRadius: '12px', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 600 
+                     }}>
+                       {t.content_status || 'draft'}
+                     </span>
                   </td>
                   <td style={{ padding: '1.25rem 0', borderBottom: '1px solid #e5e7eb', color: '#6b7280', fontSize: '0.85rem' }}>
                      {new Date(t.created_at).toLocaleDateString()}
                   </td>
                   <td style={{ padding: '1.25rem 0', borderBottom: '1px solid #e5e7eb', textAlign: 'right' }}>
+                    <Link 
+                      href={`/tenant/${tenantId}/studio/brand_ssot/answer?topicId=${t.id}&title=${encodeURIComponent(t.title)}`}
+                      style={{ padding: '0.35rem 0.75rem', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', fontSize: '0.8rem', fontWeight: 600, textDecoration: 'none', marginRight: '0.5rem' }}
+                    >
+                      ✏️ 답변 쓰기
+                    </Link>
                     <button onClick={() => handleDelete(t.id)} title="삭제" style={{ padding: '0.35rem', background: '#fee2e2', color: '#ef4444', border: 'none', borderRadius: '4px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center' }}>
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                     </button>
