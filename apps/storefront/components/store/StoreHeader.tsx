@@ -1,4 +1,6 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import Link from 'next/link';
 
 interface StoreHeaderProps {
@@ -18,6 +20,8 @@ const DEFAULT_NODES = [
 ];
 
 export function StoreHeader({ tenantName, tenantSlug, customNodes }: StoreHeaderProps) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   // Merge custom nodes over default nodes
   let activeNodes = DEFAULT_NODES.map(def => {
      if (!customNodes) return def;
@@ -29,42 +33,89 @@ export function StoreHeader({ tenantName, tenantSlug, customNodes }: StoreHeader
   activeNodes = activeNodes.filter(n => n.enabled);
 
   return (
-    <header className="sticky top-0 z-50 w-full backdrop-blur supports-[backdrop-filter]:bg-[var(--theme-surface)]/60" style={{ borderBottom: '1px solid var(--theme-border)', backgroundColor: 'var(--theme-surface)' }}>
-      <div className="container mx-auto flex h-[70px] items-center px-4">
-        <Link href={`/${tenantSlug}`} className="font-bold tracking-tight text-lg mr-8 flex items-center">
-          {tenantName} 
-          <span className="text-muted-foreground font-normal ml-2 text-sm">| 공식 홈</span>
-        </Link>
-        
-        {/* Dynamic IA Configured LNB */}
-        <nav className="flex-1 flex gap-6 items-center text-sm font-medium">
-          {activeNodes.map(node => (
-            <Link 
-               key={node.id}
-               href={`/${tenantSlug}/${node.id}`} 
-               className={`hover:text-primary transition-colors ${node.id === 'trust' ? 'flex items-center gap-1 hover:text-green-600' : ''} ${node.id === 'routines' ? 'text-blue-600 font-semibold' : ''}`}
-            >
-               {node.id === 'trust' && (
-                  <span className="relative flex h-2 w-2 mr-1">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                  </span>
-               )}
-               {node.label}
+    <>
+      <header className="sticky top-0 z-50 w-full backdrop-blur supports-[backdrop-filter]:bg-[var(--theme-surface)]/60" style={{ borderBottom: '1px solid var(--theme-border)', backgroundColor: 'var(--theme-surface)' }}>
+        <div className="container mx-auto flex h-[70px] items-center px-4 justify-between">
+          
+          <div className="flex items-center">
+            <Link href={`/${tenantSlug}`} className="font-bold tracking-tight text-lg mr-8 flex items-center">
+              {tenantName} 
+              <span className="text-muted-foreground font-normal ml-2 text-sm hidden sm:inline">| 공식 홈</span>
             </Link>
-          ))}
-        </nav>
+          </div>
+          
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex flex-1 gap-6 items-center text-sm font-medium">
+            {activeNodes.map(node => (
+              <Link 
+                 key={node.id}
+                 href={`/${tenantSlug}/${node.id}`} 
+                 className={`hover:text-primary transition-colors ${node.id === 'trust' ? 'flex items-center gap-1 hover:text-green-600' : ''} ${node.id === 'routines' ? 'text-blue-600 font-semibold' : ''}`}
+              >
+                 {node.id === 'trust' && (
+                    <span className="relative flex h-2 w-2 mr-1">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                    </span>
+                 )}
+                 {node.label}
+              </Link>
+            ))}
+          </nav>
 
-        {/* Utilities */}
-        <div className="flex gap-3 items-center ml-auto">
-          <Link href={`/${tenantSlug}/search`} className="text-sm font-medium hover:text-primary bg-muted px-3 py-1.5 rounded-full flex gap-2 items-center">
-             <span>🔍</span> 검색
-          </Link>
-          <button className="text-sm border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 rounded-md font-medium">
-             로그인
-          </button>
+          {/* Utilities & Mobile Toggle */}
+          <div className="flex gap-3 items-center ml-auto">
+            <Link href={`/${tenantSlug}/search`} className="text-sm font-medium hover:text-primary bg-muted px-3 py-1.5 rounded-full flex gap-2 items-center">
+               <span>🔍</span> <span className="hidden sm:inline">검색</span>
+            </Link>
+            <button className="hidden sm:block text-sm border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 rounded-md font-medium">
+               로그인
+            </button>
+
+            {/* Hamburger Button (Mobile Only) */}
+            <button 
+              className="md:hidden p-2 rounded-md hover:bg-muted text-foreground ml-2"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label="Toggle Menu"
+            >
+              {isMobileMenuOpen ? (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              ) : (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" /></svg>
+              )}
+            </button>
+          </div>
         </div>
-      </div>
-    </header>
+      </header>
+
+      {/* Mobile Menu Overlay */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden fixed inset-0 top-[70px] z-40 bg-[var(--theme-surface)] overflow-y-auto" style={{ borderTop: '1px solid var(--theme-border)' }}>
+          <nav className="flex flex-col p-6 gap-6">
+            {activeNodes.map(node => (
+              <Link 
+                 key={node.id}
+                 href={`/${tenantSlug}/${node.id}`} 
+                 onClick={() => setIsMobileMenuOpen(false)}
+                 className={`text-lg font-medium border-b border-[var(--theme-border)] pb-4 hover:text-primary transition-colors ${node.id === 'trust' ? 'flex items-center gap-2 hover:text-green-600' : ''} ${node.id === 'routines' ? 'text-blue-600 font-bold' : ''}`}
+              >
+                 {node.id === 'trust' && (
+                    <span className="relative flex h-3 w-3 mr-1">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                    </span>
+                 )}
+                 {node.label}
+              </Link>
+            ))}
+            <div className="mt-8 pt-4 border-t border-[var(--theme-border)] flex flex-col gap-4">
+               <button className="w-full text-base border border-input bg-background hover:bg-accent hover:text-accent-foreground py-3 rounded-md font-medium">
+                 로그인 / 회원가입
+               </button>
+            </div>
+          </nav>
+        </div>
+      )}
+    </>
   );
 }
