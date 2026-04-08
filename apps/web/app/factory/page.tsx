@@ -23,8 +23,11 @@ export default async function FactoryDashboardPage() {
   // Note: RLS allows Super Admin to view all user_profiles, but we bypass RLS due to Postgres infinite recursion bug
   const { data: allUsers } = await supabaseAdmin.from('user_profiles').select('*').order('created_at', { ascending: false });
 
-  const pendingUsers = allUsers?.filter(u => u.role === 'pending_admin') || [];
-  const activeUsers = allUsers?.filter(u => u.role !== 'pending_admin') || [];
+  // Fetch available tenants to assign
+  const { data: tenants } = await supabaseAdmin.from('tenants').select('id, name, slug, status').order('created_at', { ascending: true });
+
+  const pendingUsers = allUsers?.filter((u: any) => u.role === 'pending_admin') || [];
+  const activeUsers = allUsers?.filter((u: any) => u.role !== 'pending_admin') || [];
 
   return (
     <div style={{ padding: '3rem', maxWidth: '1200px', margin: '0 auto', fontFamily: 'system-ui, sans-serif' }}>
@@ -54,7 +57,7 @@ export default async function FactoryDashboardPage() {
               </tr>
             </thead>
             <tbody>
-              {pendingUsers.map(u => (
+              {pendingUsers.map((u: any) => (
                 <tr key={u.id}>
                   <td style={{ padding: '1rem', borderBottom: '1px solid #e5e7eb', fontWeight: 600 }}>{u.email}</td>
                   <td style={{ padding: '1rem', borderBottom: '1px solid #e5e7eb', color: '#6b7280' }}>{new Date(u.created_at).toLocaleDateString()}</td>
@@ -62,10 +65,18 @@ export default async function FactoryDashboardPage() {
                     <span style={{ background: '#fef3c7', color: '#b45309', padding: '0.2rem 0.6rem', borderRadius: '12px', fontSize: '0.75rem', fontWeight: 600 }}>Pending</span>
                   </td>
                   <td style={{ padding: '1rem', borderBottom: '1px solid #e5e7eb', textAlign: 'right' }}>
-                    <form action={approveUserAction}>
+                    <form action={approveUserAction as any} style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
                       <input type="hidden" name="user_id" value={u.id} />
+                      <select name="tenant_id" required style={{ padding: '0.5rem', borderRadius: '4px', border: '1px solid #d1d5db', background: '#f9fafb' }}>
+                        <option value="">-- 할당할 테넌트 선택 --</option>
+                        {tenants?.map((t: any) => (
+                           <option key={t.id} value={t.id}>
+                             {t.name} (/{t.slug || 'no-slug'})
+                           </option>
+                        ))}
+                      </select>
                       <button style={{ padding: '0.5rem 1rem', background: '#3b82f6', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 600 }}>
-                        승인하기 (Approve)
+                        승인 및 할당
                       </button>
                     </form>
                   </td>
@@ -87,7 +98,7 @@ export default async function FactoryDashboardPage() {
               </tr>
             </thead>
             <tbody>
-              {activeUsers.map(u => (
+              {activeUsers.map((u: any) => (
                 <tr key={u.id}>
                   <td style={{ padding: '1rem', borderBottom: '1px solid #e5e7eb', fontWeight: 600 }}>{u.email}</td>
                   <td style={{ padding: '1rem', borderBottom: '1px solid #e5e7eb' }}>

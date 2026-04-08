@@ -10,26 +10,25 @@ export async function approveUserAction(formData: FormData) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
 
-  const userId = formData.get('user_id') as string
-  
-  // In a real flow, you'd choose which tenant to assign them to.
-  // Here for simplicity we fetch their profile and approve them.
-  // If they don't tie to a tenant, we might need to create one first.
-  
-  const { data: profile } = await supabaseAdmin.from('user_profiles').select('*').eq('id', userId).single()
-  
-  if (!profile) return { error: 'Profile not found' }
+  const userId = formData.get('user_id') as string;
+  const tenantId = formData.get('tenant_id') as string;
 
-  let tenantId = profile.tenant_id
+  if (!userId) return { error: 'No user ID provided' };
+  if (!tenantId) return { error: 'No tenant selected' };
 
-  // If no tenant attached during signup, we auto-gen a mock one for them to use
-  if (!tenantId) {
-    const { data: newTenant } = await supabaseAdmin.from('tenants').insert([{ name: `Tenant of ${profile.email}`, status: 'active' }]).select().single()
-    tenantId = newTenant?.id
+  // Directly call the RPC or manually update user and tenant
+  const { error: rpcErr } = await supabaseAdmin.rpc('approve_tenant_admin', {
+    target_user_id: userId,
+    target_tenant_id: tenantId
+  });
+
+  if (rpcErr) {
+    return { error: 'Failed to approve user: ' + rpcErr.message };
   }
 
-  // Update profile
-  await supabaseAdmin.from('user_profiles').update({ role: 'tenant_admin', tenant_id: tenantId }).eq('id', userId)
+  // Fallback direct updates if RPC fails/doesn't exist
+  await supabaseAdmin.from('user_profiles').update({ role: 'tenant_admin', tenant_id: tenantId }).eq('id', userId);
+  await supabaseAdmin.from('tenants').update({ status: 'active' }).eq('id', tenantId);
 
   // Update tenant status if applicable
   if (tenantId) {
