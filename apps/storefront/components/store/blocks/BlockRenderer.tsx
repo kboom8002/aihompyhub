@@ -11,6 +11,11 @@ interface BlockRendererProps {
     tenantSlug: string;
     brandProfile: any;
     answerCards: any[];
+    heroConfig?: {
+      heroImage?: string;
+      summary?: string;
+      description?: string;
+    };
   };
 }
 
@@ -33,13 +38,17 @@ export function BlockRenderer({ layoutSettings, context }: BlockRendererProps) {
             } else if (typeof dbVoice === 'object' && dbVoice !== null) {
                voiceStr = dbVoice.tone || 'Authentic';
             }
+
+            const heroProps = context.heroConfig || {};
+
             return (
               <BrandHero 
                 key={index}
-                summary={context.brandProfile?.positioning_summary || 'Global Aesthetics Foundation'} 
+                summary={props?.summary || heroProps.summary || context.brandProfile?.positioning_summary || 'Global Aesthetics Foundation'} 
+                description={props?.description || heroProps.description}
+                heroImage={props?.heroImage || heroProps.heroImage}
                 voice={voiceStr} 
                 tenantSlug={context.tenantSlug}
-                // future-proofing: passing alignment via props
                 {...props}
               />
             );

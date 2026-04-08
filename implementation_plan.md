@@ -14,48 +14,50 @@
 
 ---
 
-# 🌐 테넌트 라우팅 체계를 Slug(슬러그) 기반으로 전환
+# 테넌트 디자인/테마 관리(Brand Hero) 연동 계획
 
-현재 테넌트 관리자의 접속 체계가 UUID(`.../tenant/0000-0000.../home`)를 사용하고 있어 메모가 불가능하고 식별 및 공유가 어렵다는 피드백을 반영합니다. 이를 사람이 읽기 편한 직관적인 슬러그(`.../tenant/answerbiz/home`) 체계로 완벽하게 덮어씌우는 전면적인 라우팅 리팩토링을 수행합니다.
+어드민님의 의견처럼 소비자 진입 시 가장 먼저 노출되는 "메인 히어로(BrandHero)의 이미지와 카피라이팅"은 시각적 정체성의 핵심이므로 ⚙️ **디자인/테마 관리(Design Manager)** 메뉴에서 통합 조율할 수 있는 것이 경험상 훨씬 직관적입니다. 
+
+이를 위해 기존의 전역 디자인 덮어쓰기(`overrides`) 항목에 Hero 에셋 관련 기능을 추가하고, 스토어프론트가 이를 자동으로 상속받도록 결합(Architecture Mapping)하겠습니다.
 
 ## User Review Required
 
 > [!IMPORTANT]  
-> 슬러그를 기반으로 접속하도록 바뀌면 향후 "테넌트의 슬러그"를 변경할 때 URL 주소 변경(리다이렉션) 이슈가 조심스럽게 다뤄져야 합니다. 현재 구현 방안에서는 URL에 들어온 문자열이 UUID인지 Slug인지 양쪽 모두 허용하여(Fallback) 기존 링크도 끊어지지 않도록 보호하는 방식으로 구현하겠습니다. 동의하시나요?
+> 수정될 관리자 화면(디자인 미세조정 섹션 아래)에 들어갈 항목은 다음 3가지입니다.
+> 1. **메인 히어로 이미지 URL** (현재는 텍스트 직접 입력 형태로 제공)
+> 2. **메인 타이틀 (Summary)** (ex: 프리미엄 비건 솔루션)
+> 3. **서브 설명글 (Description)** (ex: AI가 설계한 안전한 루틴...)
+> 이 항목들이면 충분하실까요?
 
 ## Proposed Changes
 
-### 1. 인증 미들웨어 및 전체 통제 라우팅 수정
-#### [MODIFY] `apps/web/lib/supabase/middleware.ts`
-- 관리자(Tenant Admin) 로그인 시 강제로 이동하는 기본 경로를 기존의 `UUID` 대신, 해당 테넌트의 DB 프로필에서 `slug`를 찾아서 `/tenant/[slug]/home`으로 연결하도록 개선합니다.
+### 1. 웹(관리자) 디자인 매니저 UI 확장
+#### [MODIFY] `apps/web/app/tenant/[tenantId]/studio/design/page.tsx`
+- 기존 Primary Color, Border Radius 지정 화면 하단에 `3. 메인 히어로(Hero) 콘셉트 구역` 폼을 신규로 추가합니다.
+- 상태값(`heroImage`, `heroSummary`, `heroDescription`)을 연결하여, 퍼블리싱 시 `overrides.hero` 객체로 감싸서 API로 쏘도록 수정합니다.
+- 현재 `/api/v1/tenant/design` 호출 시, `x-tenant-id` 헤더에 현재 웹 URL의 파라미터(tenantId/slug)를 실어보내어 저장 주체를 정확히 인지하도록 합니다. (버그 방지용)
 
-### 2. 레이아웃과 팩토리 OS 진입점 수정
-#### [MODIFY] `apps/web/app/factory/tenants/page.tsx`
-- 팩토리 OS의 [Inspect Workspace ↗] 버튼 링크를 `UUID`에서 `Slug`(없으면 fallback UUID) 중심으로 수정합니다.
+### 2. 관리자 데이터 저장 API (Route) 연동 보강
+#### [MODIFY] `apps/web/app/api/v1/tenant/design/route.ts`
+- 현재 하드코딩 되어있던 `CURRENT_TENANT_ID`를 헤더(`req.headers.get('x-tenant-id')`)에서 동적으로 뽑아 정식으로 DB에 반영하도록 리팩토링 합니다.
+- (슬러그일 경우 UUID를 한 번 조회하여 `universal_content_assets` 데이터 구조에 온전하게 반영)
 
-#### [MODIFY] `apps/web/app/tenant/[tenantId]/layout.tsx`
-- 파라미터로 넘어온 값(`params.tenantId`)이 UUID인지 Slug인지 자동으로 판별해 해당 테넌트 정보를 올바르게 Fetch하도록 쿼리를 `.or('id.eq.val,slug.eq.val')` 로 유연하게 변경합니다.
-- 사이드바 메뉴들의 하위 경로(`<a href="...">`)에 삽입되는 파라미터를 현재 접속 중인 슬러그 체계로 통일하여 매핑합니다.
+### 3. 스토어프론트(소비자 뷰) 파이프라인 매핑
+#### [MODIFY] `apps/storefront/lib/designConfig.ts`
+- 팩토리 OS(API)에서 저장한 `overrides.hero` 객체를 파싱 모델의 최상위 스키마에 붙여서 가져오도록 스펙을 확장합니다. (`hero: overrides.hero`)
 
-### 3. TenantSwitcher 컨트롤 최적화
-#### [MODIFY] `apps/web/app/tenant/[tenantId]/TenantSwitcher.tsx`
-- 드롭다운의 `value` 및 이동 대상을 `UUID`에서 `slug` 기준으로 전부 치환합니다.
-- `<option value={t.slug}>`로 렌더링되도록 수정하여, 사용자가 테넌트 전환 시 즉시 `/tenant/[slug]/home`으로 떨어지도록 합니다.
+#### [MODIFY] `apps/storefront/app/[tenantSlug]/page.tsx`
+- 스토어 홈 페이지 진입 시, 방금 꺼내온 `designConfig.hero` 정보를 묶어서 하위 위젯 렌더러로 내려보내줍니다 (`context={{ heroConfig: designConfig.hero, ... }}`).
 
-### 4. 하위 Page의 UUID 파라미터 대응 조치
-`home/page.tsx`나 `settings/brand/page.tsx` 등의 하위 페이지들이 API를 호출하거나 DB를 업데이트할 때는 **내부적으로 진짜 UUID 식별자가 필요**합니다.
-#### [MODIFY] `apps/web/app/tenant/[tenantId]/home/page.tsx`
-- URL 파라미터(Slug)를 가지고 DB에서 진짜 uuid(`tenantRow.id`)값을 찾아내어 `x-tenant-id` 헤더에 주입하도록 쿼리 조회 로직을 보강합니다.
-
-#### [MODIFY] `apps/web/app/tenant/[tenantId]/settings/brand/page.tsx`
-- 폼 Submit 처리 시에도 Slug 파라미터를 통해 진짜 폼 업데이트 대상(UUID)를 찾고 전송하도록 수정합니다.
+#### [MODIFY] `apps/storefront/components/store/blocks/BlockRenderer.tsx`
+- 큐레이션 보드에서 순서를 바꾼 `BrandHero`가 렌더링 될 때, 관리자 테마에서 방금 지정해둔 값을 1순위로 채택하여 화면에 표출해 주도록 `summary`, `description`, `heroImage` props 병합 로직을 구현합니다.
 
 ## Verification Plan
 
 ### Manual Verification
-1. 로컬 환경에서 기존 UUID로 된 주소 표시줄을 직접 지우고, 대신 등록해두셨던 `dr.o-skincare-00000000` 등을 주소창에 넣어(`/tenant/dr.o-skincare-00000000/home`) 정상 진입 되는지 확인합니다.
-2. TenantSwitcher에서 다른 브랜드로 전환했을 때 URL이 슬러그로 깔끔하게 바뀌는지 확인합니다.
-3. 팩토리 OS의 [Inspect Workspace ↗] 버튼을 클릭했을 때 UUID가 아닌 해당 테넌트의 슬러그 주소로 리다이렉션 되는지 점검합니다.
+1. `AnswerBiz` 나 `DR.O Skincare` 관리자의 `디자인/테마 관리` 에 진입합니다.
+2. 새롭게 생성된 히어로 에셋 구역에 새로운 이미지 경로와 카피라이팅을 타이핑하고 **퍼블리싱**을 누릅니다.
+3. 스토어프론트(`localhost:3001` 등)로 이동하면 중앙을 덮고 있던 히어로 대문 사진과 메인 문구가 방금 입력한 대로 깔끔하게 덧씌워진 것을 육안으로 확인합니다!
 
 ## 🛠️ Proposed Changes (옵션 A를 가정한 기본 안)
 

@@ -18,7 +18,12 @@ export interface DesignConfig {
   radius: string;
   layout?: {
     homepage?: { type: string; props?: any }[];
-  }
+  };
+  hero?: {
+    heroImage?: string;
+    summary?: string;
+    description?: string;
+  };
 }
 
 export async function getTenantDesignConfig(tenantSlug: string): Promise<DesignConfig> {
@@ -80,7 +85,8 @@ export async function getTenantDesignConfig(tenantSlug: string): Promise<DesignC
            primary_color: overrides.primary_color || parsed.colors?.primary || '#000000',
            font_family: parsed.fonts?.heading || 'inherit',
            radius: overrides.radius || parsed.radii?.md || '8px',
-           layout: overrides.layout || parsed.layout || undefined
+           layout: overrides.layout || parsed.layout || undefined,
+           hero: overrides.hero || undefined
         };
      }
   } catch (err) {

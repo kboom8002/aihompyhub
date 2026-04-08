@@ -79,7 +79,7 @@ export default async function TenantB2CHomepage({ params }: { params: { tenantSl
       {!isPreparing && (
         <BlockRenderer 
           layoutSettings={layoutSettings}
-          context={{ tenantSlug, brandProfile, answerCards: answerCards || [] }}
+          context={{ tenantSlug, brandProfile, answerCards: answerCards || [], heroConfig: designConfig.hero }}
         />
       )}
     </div>

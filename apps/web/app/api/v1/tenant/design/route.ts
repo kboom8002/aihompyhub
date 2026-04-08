@@ -7,12 +7,21 @@ const getSupabaseAdmin = () => createClient(
 );
 
 // Helper to get Tenant ID from headers (Simplified for this sprint)
-// Normally this comes from auth context.
-const CURRENT_TENANT_ID = '00000000-0000-0000-0000-000000000001'; // dr_o_skincare
+// Now resolved dynamically from x-tenant-id
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
-    const { data, error } = await getSupabaseAdmin()
+    const tenantIdentifier = req.headers.get('x-tenant-id');
+    if (!tenantIdentifier) return NextResponse.json({ error: 'Missing tenant header' }, { status: 400 });
+
+    const supabase = getSupabaseAdmin();
+    // Resolve slug to uuid if necessary
+    const { data: realTenant } = await supabase.from('tenants').select('id').or(`id.eq.${tenantIdentifier},slug.eq.${tenantIdentifier}`).single();
+    const CURRENT_TENANT_ID = realTenant?.id;
+
+    if (!CURRENT_TENANT_ID) return NextResponse.json({ error: 'Tenant not found' }, { status: 404 });
+
+    const { data, error } = await supabase
       .from('universal_content_assets')
       .select('json_payload, id')
       .eq('tenant_id', CURRENT_TENANT_ID)
@@ -40,11 +49,20 @@ export async function GET() {
 
 export async function PATCH(req: Request) {
   try {
+    const tenantIdentifier = req.headers.get('x-tenant-id');
+    if (!tenantIdentifier) return NextResponse.json({ error: 'Missing tenant header' }, { status: 400 });
+
+    const supabase = getSupabaseAdmin();
+    const { data: realTenant } = await supabase.from('tenants').select('id').or(`id.eq.${tenantIdentifier},slug.eq.${tenantIdentifier}`).single();
+    const CURRENT_TENANT_ID = realTenant?.id;
+
+    if (!CURRENT_TENANT_ID) return NextResponse.json({ error: 'Tenant not found' }, { status: 404 });
+
     const body = await req.json();
     const { base_theme, overrides } = body;
 
     // 1. Check if mapping already exists
-    const { data: existing } = await getSupabaseAdmin()
+    const { data: existing } = await supabase
       .from('universal_content_assets')
       .select('id')
       .eq('tenant_id', CURRENT_TENANT_ID)
@@ -66,10 +84,10 @@ export async function PATCH(req: Request) {
 
     let dbError = null;
     if (existing) {
-       const { error } = await getSupabaseAdmin().from('universal_content_assets').update({ json_payload: payload.json_payload, updated_at: new Date().toISOString() }).eq('id', existing.id);
+       const { error } = await supabase.from('universal_content_assets').update({ json_payload: payload.json_payload, updated_at: new Date().toISOString() }).eq('id', existing.id);
        dbError = error;
     } else {
-       const { error } = await getSupabaseAdmin().from('universal_content_assets').insert(payload);
+       const { error } = await supabase.from('universal_content_assets').insert(payload);
        dbError = error;
     }
 

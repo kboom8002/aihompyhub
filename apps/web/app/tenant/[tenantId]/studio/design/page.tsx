@@ -8,16 +8,24 @@ const THEMES = [
   { id: 'soft_minimalist', name: 'Soft Minimalist', desc: '라운딩을 강조한 친근하고 따뜻한 베이지 톤' },
 ];
 
-export default function DesignManagerPage() {
+export default function DesignManagerPage({ params }: { params: { tenantId: string } }) {
   const [baseTheme, setBaseTheme] = useState('clinical_premium');
   const [primaryColor, setPrimaryColor] = useState('');
   const [radius, setRadius] = useState('');
   const [bgColor, setBgColor] = useState('');
+  
+  // Hero section states
+  const [heroImage, setHeroImage] = useState('');
+  const [heroSummary, setHeroSummary] = useState('');
+  const [heroDescription, setHeroDescription] = useState('');
+
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/v1/tenant/design')
+    fetch('/api/v1/tenant/design', {
+       headers: { 'x-tenant-id': params.tenantId }
+    })
       .then(res => res.json())
       .then(data => {
          if (data) {
@@ -25,10 +33,16 @@ export default function DesignManagerPage() {
             setPrimaryColor(data.overrides?.primary_color || '');
             setRadius(data.overrides?.radius || '');
             setBgColor(data.overrides?.bg || '');
+            
+            if (data.overrides?.hero) {
+               setHeroImage(data.overrides.hero.heroImage || '');
+               setHeroSummary(data.overrides.hero.summary || '');
+               setHeroDescription(data.overrides.hero.description || '');
+            }
          }
          setLoading(false);
       });
-  }, []);
+  }, [params.tenantId]);
 
   const handleSave = async () => {
     setStatus('저장 중...');
@@ -37,13 +51,21 @@ export default function DesignManagerPage() {
        overrides: {
           ...(primaryColor ? { primary_color: primaryColor } : {}),
           ...(radius ? { radius: radius } : {}),
-          ...(bgColor ? { bg: bgColor } : {})
+          ...(bgColor ? { bg: bgColor } : {}),
+          hero: {
+             heroImage: heroImage,
+             summary: heroSummary,
+             description: heroDescription
+          }
        }
     };
 
     await fetch('/api/v1/tenant/design', {
        method: 'PATCH',
-       headers: { 'Content-Type': 'application/json' },
+       headers: { 
+          'Content-Type': 'application/json',
+          'x-tenant-id': params.tenantId
+       },
        body: JSON.stringify(payload)
     });
     setStatus('테마가 완료! 스토어프론트에서 즉시 확인하세요!');
@@ -117,7 +139,25 @@ export default function DesignManagerPage() {
          </div>
       </div>
 
-      {/* 3. Execute */}
+       {/* 3. Hero Overrides */}
+       <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem' }}>3. 메인 히어로(Hero) 콘셉트 구역</h3>
+       <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '3rem' }}>
+          <div>
+             <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>메인 배경 이미지 URL</label>
+             <input type="text" value={heroImage} onChange={e => setHeroImage(e.target.value)} placeholder="e.g. /vegan_root_hero.png 또는 외부 단축 URL" style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px' }} />
+             <p style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '0.25rem' }}>고해상도 광각 이미지를 추천합니다.</p>
+          </div>
+          <div>
+             <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>메인 타이틀 (Summary)</label>
+             <input type="text" value={heroSummary} onChange={e => setHeroSummary(e.target.value)} placeholder="e.g. Premium Botanical Skincare" style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px' }} />
+          </div>
+          <div>
+             <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>서브 설명글 (Description)</label>
+             <textarea value={heroDescription} onChange={e => setHeroDescription(e.target.value)} placeholder="e.g. AI-Crafted canonical answers and routines for absolute trust..." style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px', minHeight: '80px' }} />
+          </div>
+       </div>
+
+      {/* 4. Execute */}
       <button 
         onClick={handleSave}
         style={{ background: '#111827', color: 'white', padding: '1rem 3rem', borderRadius: '8px', fontWeight: 'bold', fontSize: '1.1rem', cursor: 'pointer', border: 'none' }}
