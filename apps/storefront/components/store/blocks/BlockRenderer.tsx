@@ -15,6 +15,7 @@ interface BlockRendererProps {
       heroImage?: string;
       summary?: string;
       description?: string;
+      voiceBadge?: string;
       primaryCtaText?: string;
       primaryCtaLink?: string;
       secondaryCtaText?: string;
@@ -55,6 +56,7 @@ export function BlockRenderer({ layoutSettings, context }: BlockRendererProps) {
                 primaryCtaLink={heroProps.primaryCtaLink || props?.primaryCtaLink}
                 secondaryCtaText={heroProps.secondaryCtaText || props?.secondaryCtaText}
                 secondaryCtaLink={heroProps.secondaryCtaLink || props?.secondaryCtaLink}
+                voiceBadge={heroProps.voiceBadge || props?.voiceBadge}
                 voice={voiceStr} 
                 tenantSlug={context.tenantSlug}
                 {...props}

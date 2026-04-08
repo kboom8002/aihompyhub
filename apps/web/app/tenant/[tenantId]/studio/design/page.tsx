@@ -22,9 +22,12 @@ export default function DesignManagerPage({ params }: { params: { tenantId: stri
   const [primaryCtaLink, setPrimaryCtaLink] = useState('');
   const [secondaryCtaText, setSecondaryCtaText] = useState('');
   const [secondaryCtaLink, setSecondaryCtaLink] = useState('');
+  const [voiceBadge, setVoiceBadge] = useState('');
 
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(true);
+  const [isUploading, setIsUploading] = useState(false);
+  const [iaNodes, setIaNodes] = useState<{id: string, label: string}[]>([]);
 
   useEffect(() => {
     fetch('/api/v1/tenant/design', {
@@ -46,11 +49,47 @@ export default function DesignManagerPage({ params }: { params: { tenantId: stri
                setPrimaryCtaLink(data.overrides.hero.primaryCtaLink || '');
                setSecondaryCtaText(data.overrides.hero.secondaryCtaText || '');
                setSecondaryCtaLink(data.overrides.hero.secondaryCtaLink || '');
+               setVoiceBadge(data.overrides.hero.voiceBadge || '');
             }
+         }
+         
+         // Fetch IA nodes for datalist
+         return fetch('/api/v1/tenant/ia', { headers: { 'x-tenant-id': params.tenantId } });
+      })
+      .then(res => res ? res.json() : null)
+      .then(iaData => {
+         if (iaData && iaData.nodes) {
+             setIaNodes(iaData.nodes.filter((n: any) => n.enabled));
          }
          setLoading(false);
       });
   }, [params.tenantId]);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+     const file = e.target.files?.[0];
+     if (!file) return;
+
+     setIsUploading(true);
+     try {
+       const formData = new FormData();
+       formData.append('file', file);
+       const res = await fetch('/api/v1/tenant/upload', {
+         method: 'POST',
+         headers: { 'x-tenant-id': params.tenantId },
+         body: formData
+       });
+       const data = await res.json();
+       if (data.url) {
+         setHeroImage(data.url);
+       } else {
+         alert('업로드 실패: ' + (data.error || '알 수 없는 오류'));
+       }
+     } catch (err) {
+       alert('업로드 중 오류 발생');
+     } finally {
+       setIsUploading(false);
+     }
+  };
 
   const handleSave = async () => {
     setStatus('저장 중...');
@@ -64,6 +103,7 @@ export default function DesignManagerPage({ params }: { params: { tenantId: stri
              heroImage: heroImage,
              summary: heroSummary,
              description: heroDescription,
+             voiceBadge: voiceBadge,
              primaryCtaText: primaryCtaText,
              primaryCtaLink: primaryCtaLink,
              secondaryCtaText: secondaryCtaText,
@@ -155,9 +195,21 @@ export default function DesignManagerPage({ params }: { params: { tenantId: stri
        <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem' }}>3. 메인 히어로(Hero) 콘셉트 구역</h3>
        <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '3rem' }}>
           <div>
-             <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>메인 배경 이미지 URL</label>
-             <input type="text" value={heroImage} onChange={e => setHeroImage(e.target.value)} placeholder="e.g. /vegan_root_hero.png 또는 외부 단축 URL" style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px' }} />
-             <p style={{ fontSize: '0.8rem', color: '#6b7280', marginTop: '0.25rem' }}>고해상도 광각 이미지를 추천합니다.</p>
+             <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>메인 배경 이미지 업로드 (File Upload / URL)</label>
+             <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                <input type="file" accept="image/*" onChange={handleFileUpload} style={{ padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '6px' }} />
+                {isUploading && <span style={{ fontSize: '0.9rem', color: '#3b82f6' }}>업로드 중...</span>}
+             </div>
+             <input type="text" value={heroImage} onChange={e => setHeroImage(e.target.value)} placeholder="업로드된 클라우드 URL (또는 직접 입력)" style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px', marginTop: '0.5rem' }} />
+             {heroImage && (
+                <div style={{ marginTop: '0.5rem', maxWidth: '300px', borderRadius: '6px', overflow: 'hidden', border: '1px solid #e5e7eb' }}>
+                   <img src={heroImage} alt="Hero Preview" style={{ width: '100%', height: 'auto', display: 'block' }} />
+                </div>
+             )}
+          </div>
+          <div>
+             <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>보이스 배지 텍스트 (Voice Badge)</label>
+             <input type="text" value={voiceBadge} onChange={e => setVoiceBadge(e.target.value)} placeholder="e.g. 프리미엄 스킨 리셋 VOICE (비워두면 브랜드 SSoT 설정 따름)" style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px' }} />
           </div>
           <div>
              <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>메인 타이틀 (Summary)</label>
@@ -174,7 +226,7 @@ export default function DesignManagerPage({ params }: { params: { tenantId: stri
              </div>
              <div style={{ flex: 1 }}>
                 <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>메인 버튼 링크 (Primary Link)</label>
-                <input type="text" value={primaryCtaLink} onChange={e => setPrimaryCtaLink(e.target.value)} placeholder="e.g. /routines" style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px' }} />
+                <input type="text" list="ia-nodes" value={primaryCtaLink} onChange={e => setPrimaryCtaLink(e.target.value)} placeholder="e.g. /routines" style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px' }} />
              </div>
           </div>
           <div style={{ display: 'flex', gap: '1rem' }}>
@@ -184,10 +236,16 @@ export default function DesignManagerPage({ params }: { params: { tenantId: stri
              </div>
              <div style={{ flex: 1 }}>
                 <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>서브 버튼 링크 (Secondary Link)</label>
-                <input type="text" value={secondaryCtaLink} onChange={e => setSecondaryCtaLink(e.target.value)} placeholder="e.g. /solutions" style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px' }} />
+                <input type="text" list="ia-nodes" value={secondaryCtaLink} onChange={e => setSecondaryCtaLink(e.target.value)} placeholder="e.g. /solutions" style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px' }} />
              </div>
           </div>
        </div>
+
+      <datalist id="ia-nodes">
+        {iaNodes.map(node => (
+           <option key={node.id} value={`/${node.id}`}>{node.label}</option>
+        ))}
+      </datalist>
 
       {/* 4. Execute */}
       <button 

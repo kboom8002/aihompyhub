@@ -12,13 +12,14 @@ interface BrandHeroProps {
   heroImage?: string;
   description?: string;
   textMode?: 'dark' | 'light';
+  voiceBadge?: string;
   primaryCtaText?: string;
   primaryCtaLink?: string;
   secondaryCtaText?: string;
   secondaryCtaLink?: string;
 }
 
-export function BrandHero({ summary, voice, skinTheme, tenantSlug, heroImage, description, textMode = 'dark', primaryCtaText, primaryCtaLink, secondaryCtaText, secondaryCtaLink }: BrandHeroProps) {
+export function BrandHero({ summary, voice, skinTheme, tenantSlug, heroImage, description, textMode = 'dark', voiceBadge, primaryCtaText, primaryCtaLink, secondaryCtaText, secondaryCtaLink }: BrandHeroProps) {
   const isLightText = textMode === 'dark'; // 'dark' mode means dark background -> needs light text
 
   return (
@@ -38,7 +39,7 @@ export function BrandHero({ summary, voice, skinTheme, tenantSlug, heroImage, de
       {/* Hero Content (Glassmorphism) */}
       <div className={`relative z-10 p-10 md:p-14 text-center border rounded-2xl backdrop-blur-md shadow-2xl max-w-4xl mx-4 transition-all ${isLightText ? 'border-white/20 bg-white/10 hover:bg-white/15' : 'border-black/10 bg-white/40 hover:bg-white/50'}`}>
         <span className={`inline-block px-4 py-1.5 rounded-full text-xs font-semibold tracking-[0.2em] uppercase mb-6 shadow-sm ${isLightText ? 'bg-white/20 text-white' : 'bg-black/10 text-gray-900 border border-gray-900/20'}`}>
-          {voice} Voice
+          {voiceBadge || `${voice} Voice`}
         </span>
         <h1 className={`text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight leading-tight ${isLightText ? 'text-white drop-shadow-2xl' : 'text-gray-900 drop-shadow-md'}`} style={{ fontFamily: 'var(--theme-font, inherit)' }}>
           {summary || 'Premium Botanical Skincare'}

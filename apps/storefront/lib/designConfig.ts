@@ -23,6 +23,7 @@ export interface DesignConfig {
     heroImage?: string;
     summary?: string;
     description?: string;
+    voiceBadge?: string;
     primaryCtaText?: string;
     primaryCtaLink?: string;
     secondaryCtaText?: string;

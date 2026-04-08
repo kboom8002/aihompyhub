@@ -14,46 +14,44 @@
 
 ---
 
-# 테넌트 디자인/테마 관리(Brand Hero) 퍼블리싱 및 CTA 확장 연동
+# 스토어프론트 Hero 구역 최고급 커스터마이징 (업로드, IA 드롭다운, 보이스 배지)
 
-어드민님의 날카로운 관찰력이 맞습니다! 
-이전 연동에서 **블록 렌더러(BlockRenderer)**가 "만약 홈 큐레이션 보드 쪽에 명시된 설정(`props`)이 있으면 그 값을 먼저 쓴다"라고 우선순위를 판정하는 바람에, 디자인 매니저에서 덮어쓴 값(`heroProps`)이 무시당하는 렌더링 우선순위 버그가 있었습니다.
-
-또한 히어로 영역 하단에는 **2개의 액션 버튼(CTA)**과 상단의 **보이스 배지(Voice Badge)**가 자리잡고 있습니다. 어드민님의 말씀처럼 "이미지와 텍스트 외의 요소(버튼 등)"도 테넌트 관리자가 마음대로 링크와 라벨을 변경할 수 있어야 완벽한 빌더의 면모를 갖출 수 있습니다!
+말씀해주신 3가지 개선 사항은 완벽한 노코드(No-code) SaaS 플랫폼으로 거듭나기 위한 핵심 기능들입니다. 특히 사용자가 URL을 복사하여 붙여넣는 방식은 불편하므로 파일 업로드(Storage)로 대체하고, 버튼 라우팅도 직관적으로 고를 수 있게 UX를 파격적으로 개선하겠습니다!
 
 ## User Review Required
 
 > [!IMPORTANT]  
-> 관리자의 `디자인/테마 관리` 화면의 메인 히어로 구역 폼에 다음 4가지 버튼 관련 항목을 추가합니다. 승인해주시면 바로 작업에 착수하겠습니다.
-> 1. 메인 버튼 텍스트 (예: 내 루틴/리셋 찾기)
-> 2. 메인 버튼 연결 링크 (예: `/routines`)
-> 3. 서브 버튼 텍스트 (예: 고민별 공식 답변 보기)
-> 4. 서브 버튼 연결 링크 (예: `/solutions`)
+> 1. **배경 이미지 파일 업로드**: Supabase Storage 연동을 통해 브라우저에서 직접 파일을 첨부하여 업로드 되도록 변경합니다. 
+> 2. **버튼 링크 IA 드롭다운**: 텍스트 인풋 대신, `<datalist>` 태그를 활용해 `IA 매니저`에 등록된 메뉴들이 **드롭다운으로 자동 완성**되도록 제공하겠습니다. 원하시면 직접 타이핑도 가능합니다.
+> 3. **보이스 배지 오버라이드**: 이미지 상단에 나타나는 투명한 캡슐 라벨(Voice Badge)은 본래 기본 브랜드 프로필(Brand SSoT)에서 가져오지만, 히어로 전용으로 강제 수정할 수 있는 입력 칸 하나를 더 만들어 두겠습니다.
+> 이 구현 방향성으로 진행할까요?
 
 ## Proposed Changes
 
-### 1. 스토어프론트 우위성(Priority) 역전 & CTA 컴포넌트 Props 바인딩
-#### [MODIFY] `apps/storefront/components/store/blocks/BlockRenderer.tsx`
-- 기존의 값이 없으면 꺼내오는 체인 `props?.heroImage || heroProps.heroImage` 의 순서를 **`heroProps.heroImage || props?.heroImage`** 로 뒤집어버립니다! 즉, 방금 디자인/테마 관리에서 저장한 `heroConfig`의 값을 **무조건 최우선 호가**로 렌더링하도록 덮어쓰기 권력을 부여합니다.
-
-#### [MODIFY] `apps/storefront/components/store/BrandHero.tsx`
-- 컴포넌트 하단에 하드코딩 되어 있던 두 개의 Link와 Button 안의 텍스트를 `props.primaryCtaText`, `props.primaryCtaLink` 등으로 교체합니다. 만약 입력값이 없으면 기존의 텍스트가 Fallback 되도록 보존합니다.
-
+### 1. 스토어프론트 뷰 오버라이드 & 스키마 확장
+#### [MODIFY] `apps/storefront/components/store/BrandHero.tsx` & `BlockRenderer.tsx`
+- 기존 `BrandHero`가 `voice` 속성을 상속받고 있었습니다. 여기에 `heroProps.voiceBadge` 속성을 1순위로 채택하도록 프롭스를 살짝만 더 병합시킵니다.
 #### [MODIFY] `apps/storefront/lib/designConfig.ts`
-- `designConfig` 스키마 인터페이스의 `hero` 필드 안에 `primaryCtaText`, `primaryCtaLink`, `secondaryCtaText`, `secondaryCtaLink` 를 편입시킵니다.
+- `designConfig` 스키마 인터페이스의 `hero` 필드 안에 `voiceBadge` 를 추가합니다.
 
-### 2. 웹(관리자) 디자인 매니저 UI 확장
+### 2. AWS S3 기반(Supabase Storage) 원클릭 업로더 백엔드 신설
+#### [NEW] `apps/web/app/api/v1/tenant/upload/route.ts`
+- 테넌트 어드민이 올려보낸 파일을 받아 `tenant-assets` 버킷(방금 제가 즉석으로 생성해 두었습니다!)에 안전하게 저장하고 절대경로 Public URL을 반환해주는 전용 REST API를 하나 신설합니다.
+
+### 3. 웹(관리자) 디자인 매니저 UI 최고급화 (업로더/드롭다운)
 #### [MODIFY] `apps/web/app/tenant/[tenantId]/studio/design/page.tsx`
-- 기존 히어로 이미지/타이틀 설정란 아래에 **[액션 버튼(CTA) 1]** 과 **[액션 버튼(CTA) 2]** 의 라벨과 도달 경로(URL)를 적을 수 있는 Input 필드를 4개 더 붙입니다.
-- 저장 버튼 누를 때 `payload.overrides.hero` 객체 안에 CTA 텍스트와 링크를 함께 동봉해서 DB(`api/v1/tenant/design/route.ts`)로 넘기도록 조립합니다.
+- **배경 이미지 설정란**: 단순 텍스트 박스에서 `<input type="file" />` 요소로 바꿉니다. 파일 선택 시 앞서 만든 API가 백그라운드에서 동작한 뒤 저장됩니다.
+- **버튼 링크 설정란**: `fetch` 로 `api/v1/tenant/ia` 목록을 가져온 뒤 HTML5의 `<datalist>` 와 바인딩하여 콤보박스(드롭다운) UX를 선사합니다.
+- **보이스 배지 오버라이드**: 텍스트 인풋 필드를 하나 더 추가합니다.
 
 ## Verification Plan
 
 ### Manual Verification
-1. `디자인/테마 관리` 에 진입하면 히어로 구역 아래에 버튼 이름과 위치를 적을 수 있는 칸이 생성되어 있는지 확인합니다.
-2. 예컨대 스킨케어 브랜드가 아닐 경우 "시작하기", "/pricing" 등으로 세팅 후 퍼블리싱합니다.
-3. 스토어프론트에 진입하여 방금 적은 타이틀과 이미지가 1순위로 즉각 반영되어 대문에 찍히는지 점검합니다.
-4. 버튼 텍스트가 바뀐 것을 육안으로 보고 클릭 시 의도한 주소로 올바르게 튕겨져 나가는지 확인합니다!
+1. `디자인/테마 관리` 에 들어갑니다.
+2. 배경 이미지를 "URL 입력"이 아닌 **[파일 선택]** 버튼을 통해 업로드합니다.
+3. 로딩바가 끝나면 스토어프론트용 클라우드 버킷 URL이 부여됩니다.
+4. 링크 인풋을 클릭하면 `IA 매니저`에서 쓰이는 메뉴 경로(`/routines`, `/solutions` 등)가 드롭다운 박스로 보기 좋게 제안됩니다.
+5. 저장 후 스토어 프론트에 배지가 잘 나오는지 봅니다.
 
 ## 🛠️ Proposed Changes (옵션 A를 가정한 기본 안)
 
