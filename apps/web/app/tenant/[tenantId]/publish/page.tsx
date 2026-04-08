@@ -1,4 +1,5 @@
 import React from 'react';
+import { headers } from 'next/headers';
 import { PageHeader } from '../../../components/PageHeader';
 import { StatusBadge } from '../../../components/StatusBadge';
 import { PublishActions } from './PublishActions';
@@ -7,9 +8,23 @@ export default async function PublishManagerPage(props: { params: Promise<{ tena
   const params = await props.params;
   const tenantId = params.tenantId;
 
-  const res = await fetch('http://localhost:3000/api/v1/queries/publish-bundle-snapshot', { cache: 'no-store', headers: { 'x-tenant-id': tenantId } })
-    .catch(() => null);
-  const snapshot = res ? await res.json() : null;
+  const headersList = await headers();
+  const host = headersList.get('host') || 'localhost:3002';
+  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+  const baseUrl = `${protocol}://${host}`;
+  const cookieHeader = headersList.get('cookie') || '';
+
+  let snapshot = null;
+  try {
+    const res = await fetch(`${baseUrl}/api/v1/queries/publish-bundle-snapshot`, { 
+      cache: 'no-store', 
+      headers: { 'x-tenant-id': tenantId, 'cookie': cookieHeader } 
+    });
+    if (res.ok) snapshot = await res.json();
+  } catch (e) {
+    console.error(e);
+  }
+  
   const bundles = snapshot?.data?.bundles || [];
 
   return (

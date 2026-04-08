@@ -1,4 +1,5 @@
 import React from 'react';
+import { headers } from 'next/headers';
 import { CriticalStrip } from '../../../components/CriticalStrip';
 import { PageHeader } from '../../../components/PageHeader';
 import { StatusBadge } from '../../../components/StatusBadge';
@@ -6,11 +7,29 @@ import { StatusBadge } from '../../../components/StatusBadge';
 export default async function TenantHomePage(props: { params: Promise<{ tenantId: string }> }) {
   const params = await props.params;
   const tenantId = params.tenantId;
-  const res = await fetch('http://localhost:3000/api/v1/queries/tenant-home-snapshot', { cache: 'no-store' })
-    .catch(() => null);
   
-  const snapshot = res ? await res.json() : null;
-  const data = snapshot?.data || {};
+  const headersList = await headers();
+  const host = headersList.get('host') || 'localhost:3002';
+  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+  const baseUrl = `${protocol}://${host}`;
+  const cookieHeader = headersList.get('cookie') || '';
+
+  let data: any = {};
+  try {
+    const res = await fetch(`${baseUrl}/api/v1/queries/tenant-home-snapshot`, { 
+        cache: 'no-store',
+        headers: {
+            'cookie': cookieHeader,
+            'x-tenant-id': tenantId
+        }
+    });
+    if (res.ok) {
+       const snapshot = await res.json();
+       data = snapshot?.data || {};
+    }
+  } catch (e) {
+      console.error('Failed to fetch snapshot:', e);
+  }
 
   const criticalItems = [
     { label: '검수 필요', count: data.criticalStrip?.reviewPendingCount || 0, intent: 'warning' as const },
