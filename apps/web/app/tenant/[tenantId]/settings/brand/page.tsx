@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { PageHeader } from '../../../../components/PageHeader';
 import { updateTenantIdentity } from './actions';
 
-export default function BrandSettingsPage({ params }: { params: Promise<{ tenantId: string }> }) {
+export default function BrandSettingsPage({ params }: { params: { tenantId: string } }) {
   const [tenantId, setTenantId] = useState<string>('');
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
@@ -12,22 +12,21 @@ export default function BrandSettingsPage({ params }: { params: Promise<{ tenant
   const [message, setMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null);
 
   useEffect(() => {
-    params.then(p => {
-       setTenantId(p.tenantId);
-       // Load initial data
-       fetch(`/api/v1/factory/tenants`)
-         .then(res => res.json())
-         .then(payload => {
-            if (payload?.data?.healthSummaries) {
-               const tenant = payload.data.healthSummaries.find((t: any) => t.tenantId === p.tenantId);
-               if (tenant) {
-                  setName(tenant.tenantName || '');
-                  setSlug(tenant.slug || '');
-               }
+    const pId = params.tenantId;
+    setTenantId(pId);
+    // Load initial data
+    fetch(`/api/v1/factory/tenants`)
+      .then(res => res.json())
+      .then(payload => {
+         if (payload?.data?.healthSummaries) {
+            const tenant = payload.data.healthSummaries.find((t: any) => t.tenantId === pId || t.slug === pId);
+            if (tenant) {
+               setName(tenant.tenantName || '');
+               setSlug(tenant.slug || '');
             }
-         });
-    });
-  }, [params]);
+         }
+      });
+  }, [params.tenantId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
