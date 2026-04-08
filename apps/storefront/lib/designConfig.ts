@@ -23,6 +23,10 @@ export interface DesignConfig {
     heroImage?: string;
     summary?: string;
     description?: string;
+    primaryCtaText?: string;
+    primaryCtaLink?: string;
+    secondaryCtaText?: string;
+    secondaryCtaLink?: string;
   };
 }
 

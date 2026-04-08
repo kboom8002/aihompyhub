@@ -14,50 +14,46 @@
 
 ---
 
-# 테넌트 디자인/테마 관리(Brand Hero) 연동 계획
+# 테넌트 디자인/테마 관리(Brand Hero) 퍼블리싱 및 CTA 확장 연동
 
-어드민님의 의견처럼 소비자 진입 시 가장 먼저 노출되는 "메인 히어로(BrandHero)의 이미지와 카피라이팅"은 시각적 정체성의 핵심이므로 ⚙️ **디자인/테마 관리(Design Manager)** 메뉴에서 통합 조율할 수 있는 것이 경험상 훨씬 직관적입니다. 
+어드민님의 날카로운 관찰력이 맞습니다! 
+이전 연동에서 **블록 렌더러(BlockRenderer)**가 "만약 홈 큐레이션 보드 쪽에 명시된 설정(`props`)이 있으면 그 값을 먼저 쓴다"라고 우선순위를 판정하는 바람에, 디자인 매니저에서 덮어쓴 값(`heroProps`)이 무시당하는 렌더링 우선순위 버그가 있었습니다.
 
-이를 위해 기존의 전역 디자인 덮어쓰기(`overrides`) 항목에 Hero 에셋 관련 기능을 추가하고, 스토어프론트가 이를 자동으로 상속받도록 결합(Architecture Mapping)하겠습니다.
+또한 히어로 영역 하단에는 **2개의 액션 버튼(CTA)**과 상단의 **보이스 배지(Voice Badge)**가 자리잡고 있습니다. 어드민님의 말씀처럼 "이미지와 텍스트 외의 요소(버튼 등)"도 테넌트 관리자가 마음대로 링크와 라벨을 변경할 수 있어야 완벽한 빌더의 면모를 갖출 수 있습니다!
 
 ## User Review Required
 
 > [!IMPORTANT]  
-> 수정될 관리자 화면(디자인 미세조정 섹션 아래)에 들어갈 항목은 다음 3가지입니다.
-> 1. **메인 히어로 이미지 URL** (현재는 텍스트 직접 입력 형태로 제공)
-> 2. **메인 타이틀 (Summary)** (ex: 프리미엄 비건 솔루션)
-> 3. **서브 설명글 (Description)** (ex: AI가 설계한 안전한 루틴...)
-> 이 항목들이면 충분하실까요?
+> 관리자의 `디자인/테마 관리` 화면의 메인 히어로 구역 폼에 다음 4가지 버튼 관련 항목을 추가합니다. 승인해주시면 바로 작업에 착수하겠습니다.
+> 1. 메인 버튼 텍스트 (예: 내 루틴/리셋 찾기)
+> 2. 메인 버튼 연결 링크 (예: `/routines`)
+> 3. 서브 버튼 텍스트 (예: 고민별 공식 답변 보기)
+> 4. 서브 버튼 연결 링크 (예: `/solutions`)
 
 ## Proposed Changes
 
-### 1. 웹(관리자) 디자인 매니저 UI 확장
-#### [MODIFY] `apps/web/app/tenant/[tenantId]/studio/design/page.tsx`
-- 기존 Primary Color, Border Radius 지정 화면 하단에 `3. 메인 히어로(Hero) 콘셉트 구역` 폼을 신규로 추가합니다.
-- 상태값(`heroImage`, `heroSummary`, `heroDescription`)을 연결하여, 퍼블리싱 시 `overrides.hero` 객체로 감싸서 API로 쏘도록 수정합니다.
-- 현재 `/api/v1/tenant/design` 호출 시, `x-tenant-id` 헤더에 현재 웹 URL의 파라미터(tenantId/slug)를 실어보내어 저장 주체를 정확히 인지하도록 합니다. (버그 방지용)
-
-### 2. 관리자 데이터 저장 API (Route) 연동 보강
-#### [MODIFY] `apps/web/app/api/v1/tenant/design/route.ts`
-- 현재 하드코딩 되어있던 `CURRENT_TENANT_ID`를 헤더(`req.headers.get('x-tenant-id')`)에서 동적으로 뽑아 정식으로 DB에 반영하도록 리팩토링 합니다.
-- (슬러그일 경우 UUID를 한 번 조회하여 `universal_content_assets` 데이터 구조에 온전하게 반영)
-
-### 3. 스토어프론트(소비자 뷰) 파이프라인 매핑
-#### [MODIFY] `apps/storefront/lib/designConfig.ts`
-- 팩토리 OS(API)에서 저장한 `overrides.hero` 객체를 파싱 모델의 최상위 스키마에 붙여서 가져오도록 스펙을 확장합니다. (`hero: overrides.hero`)
-
-#### [MODIFY] `apps/storefront/app/[tenantSlug]/page.tsx`
-- 스토어 홈 페이지 진입 시, 방금 꺼내온 `designConfig.hero` 정보를 묶어서 하위 위젯 렌더러로 내려보내줍니다 (`context={{ heroConfig: designConfig.hero, ... }}`).
-
+### 1. 스토어프론트 우위성(Priority) 역전 & CTA 컴포넌트 Props 바인딩
 #### [MODIFY] `apps/storefront/components/store/blocks/BlockRenderer.tsx`
-- 큐레이션 보드에서 순서를 바꾼 `BrandHero`가 렌더링 될 때, 관리자 테마에서 방금 지정해둔 값을 1순위로 채택하여 화면에 표출해 주도록 `summary`, `description`, `heroImage` props 병합 로직을 구현합니다.
+- 기존의 값이 없으면 꺼내오는 체인 `props?.heroImage || heroProps.heroImage` 의 순서를 **`heroProps.heroImage || props?.heroImage`** 로 뒤집어버립니다! 즉, 방금 디자인/테마 관리에서 저장한 `heroConfig`의 값을 **무조건 최우선 호가**로 렌더링하도록 덮어쓰기 권력을 부여합니다.
+
+#### [MODIFY] `apps/storefront/components/store/BrandHero.tsx`
+- 컴포넌트 하단에 하드코딩 되어 있던 두 개의 Link와 Button 안의 텍스트를 `props.primaryCtaText`, `props.primaryCtaLink` 등으로 교체합니다. 만약 입력값이 없으면 기존의 텍스트가 Fallback 되도록 보존합니다.
+
+#### [MODIFY] `apps/storefront/lib/designConfig.ts`
+- `designConfig` 스키마 인터페이스의 `hero` 필드 안에 `primaryCtaText`, `primaryCtaLink`, `secondaryCtaText`, `secondaryCtaLink` 를 편입시킵니다.
+
+### 2. 웹(관리자) 디자인 매니저 UI 확장
+#### [MODIFY] `apps/web/app/tenant/[tenantId]/studio/design/page.tsx`
+- 기존 히어로 이미지/타이틀 설정란 아래에 **[액션 버튼(CTA) 1]** 과 **[액션 버튼(CTA) 2]** 의 라벨과 도달 경로(URL)를 적을 수 있는 Input 필드를 4개 더 붙입니다.
+- 저장 버튼 누를 때 `payload.overrides.hero` 객체 안에 CTA 텍스트와 링크를 함께 동봉해서 DB(`api/v1/tenant/design/route.ts`)로 넘기도록 조립합니다.
 
 ## Verification Plan
 
 ### Manual Verification
-1. `AnswerBiz` 나 `DR.O Skincare` 관리자의 `디자인/테마 관리` 에 진입합니다.
-2. 새롭게 생성된 히어로 에셋 구역에 새로운 이미지 경로와 카피라이팅을 타이핑하고 **퍼블리싱**을 누릅니다.
-3. 스토어프론트(`localhost:3001` 등)로 이동하면 중앙을 덮고 있던 히어로 대문 사진과 메인 문구가 방금 입력한 대로 깔끔하게 덧씌워진 것을 육안으로 확인합니다!
+1. `디자인/테마 관리` 에 진입하면 히어로 구역 아래에 버튼 이름과 위치를 적을 수 있는 칸이 생성되어 있는지 확인합니다.
+2. 예컨대 스킨케어 브랜드가 아닐 경우 "시작하기", "/pricing" 등으로 세팅 후 퍼블리싱합니다.
+3. 스토어프론트에 진입하여 방금 적은 타이틀과 이미지가 1순위로 즉각 반영되어 대문에 찍히는지 점검합니다.
+4. 버튼 텍스트가 바뀐 것을 육안으로 보고 클릭 시 의도한 주소로 올바르게 튕겨져 나가는지 확인합니다!
 
 ## 🛠️ Proposed Changes (옵션 A를 가정한 기본 안)
 

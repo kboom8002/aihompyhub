@@ -12,9 +12,13 @@ interface BrandHeroProps {
   heroImage?: string;
   description?: string;
   textMode?: 'dark' | 'light';
+  primaryCtaText?: string;
+  primaryCtaLink?: string;
+  secondaryCtaText?: string;
+  secondaryCtaLink?: string;
 }
 
-export function BrandHero({ summary, voice, skinTheme, tenantSlug, heroImage, description, textMode = 'dark' }: BrandHeroProps) {
+export function BrandHero({ summary, voice, skinTheme, tenantSlug, heroImage, description, textMode = 'dark', primaryCtaText, primaryCtaLink, secondaryCtaText, secondaryCtaLink }: BrandHeroProps) {
   const isLightText = textMode === 'dark'; // 'dark' mode means dark background -> needs light text
 
   return (
@@ -43,14 +47,14 @@ export function BrandHero({ summary, voice, skinTheme, tenantSlug, heroImage, de
           {description || 'AI-Crafted canonical answers and routines for absolute trust and transparency.\nDiscover the verified difference.'}
         </p>
         <div className="mt-10 flex gap-4 justify-center">
-          <Link href={`/${tenantSlug || 'skincare-brand'}/routines`}>
+          <Link href={primaryCtaLink || `/${tenantSlug || 'skincare-brand'}/routines`}>
              <Button size="lg" style={{ background: 'var(--theme-primary)', color: 'var(--theme-surface)', borderRadius: 'var(--theme-radius)' }} className="hover:opacity-90 px-8 tracking-wider border-none font-semibold">
-               내 루틴/리셋 찾기
+               {primaryCtaText || '내 루틴/리셋 찾기'}
              </Button>
           </Link>
-          <Link href={`/${tenantSlug || 'skincare-brand'}/solutions`}>
+          <Link href={secondaryCtaLink || `/${tenantSlug || 'skincare-brand'}/solutions`}>
              <Button size="lg" style={{ borderColor: 'var(--theme-primary)', color: 'var(--theme-surface)', backgroundColor: 'rgba(0,0,0,0.4)', borderRadius: 'var(--theme-radius)' }} className="border-2 hover:bg-black/60 px-8 tracking-wider font-semibold">
-               고민별 공식 답변 보기
+               {secondaryCtaText || '고민별 공식 답변 보기'}
              </Button>
           </Link>
         </div>

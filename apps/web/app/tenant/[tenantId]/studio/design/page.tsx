@@ -18,6 +18,10 @@ export default function DesignManagerPage({ params }: { params: { tenantId: stri
   const [heroImage, setHeroImage] = useState('');
   const [heroSummary, setHeroSummary] = useState('');
   const [heroDescription, setHeroDescription] = useState('');
+  const [primaryCtaText, setPrimaryCtaText] = useState('');
+  const [primaryCtaLink, setPrimaryCtaLink] = useState('');
+  const [secondaryCtaText, setSecondaryCtaText] = useState('');
+  const [secondaryCtaLink, setSecondaryCtaLink] = useState('');
 
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(true);
@@ -38,6 +42,10 @@ export default function DesignManagerPage({ params }: { params: { tenantId: stri
                setHeroImage(data.overrides.hero.heroImage || '');
                setHeroSummary(data.overrides.hero.summary || '');
                setHeroDescription(data.overrides.hero.description || '');
+               setPrimaryCtaText(data.overrides.hero.primaryCtaText || '');
+               setPrimaryCtaLink(data.overrides.hero.primaryCtaLink || '');
+               setSecondaryCtaText(data.overrides.hero.secondaryCtaText || '');
+               setSecondaryCtaLink(data.overrides.hero.secondaryCtaLink || '');
             }
          }
          setLoading(false);
@@ -55,7 +63,11 @@ export default function DesignManagerPage({ params }: { params: { tenantId: stri
           hero: {
              heroImage: heroImage,
              summary: heroSummary,
-             description: heroDescription
+             description: heroDescription,
+             primaryCtaText: primaryCtaText,
+             primaryCtaLink: primaryCtaLink,
+             secondaryCtaText: secondaryCtaText,
+             secondaryCtaLink: secondaryCtaLink
           }
        }
     };
@@ -154,6 +166,26 @@ export default function DesignManagerPage({ params }: { params: { tenantId: stri
           <div>
              <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>서브 설명글 (Description)</label>
              <textarea value={heroDescription} onChange={e => setHeroDescription(e.target.value)} placeholder="e.g. AI-Crafted canonical answers and routines for absolute trust..." style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px', minHeight: '80px' }} />
+          </div>
+          <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', borderTop: '1px solid #e5e7eb', paddingTop: '1.5rem' }}>
+             <div style={{ flex: 1 }}>
+                <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>메인 버튼 텍스트 (Primary CTA)</label>
+                <input type="text" value={primaryCtaText} onChange={e => setPrimaryCtaText(e.target.value)} placeholder="e.g. 내 루틴/리셋 찾기" style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px' }} />
+             </div>
+             <div style={{ flex: 1 }}>
+                <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>메인 버튼 링크 (Primary Link)</label>
+                <input type="text" value={primaryCtaLink} onChange={e => setPrimaryCtaLink(e.target.value)} placeholder="e.g. /routines" style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px' }} />
+             </div>
+          </div>
+          <div style={{ display: 'flex', gap: '1rem' }}>
+             <div style={{ flex: 1 }}>
+                <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>서브 버튼 텍스트 (Secondary CTA)</label>
+                <input type="text" value={secondaryCtaText} onChange={e => setSecondaryCtaText(e.target.value)} placeholder="e.g. 고민별 공식 답변 보기" style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px' }} />
+             </div>
+             <div style={{ flex: 1 }}>
+                <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>서브 버튼 링크 (Secondary Link)</label>
+                <input type="text" value={secondaryCtaLink} onChange={e => setSecondaryCtaLink(e.target.value)} placeholder="e.g. /solutions" style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px' }} />
+             </div>
           </div>
        </div>
 

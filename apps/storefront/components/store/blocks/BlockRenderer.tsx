@@ -15,6 +15,10 @@ interface BlockRendererProps {
       heroImage?: string;
       summary?: string;
       description?: string;
+      primaryCtaText?: string;
+      primaryCtaLink?: string;
+      secondaryCtaText?: string;
+      secondaryCtaLink?: string;
     };
   };
 }
@@ -44,9 +48,13 @@ export function BlockRenderer({ layoutSettings, context }: BlockRendererProps) {
             return (
               <BrandHero 
                 key={index}
-                summary={props?.summary || heroProps.summary || context.brandProfile?.positioning_summary || 'Global Aesthetics Foundation'} 
-                description={props?.description || heroProps.description}
-                heroImage={props?.heroImage || heroProps.heroImage}
+                summary={heroProps.summary || props?.summary || context.brandProfile?.positioning_summary || 'Global Aesthetics Foundation'} 
+                description={heroProps.description || props?.description}
+                heroImage={heroProps.heroImage || props?.heroImage}
+                primaryCtaText={heroProps.primaryCtaText || props?.primaryCtaText}
+                primaryCtaLink={heroProps.primaryCtaLink || props?.primaryCtaLink}
+                secondaryCtaText={heroProps.secondaryCtaText || props?.secondaryCtaText}
+                secondaryCtaLink={heroProps.secondaryCtaLink || props?.secondaryCtaLink}
                 voice={voiceStr} 
                 tenantSlug={context.tenantSlug}
                 {...props}
