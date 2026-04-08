@@ -5,19 +5,17 @@ import { useParams } from 'next/navigation';
 
 export default function TenantSeoPage() {
    const params = useParams();
-   const tenantId = params.tenantId as string;
+   const tenantSlug = params.tenantId as string;
    const [graphData, setGraphData] = useState<any>(null);
    const [isLoading, setIsLoading] = useState(false);
-   
-   // MVP 역방향 매핑 (id -> slug)
-   const tenantSlug = tenantId === '00000000-0000-0000-0000-000000000002' ? 'haircare-brand' : 'skincare-brand';
    const [status, setStatus] = useState('');
 
    const fetchGraph = async () => {
        setIsLoading(true);
        try {
-           // In production, this hits the public domain. For local dev, we hit localhost:3001
-           const res = await fetch(`http://localhost:3001/${tenantSlug}/semantic-graph.json`);
+           const baseUrl = process.env.NODE_ENV === 'production' ? 'https://aihompy.vercel.app' : 'http://localhost:3001';
+           const fetchUrl = `${baseUrl}/${tenantSlug}/semantic-graph.json`;
+           const res = await fetch(fetchUrl);
            if (res.ok) {
               const data = await res.json();
               setGraphData(data);
@@ -46,7 +44,7 @@ export default function TenantSeoPage() {
                <div>
                   <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.25rem' }}>🔍 실시간 시맨틱 그래프 프리뷰</h3>
                   <p style={{ color: '#64748b', fontSize: '0.9rem' }}>
-                     퍼블릭 URL: <a href={`http://localhost:3001/${tenantSlug}/semantic-graph.json`} target="_blank" rel="noopener noreferrer" style={{ color: '#3b82f6' }}>{`https://store.aihompyhub.com/${tenantSlug}/semantic-graph.json`}</a>
+                     퍼블릭 대상: <a href={process.env.NODE_ENV === 'production' ? `https://aihompy.vercel.app/${tenantSlug}/semantic-graph.json` : `http://localhost:3001/${tenantSlug}/semantic-graph.json`} target="_blank" rel="noopener noreferrer" style={{ color: '#3b82f6' }}>{`스토어프론트/${tenantSlug}/semantic-graph.json`}</a>
                   </p>
                </div>
                <button onClick={publishGraph} className="button-primary" style={{ padding: '0.75rem 1.5rem', fontWeight: 600 }}>
