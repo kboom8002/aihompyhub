@@ -44,11 +44,15 @@ export async function updateSession(request: NextRequest) {
   if (user && (pathname.startsWith('/tenant') || pathname.startsWith('/factory') || pathname.startsWith('/pending'))) {
     
     // Fetch the user_profile. 
-    const { data: profile } = await supabase
+    const { data: profile, error } = await supabase
       .from('user_profiles')
       .select('role, tenant_id')
       .eq('id', user.id)
       .single()
+
+    console.log('[MW DEBUG] user.id=', user.id);
+    console.log('[MW DEBUG] profile=', profile);
+    console.log('[MW DEBUG] error=', error);
 
     if (!profile) {
        // If no profile yet, maybe redirect to an onboarding or error page, but for now we treat as pending_admin
@@ -63,7 +67,7 @@ export async function updateSession(request: NextRequest) {
 
     // Super Admin: Can go anywhere. Just block pending/login pages if they go there
     if (role === 'super_admin') {
-      if (pathname === '/pending' || pathname === '/login') {
+      if (pathname === '/pending' || pathname === '/login' || pathname === '/tenant/home' || pathname === '/tenant') {
          const url = request.nextUrl.clone()
          url.pathname = '/factory'
          return NextResponse.redirect(url)
@@ -89,24 +93,26 @@ export async function updateSession(request: NextRequest) {
       // If they try to access factory, block
       if (pathname.startsWith('/factory')) {
         const url = request.nextUrl.clone()
-        url.pathname = '/tenant/home' // Route them to a generic dashboard or fallback
+        url.pathname = `/tenant/${tenant_id}/home`
         return NextResponse.redirect(url)
       }
       
-      // If we don't have a direct URL mapping because slugs are resolved elsewhere,
-      // We perform a light check: If tenant_id isn't bound, error out
+      // If no valid UUID in URL and trying to access /tenant or /tenant/home generically
+      if (pathname === '/tenant' || pathname === '/tenant/home') {
+        const url = request.nextUrl.clone()
+        url.pathname = `/tenant/${tenant_id}/home`
+        return NextResponse.redirect(url)
+      }
+
       if (!tenant_id) {
         const url = request.nextUrl.clone()
         url.pathname = '/pending'
         return NextResponse.redirect(url)
       }
 
-      // We ideally resolve Slug -> UUID to verify if they match, but since middleware cannot query DB heavily without slowing down,
-      // We will allow the frontend components (like layout.tsx) to do the strict check for `tenant_id` match.
-      // We just ensure they don't access '/pending'
       if (pathname === '/pending') {
         const url = request.nextUrl.clone()
-        url.pathname = '/tenant/home'
+        url.pathname = `/tenant/${tenant_id}/home`
         return NextResponse.redirect(url)
       }
     }
