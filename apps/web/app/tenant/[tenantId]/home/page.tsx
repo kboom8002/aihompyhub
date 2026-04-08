@@ -16,19 +16,21 @@ export default async function TenantHomePage(props: { params: Promise<{ tenantId
 
   let data: any = {};
   let tenantName = 'Lumiere Skincare';
+  let realTenantId = tenantId;
   try {
      const { createClient } = require('../../../../lib/supabase/server');
      const supabase = await createClient();
-     const { data: tenantRow } = await supabase.from('tenants').select('name').eq('id', tenantId).single();
+     const { data: tenantRow } = await supabase.from('tenants').select('id, name').or(`id.eq.${tenantId},slug.eq.${tenantId}`).single();
      if (tenantRow) {
         tenantName = tenantRow.name;
+        realTenantId = tenantRow.id;
      }
 
     const res = await fetch(`${baseUrl}/api/v1/queries/tenant-home-snapshot`, { 
         cache: 'no-store',
         headers: {
             'cookie': cookieHeader,
-            'x-tenant-id': tenantId
+            'x-tenant-id': realTenantId
         }
     });
     if (res.ok) {

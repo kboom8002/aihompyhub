@@ -37,7 +37,7 @@ export default function TenantSwitcher({
              }}
            >
               {visibleTenants.map(t => (
-                 <option key={t.id} value={t.id}>{t.name}</option>
+                 <option key={t.id} value={t.slug || t.id}>{t.name}</option>
               ))}
            </select>
         </div>

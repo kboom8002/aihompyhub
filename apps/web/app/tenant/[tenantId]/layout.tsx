@@ -20,15 +20,23 @@ export default async function TenantLayout(props: { children: React.ReactNode, p
 
   // Fetch tenants data for dynamic UI
   let tenantsData = [];
+  let currentSlug = tenantId; // default to URL param
   try {
      const { createClient } = require('../../../../lib/supabase/server');
      const supabase = await createClient();
      if (userRole === 'super_admin') {
          const { data, error } = await supabase.from('tenants').select('id, name, slug');
-         if (!error && data) tenantsData = data;
+         if (!error && data) {
+            tenantsData = data;
+            const current = data.find((t: any) => t.id === tenantId || t.slug === tenantId);
+            if (current && current.slug) currentSlug = current.slug;
+         }
      } else {
-         const { data, error } = await supabase.from('tenants').select('id, name, slug').eq('id', tenantId).limit(1);
-         if (!error && data) tenantsData = data;
+         const { data, error } = await supabase.from('tenants').select('id, name, slug').or(`id.eq.${tenantId},slug.eq.${tenantId}`).limit(1);
+         if (!error && data) {
+            tenantsData = data;
+            if (data[0] && data[0].slug) currentSlug = data[0].slug;
+         }
      }
   } catch (err) {
       console.error("Failed to fetch tenants:", err);
@@ -40,55 +48,55 @@ export default async function TenantLayout(props: { children: React.ReactNode, p
         <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1.5rem', color: '#111827' }}>브랜드 관리(Tenant)</h2>
         
         {/* MVP Tenant Switcher - Role 기반 제어됨 */}
-        <TenantSwitcher currentTenantId={tenantId} userRole={userRole} tenants={tenantsData} />
+        <TenantSwitcher currentTenantId={currentSlug} userRole={userRole} tenants={tenantsData} />
 
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', overflowY: 'auto' }}>
-          <a href={`/tenant/${tenantId}/settings/brand`} style={{ color: '#000', textDecoration: 'none', fontWeight: '800', marginBottom: '0.5rem' }}>⚙️ 브랜드 기본 설정</a>
-          <a href={`/tenant/${tenantId}/home`} style={{ color: '#4b5563', textDecoration: 'none', fontWeight: '600' }}>🏠 홈 대시보드</a>
-          <a href={`/tenant/${tenantId}/questions/clusters`} style={{ color: '#4b5563', textDecoration: 'none', fontWeight: '600' }}>💬 질문 자산 (Clusters)</a>
+          <a href={`/tenant/${currentSlug}/settings/brand`} style={{ color: '#000', textDecoration: 'none', fontWeight: '800', marginBottom: '0.5rem' }}>⚙️ 브랜드 기본 설정</a>
+          <a href={`/tenant/${currentSlug}/home`} style={{ color: '#4b5563', textDecoration: 'none', fontWeight: '600' }}>🏠 홈 대시보드</a>
+          <a href={`/tenant/${currentSlug}/questions/clusters`} style={{ color: '#4b5563', textDecoration: 'none', fontWeight: '600' }}>💬 질문 자산 (Clusters)</a>
           
           <hr style={{ border: 'none', borderTop: '1px solid #e5e7eb', margin: '0.5rem 0' }}/>
           
           <details open>
             <summary style={{ fontWeight: 'bold', cursor: 'pointer', marginBottom: '0.5rem', color: '#1f2937' }}>🛡️ Brand SSoT</summary>
             <div style={{ paddingLeft: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.6rem', fontSize: '0.9rem' }}>
-              <a href={`/tenant/${tenantId}/studio/brand_ssot/topic_hub`} style={{ color: '#4b5563', textDecoration: 'none' }}>Topic Hub</a>
-              <a href={`/tenant/${tenantId}/studio/brand_ssot/answer`} style={{ color: '#4b5563', textDecoration: 'none' }}>공식 답변 (Answer)</a>
-              <a href={`/tenant/${tenantId}/studio/brand_ssot/compare`} style={{ color: '#4b5563', textDecoration: 'none' }}>비교 분석 (Compare)</a>
-              <a href={`/tenant/${tenantId}/studio/brand_ssot/routine`} style={{ color: '#4b5563', textDecoration: 'none' }}>뷰티 루틴 (Routine)</a>
-              <a href={`/tenant/${tenantId}/studio/brand_ssot/product_fit`} style={{ color: '#4b5563', textDecoration: 'none' }}>제품 적합성 (Fit)</a>
-              <a href={`/tenant/${tenantId}/studio/brand_ssot/product`} style={{ color: '#4b5563', textDecoration: 'none' }}>제품 디테일 (Product)</a>
-              <a href={`/tenant/${tenantId}/studio/brand_ssot/trust`} style={{ color: '#4b5563', textDecoration: 'none' }}>신뢰/보증 (Trust)</a>
+              <a href={`/tenant/${currentSlug}/studio/brand_ssot/topic_hub`} style={{ color: '#4b5563', textDecoration: 'none' }}>Topic Hub</a>
+              <a href={`/tenant/${currentSlug}/studio/brand_ssot/answer`} style={{ color: '#4b5563', textDecoration: 'none' }}>공식 답변 (Answer)</a>
+              <a href={`/tenant/${currentSlug}/studio/brand_ssot/compare`} style={{ color: '#4b5563', textDecoration: 'none' }}>비교 분석 (Compare)</a>
+              <a href={`/tenant/${currentSlug}/studio/brand_ssot/routine`} style={{ color: '#4b5563', textDecoration: 'none' }}>뷰티 루틴 (Routine)</a>
+              <a href={`/tenant/${currentSlug}/studio/brand_ssot/product_fit`} style={{ color: '#4b5563', textDecoration: 'none' }}>제품 적합성 (Fit)</a>
+              <a href={`/tenant/${currentSlug}/studio/brand_ssot/product`} style={{ color: '#4b5563', textDecoration: 'none' }}>제품 디테일 (Product)</a>
+              <a href={`/tenant/${currentSlug}/studio/brand_ssot/trust`} style={{ color: '#4b5563', textDecoration: 'none' }}>신뢰/보증 (Trust)</a>
             </div>
           </details>
 
           <details>
             <summary style={{ fontWeight: 'bold', cursor: 'pointer', marginBottom: '0.5rem', marginTop: '0.5rem', color: '#1f2937' }}>📰 Media SSoT</summary>
             <div style={{ paddingLeft: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.6rem', fontSize: '0.9rem' }}>
-              <a href={`/tenant/${tenantId}/studio/media_ssot/story`} style={{ color: '#4b5563', textDecoration: 'none' }}>스토리 / 아티클</a>
-              <a href={`/tenant/${tenantId}/studio/media_ssot/guide`} style={{ color: '#4b5563', textDecoration: 'none' }}>가이드 / 설명서</a>
-              <a href={`/tenant/${tenantId}/studio/media_ssot/review`} style={{ color: '#4b5563', textDecoration: 'none' }}>리뷰 / 케이스</a>
-              <a href={`/tenant/${tenantId}/studio/media_ssot/insight`} style={{ color: '#4b5563', textDecoration: 'none' }}>인사이트 / 트렌드</a>
-              <a href={`/tenant/${tenantId}/studio/media_ssot/event`} style={{ color: '#4b5563', textDecoration: 'none' }}>이벤트 / 론칭</a>
+              <a href={`/tenant/${currentSlug}/studio/media_ssot/story`} style={{ color: '#4b5563', textDecoration: 'none' }}>스토리 / 아티클</a>
+              <a href={`/tenant/${currentSlug}/studio/media_ssot/guide`} style={{ color: '#4b5563', textDecoration: 'none' }}>가이드 / 설명서</a>
+              <a href={`/tenant/${currentSlug}/studio/media_ssot/review`} style={{ color: '#4b5563', textDecoration: 'none' }}>리뷰 / 케이스</a>
+              <a href={`/tenant/${currentSlug}/studio/media_ssot/insight`} style={{ color: '#4b5563', textDecoration: 'none' }}>인사이트 / 트렌드</a>
+              <a href={`/tenant/${currentSlug}/studio/media_ssot/event`} style={{ color: '#4b5563', textDecoration: 'none' }}>이벤트 / 론칭</a>
             </div>
           </details>
 
           <details>
             <summary style={{ fontWeight: 'bold', cursor: 'pointer', marginBottom: '0.5rem', marginTop: '0.5rem', color: '#1f2937' }}>🛍️ Answer Commerce</summary>
             <div style={{ paddingLeft: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.6rem', fontSize: '0.9rem' }}>
-              <a href={`/tenant/${tenantId}/studio/commerce/answer_block`} style={{ color: '#4b5563', textDecoration: 'none' }}>제품 답변 블록</a>
-              <a href={`/tenant/${tenantId}/studio/commerce/bundle`} style={{ color: '#4b5563', textDecoration: 'none' }}>번들 구성 (Set)</a>
-              <a href={`/tenant/${tenantId}/studio/commerce/consultation`} style={{ color: '#4b5563', textDecoration: 'none' }}>맞춤 상담 CTA</a>
-              <a href={`/tenant/${tenantId}/studio/commerce/diagnostic`} style={{ color: '#4b5563', textDecoration: 'none' }}>진단 / 리셋 파인더</a>
+              <a href={`/tenant/${currentSlug}/studio/commerce/answer_block`} style={{ color: '#4b5563', textDecoration: 'none' }}>제품 답변 블록</a>
+              <a href={`/tenant/${currentSlug}/studio/commerce/bundle`} style={{ color: '#4b5563', textDecoration: 'none' }}>번들 구성 (Set)</a>
+              <a href={`/tenant/${currentSlug}/studio/commerce/consultation`} style={{ color: '#4b5563', textDecoration: 'none' }}>맞춤 상담 CTA</a>
+              <a href={`/tenant/${currentSlug}/studio/commerce/diagnostic`} style={{ color: '#4b5563', textDecoration: 'none' }}>진단 / 리셋 파인더</a>
             </div>
           </details>
           
           <hr style={{ border: 'none', borderTop: '1px solid #e5e7eb', margin: '0.5rem 0' }}/>
-          <a href={`/tenant/${tenantId}/studio/design`} style={{ color: '#4b5563', textDecoration: 'none', fontWeight: '600' }}>🎨 디자인/테마 관리</a>
-          <a href={`/tenant/${tenantId}/studio/curation`} style={{ color: '#4b5563', textDecoration: 'none', fontWeight: '600' }}>📌 홈 큐레이션 보드</a>
-          <a href={`/tenant/${tenantId}/studio/ia`} style={{ color: '#4b5563', textDecoration: 'none', fontWeight: '600' }}>🗂️ GNB / IA 매니저</a>
-          <a href={`/tenant/${tenantId}/seo`} style={{ color: '#ec4899', textDecoration: 'none', fontWeight: '600' }}>🌐 AEO/GEO 시맨틱 맵</a>
-          <a href={`/tenant/${tenantId}/publish`} style={{ color: '#4b5563', textDecoration: 'none', fontWeight: '600' }}>📤 배포 (Publish)</a>
+          <a href={`/tenant/${currentSlug}/studio/design`} style={{ color: '#4b5563', textDecoration: 'none', fontWeight: '600' }}>🎨 디자인/테마 관리</a>
+          <a href={`/tenant/${currentSlug}/studio/curation`} style={{ color: '#4b5563', textDecoration: 'none', fontWeight: '600' }}>📌 홈 큐레이션 보드</a>
+          <a href={`/tenant/${currentSlug}/studio/ia`} style={{ color: '#4b5563', textDecoration: 'none', fontWeight: '600' }}>🗂️ GNB / IA 매니저</a>
+          <a href={`/tenant/${currentSlug}/seo`} style={{ color: '#ec4899', textDecoration: 'none', fontWeight: '600' }}>🌐 AEO/GEO 시맨틱 맵</a>
+          <a href={`/tenant/${currentSlug}/publish`} style={{ color: '#4b5563', textDecoration: 'none', fontWeight: '600' }}>📤 배포 (Publish)</a>
         </nav>
         
         {/* Logout Control */}

@@ -53,9 +53,11 @@ export async function updateSession(request: NextRequest) {
     // Fetch the user_profile using Admin client
     const { data: profile, error } = await supabaseAdmin
       .from('user_profiles')
-      .select('role, tenant_id')
+      .select('role, tenant_id, tenants(slug)')
       .eq('id', user.id)
       .single()
+
+    const tenantSlug = profile?.tenants?.slug;
 
     console.log('[MW DEBUG] user.id=', user.id);
     console.log('[MW DEBUG] profile=', profile);
@@ -100,14 +102,14 @@ export async function updateSession(request: NextRequest) {
       // If they try to access factory, block
       if (pathname.startsWith('/factory')) {
         const url = request.nextUrl.clone()
-        url.pathname = `/tenant/${tenant_id}/home`
+        url.pathname = `/tenant/${tenantSlug || tenant_id}/home`
         return NextResponse.redirect(url)
       }
       
       // If no valid UUID in URL and trying to access /tenant or /tenant/home generically
       if (pathname === '/tenant' || pathname === '/tenant/home') {
         const url = request.nextUrl.clone()
-        url.pathname = `/tenant/${tenant_id}/home`
+        url.pathname = `/tenant/${tenantSlug || tenant_id}/home`
         return NextResponse.redirect(url)
       }
 
@@ -119,7 +121,7 @@ export async function updateSession(request: NextRequest) {
 
       if (pathname === '/pending') {
         const url = request.nextUrl.clone()
-        url.pathname = `/tenant/${tenant_id}/home`
+        url.pathname = `/tenant/${tenantSlug || tenant_id}/home`
         return NextResponse.redirect(url)
       }
     }

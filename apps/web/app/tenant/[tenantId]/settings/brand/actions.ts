@@ -19,10 +19,18 @@ export async function updateTenantIdentity(formData: FormData) {
     return { error: 'Slug format is invalid. Use only lowercase letters, numbers, and hyphens.' };
   }
 
+  // Find the real UUID to update
+  const { data: realTenant } = await supabase.from('tenants').select('id').or(`id.eq.${tenantId},slug.eq.${tenantId}`).single();
+  const realId = realTenant?.id;
+
+  if (!realId) {
+     return { error: 'Tenant not found' };
+  }
+
   const { error } = await supabase
     .from('tenants')
     .update({ name, slug })
-    .eq('id', tenantId);
+    .eq('id', realId);
 
   if (error) {
     console.error('Update tenant error:', error);
@@ -34,5 +42,9 @@ export async function updateTenantIdentity(formData: FormData) {
   }
 
   revalidatePath(`/tenant/${tenantId}`, 'layout');
+  // Revalidate the new slug layout just in case
+  if (slug !== tenantId) {
+     revalidatePath(`/tenant/${slug}`, 'layout');
+  }
   return { success: true };
 }

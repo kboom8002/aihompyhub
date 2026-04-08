@@ -118,10 +118,10 @@ export default function TenantHealthRegistry() {
                   <td style={{ padding: '1rem', borderBottom: '1px solid var(--color-border)', color: t.activeIncidents > 0 ? 'var(--color-risk-red)' : 'inherit' }}>
                      {t.activeIncidents}
                   </td>
-                  <td style={{ padding: '1rem', borderBottom: '1px solid var(--color-border)', textAlign: 'right', display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', borderTop: 'none', borderLeft: 'none', borderRight: 'none' }}>
-                     <button onClick={() => handleInviteAdmin(t.tenantId, t.tenantName)} className="button-secondary" style={{ fontSize: '0.8rem', background: '#374151', padding: '0.4rem 0.8rem', borderRadius: '4px', color: '#e5e7eb', border: 'none', cursor: 'pointer' }}>Invite Admin ✉️</button>
-                     <Link href={`/tenant/${t.tenantId}/home`} className="button-secondary" style={{ textDecoration: 'none', fontSize: '0.8rem', border: '1px solid #4b5563', padding: '0.4rem 0.8rem', borderRadius: '4px', color: '#e5e7eb' }}>Inspect Workspace ↗</Link>
-                  </td>
+                     <td style={{ padding: '1rem', borderBottom: '1px solid var(--color-border)', textAlign: 'right', display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', borderTop: 'none', borderLeft: 'none', borderRight: 'none' }}>
+                        <button onClick={() => handleInviteAdmin(t.tenantId, t.tenantName)} className="button-secondary" style={{ fontSize: '0.8rem', background: '#374151', padding: '0.4rem 0.8rem', borderRadius: '4px', color: '#e5e7eb', border: 'none', cursor: 'pointer' }}>Invite Admin ✉️</button>
+                        <Link href={`/tenant/${t.slug || t.tenantId}/home`} className="button-secondary" style={{ textDecoration: 'none', fontSize: '0.8rem', border: '1px solid #4b5563', padding: '0.4rem 0.8rem', borderRadius: '4px', color: '#e5e7eb' }}>Inspect Workspace ↗</Link>
+                     </td>
                </tr>
             ))}
          </tbody>
