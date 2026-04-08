@@ -22,19 +22,43 @@ export default async function AnswerDetailPage(props: Props) {
   
   if (!tenantId) return notFound();
 
-  // 1. Fetch the physical asset from the Universal CMS payload
-  const { data: content, error } = await supabaseAdmin
-    .from('universal_content_assets')
-    .select('*')
+  // 1. Try fetching from answer_cards (Standard Schema)
+  let title = '';
+  let htmlBody = '';
+  let payload: any = {};
+  let updatedAt = '';
+
+  const { data: answerData } = await supabaseAdmin
+    .from('answer_cards')
+    .select('*, topics(title)')
     .eq('id', params.id)
     .eq('tenant_id', tenantId)
     .single();
 
-  if (error || !content) return notFound();
+  if (answerData) {
+     payload = answerData.structured_body || {};
+     title = payload.title || answerData.topics?.title || 'Brand SSoT Document';
+     // 블록형 지원 및 일반 content 속성 지원
+     htmlBody = payload.content
+                  ? `<p>${payload.content}</p>`
+                  : (Array.isArray(payload.blocks) ? payload.blocks.map((b: any) => `<p>${b.content}</p>`).join('') : '');
+     updatedAt = answerData.updated_at || answerData.created_at || new Date().toISOString();
+  } else {
+    // 2. Fetch from Universal CMS payload (Fallback Schema)
+    const { data: content, error } = await supabaseAdmin
+      .from('universal_content_assets')
+      .select('*')
+      .eq('id', params.id)
+      .eq('tenant_id', tenantId)
+      .single();
 
-  // 2. Parse the schema-less JSON wrapper
-  const payload = content.json_payload || {};
-  const htmlBody = payload.body || '';
+    if (error || !content) return notFound();
+
+    payload = content.json_payload || {};
+    htmlBody = payload.body || payload.answer || '';
+    title = content.title || 'Brand SSoT Document';
+    updatedAt = content.updated_at || content.created_at || new Date().toISOString();
+  }
 
   return (
     <article className="container mx-auto py-8 text-[var(--theme-text)] px-4 md:px-0">
@@ -45,14 +69,14 @@ export default async function AnswerDetailPage(props: Props) {
       {/* Dynamic SSoT Rendering */}
       <HeroQuestionBlock 
         category="공식 답변"
-        question={content.title}
+        question={title}
         snippet="아래는 브랜드 SSoT(Single Source of Truth) 기반으로 검증된 공식 답변입니다."
       />
 
       <TrustStrip 
         sources={payload.sources || []}
         reviewerName={payload.reviewer || "Brand Official"}
-        updatedAt={new Date(content.updated_at || content.created_at).toLocaleDateString()}
+        updatedAt={new Date(updatedAt).toLocaleDateString()}
       />
 
       <div className="mt-12 pt-8 border-t border-[var(--theme-border)]">
