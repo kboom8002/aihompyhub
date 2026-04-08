@@ -16,7 +16,8 @@ export async function login(formData: FormData) {
   })
 
   if (error) {
-    redirect('/login?message=Could not authenticate user')
+    console.error("Login Error:", error);
+    redirect(`/login?message=${encodeURIComponent(error.message)}`)
   }
 
   // Redirect handles checking the role in the middleware
@@ -24,26 +25,31 @@ export async function login(formData: FormData) {
 }
 
 export async function signup(formData: FormData) {
-  const supabase = await createClient()
-
   const email = formData.get('email') as string
   const password = formData.get('password') as string
 
-  // Actually signing up creates a 'pending_admin' profile automatically via the PSQL trigger
-  const { error } = await supabase.auth.signUp({
+  const { createClient } = require('@supabase/supabase-js');
+  const supabaseAdmin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+
+  // Directly create the user bypassing the SMTP rate limits (over_email_send_rate_limit)
+  // By assigning email_confirm: true, we completely skip the email sending portion during this B2B dev phase.
+  const { error } = await supabaseAdmin.auth.admin.createUser({
     email,
     password,
-    options: {
-      data: {
-        role: 'pending_admin',
-      }
+    email_confirm: true,
+    user_metadata: {
+      role: 'pending_admin',
     }
   })
 
   if (error) {
-    redirect('/login?message=Could not sign up user')
+    console.error("Signup Error:", error);
+    redirect(`/login?message=${encodeURIComponent(error.message)}`)
   }
 
-  // We redirect to /pending or /login with success message
-  redirect('/login?message=Check email to continue sign in process')
+  // We redirect to /login with success message
+  redirect(`/login?message=${encodeURIComponent('가입 신청이 성공적으로 접수되었습니다. (자동 인증 완료)')}`);
 }

@@ -18,15 +18,32 @@ export default async function TenantLayout(props: { children: React.ReactNode, p
     } catch {}
   }
 
+  // Fetch tenants data for dynamic UI
+  let tenantsData = [];
+  try {
+     const { createClient } = require('../../../../lib/supabase/server');
+     const supabase = await createClient();
+     if (userRole === 'super_admin') {
+         const { data, error } = await supabase.from('tenants').select('id, name, slug');
+         if (!error && data) tenantsData = data;
+     } else {
+         const { data, error } = await supabase.from('tenants').select('id, name, slug').eq('id', tenantId).limit(1);
+         if (!error && data) tenantsData = data;
+     }
+  } catch (err) {
+      console.error("Failed to fetch tenants:", err);
+  }
+
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '250px 1fr', minHeight: '100vh', background: '#f9fafb' }}>
       <aside style={{ background: '#ffffff', borderRight: '1px solid #e5e7eb', padding: '2rem 1rem', display: 'flex', flexDirection: 'column' }}>
         <h2 style={{ fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1.5rem', color: '#111827' }}>브랜드 관리(Tenant)</h2>
         
         {/* MVP Tenant Switcher - Role 기반 제어됨 */}
-        <TenantSwitcher currentTenantId={tenantId} userRole={userRole} />
+        <TenantSwitcher currentTenantId={tenantId} userRole={userRole} tenants={tenantsData} />
 
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', overflowY: 'auto' }}>
+          <a href={`/tenant/${tenantId}/settings/brand`} style={{ color: '#000', textDecoration: 'none', fontWeight: '800', marginBottom: '0.5rem' }}>⚙️ 브랜드 기본 설정</a>
           <a href={`/tenant/${tenantId}/home`} style={{ color: '#4b5563', textDecoration: 'none', fontWeight: '600' }}>🏠 홈 대시보드</a>
           <a href={`/tenant/${tenantId}/questions/clusters`} style={{ color: '#4b5563', textDecoration: 'none', fontWeight: '600' }}>💬 질문 자산 (Clusters)</a>
           

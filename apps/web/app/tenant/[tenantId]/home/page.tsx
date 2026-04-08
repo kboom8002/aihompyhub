@@ -15,7 +15,15 @@ export default async function TenantHomePage(props: { params: Promise<{ tenantId
   const cookieHeader = headersList.get('cookie') || '';
 
   let data: any = {};
+  let tenantName = 'Lumiere Skincare';
   try {
+     const { createClient } = require('../../../../lib/supabase/server');
+     const supabase = await createClient();
+     const { data: tenantRow } = await supabase.from('tenants').select('name').eq('id', tenantId).single();
+     if (tenantRow) {
+        tenantName = tenantRow.name;
+     }
+
     const res = await fetch(`${baseUrl}/api/v1/queries/tenant-home-snapshot`, { 
         cache: 'no-store',
         headers: {
@@ -42,7 +50,7 @@ export default async function TenantHomePage(props: { params: Promise<{ tenantId
       <CriticalStrip items={criticalItems} />
       <PageHeader 
         title="홈대시보드" 
-        subtitle="Lumiere Skincare의 AI 홈페이지 현황입니다."
+        subtitle={`${tenantName}의 AI 홈페이지 현황입니다.`}
         actions={<button className="button-primary">새 배포 번들 생성</button>} 
       />
       
