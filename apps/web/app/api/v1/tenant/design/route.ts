@@ -16,7 +16,8 @@ export async function GET(req: Request) {
 
     const supabase = getSupabaseAdmin();
     // Resolve slug to uuid if necessary
-    const { data: realTenant } = await supabase.from('tenants').select('id').or(`id.eq.${tenantIdentifier},slug.eq.${tenantIdentifier}`).single();
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(tenantIdentifier);
+    const { data: realTenant } = await supabase.from('tenants').select('id').eq(isUuid ? 'id' : 'slug', tenantIdentifier).single();
     const CURRENT_TENANT_ID = realTenant?.id;
 
     if (!CURRENT_TENANT_ID) return NextResponse.json({ error: 'Tenant not found' }, { status: 404 });
@@ -53,7 +54,8 @@ export async function PATCH(req: Request) {
     if (!tenantIdentifier) return NextResponse.json({ error: 'Missing tenant header' }, { status: 400 });
 
     const supabase = getSupabaseAdmin();
-    const { data: realTenant } = await supabase.from('tenants').select('id').or(`id.eq.${tenantIdentifier},slug.eq.${tenantIdentifier}`).single();
+    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(tenantIdentifier);
+    const { data: realTenant } = await supabase.from('tenants').select('id').eq(isUuid ? 'id' : 'slug', tenantIdentifier).single();
     const CURRENT_TENANT_ID = realTenant?.id;
 
     if (!CURRENT_TENANT_ID) return NextResponse.json({ error: 'Tenant not found' }, { status: 404 });

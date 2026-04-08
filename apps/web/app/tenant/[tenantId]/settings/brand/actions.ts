@@ -20,7 +20,8 @@ export async function updateTenantIdentity(formData: FormData) {
   }
 
   // Find the real UUID to update
-  const { data: realTenant } = await supabase.from('tenants').select('id').or(`id.eq.${tenantId},slug.eq.${tenantId}`).single();
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(tenantId);
+  const { data: realTenant } = await supabase.from('tenants').select('id').eq(isUuid ? 'id' : 'slug', tenantId).single();
   const realId = realTenant?.id;
 
   if (!realId) {

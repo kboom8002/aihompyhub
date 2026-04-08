@@ -32,7 +32,8 @@ export default async function TenantLayout(props: { children: React.ReactNode, p
             if (current && current.slug) currentSlug = current.slug;
          }
      } else {
-         const { data, error } = await supabase.from('tenants').select('id, name, slug').or(`id.eq.${tenantId},slug.eq.${tenantId}`).limit(1);
+         const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(tenantId);
+         const { data, error } = await supabase.from('tenants').select('id, name, slug').eq(isUuid ? 'id' : 'slug', tenantId).limit(1);
          if (!error && data) {
             tenantsData = data;
             if (data[0] && data[0].slug) currentSlug = data[0].slug;

@@ -20,7 +20,8 @@ export default async function TenantHomePage(props: { params: Promise<{ tenantId
   try {
      const { createClient } = require('../../../../lib/supabase/server');
      const supabase = await createClient();
-     const { data: tenantRow } = await supabase.from('tenants').select('id, name').or(`id.eq.${tenantId},slug.eq.${tenantId}`).single();
+     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(tenantId);
+     const { data: tenantRow } = await supabase.from('tenants').select('id, name').eq(isUuid ? 'id' : 'slug', tenantId).single();
      if (tenantRow) {
         tenantName = tenantRow.name;
         realTenantId = tenantRow.id;
