@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { resolveAdminTenantId } from '../../../../../lib/tenant';
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -14,7 +15,8 @@ let MOCK_CLUSTERS: any[] = [
 
 export async function GET(request: Request) {
   try {
-    const tenantId = request.headers.get('x-tenant-id') || 'SYSTEM';
+    const rawTenantId = request.headers.get('x-tenant-id') || 'SYSTEM';
+    const tenantId = resolveAdminTenantId(rawTenantId);
     const { data: clusters, error } = await supabaseAdmin
       .from('question_clusters')
       .select('*')
@@ -30,7 +32,8 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const tenantId = request.headers.get('x-tenant-id') || 'SYSTEM';
+    const rawTenantId = request.headers.get('x-tenant-id') || 'SYSTEM';
+    const tenantId = resolveAdminTenantId(rawTenantId);
     const body = await request.json();
     const { cluster_name, intent_type, priority_score } = body;
 

@@ -20,8 +20,12 @@ export function middleware(request: NextRequest) {
       const pathParts = pathname.split('/');
       const requestedTenantId = pathParts.length > 2 ? pathParts[2] : null;
 
+      let mappedTenantId = requestedTenantId;
+      if (requestedTenantId === 'dr-oracle') mappedTenantId = '00000000-0000-0000-0000-000000000001';
+      else if (requestedTenantId === 'vegan-root') mappedTenantId = '00000000-0000-0000-0000-000000000002';
+
       // Rule: tenant_admin can only access their own tenant
-      if (role === 'tenant_admin' && requestedTenantId && requestedTenantId !== tenantId) {
+      if (role === 'tenant_admin' && mappedTenantId && mappedTenantId !== tenantId) {
         // Redirect them back to their own home
         return NextResponse.redirect(new URL(`/tenant/${tenantId}/home`, request.url));
       }

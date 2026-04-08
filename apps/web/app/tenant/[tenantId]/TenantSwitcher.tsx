@@ -24,8 +24,8 @@ export default function TenantSwitcher({ currentTenantId, userRole = 'tenant_adm
                  }
              }}
            >
-              <option value="00000000-0000-0000-0000-000000000001">Dr.Oracle (스킨케어)</option>
-              <option value="00000000-0000-0000-0000-000000000002">VEGAN ROOT (헤어케어)</option>
+              <option value="dr-oracle">Dr.Oracle (스킨케어)</option>
+              <option value="vegan-root">VEGAN ROOT (헤어케어)</option>
            </select>
         </div>
    );

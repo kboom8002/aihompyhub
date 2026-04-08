@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { resolveAdminTenantId } from '../../../../../lib/tenant';
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -8,7 +9,8 @@ const supabaseAdmin = createClient(
 
 export async function POST(request: Request) {
   try {
-    const tenantId = request.headers.get('x-tenant-id') || '00000000-0000-0000-0000-000000000001';
+    const rawTenantId = request.headers.get('x-tenant-id') || '00000000-0000-0000-0000-000000000001';
+    const tenantId = resolveAdminTenantId(rawTenantId);
     const body = await request.json();
     const { category, type, items } = body;
 
