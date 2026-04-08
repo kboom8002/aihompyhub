@@ -6,9 +6,12 @@ import { Button } from "@/components/ui/button";
 
 interface AnswerCardGridProps {
   cards: any[];
+  tenantSlug?: string;
 }
 
-export function AnswerCardGrid({ cards }: AnswerCardGridProps) {
+import Link from 'next/link';
+
+export function AnswerCardGrid({ cards, tenantSlug }: AnswerCardGridProps) {
   if (!cards || cards.length === 0) {
     return (
       <div className="py-12 text-center text-muted-foreground border border-dashed rounded-lg">
@@ -25,7 +28,11 @@ export function AnswerCardGrid({ cards }: AnswerCardGridProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       {cards.map((card, idx) => (
-        <div key={idx} className="group relative flex flex-col md:flex-row bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-slate-100">
+        <Link 
+          key={idx} 
+          href={`/${tenantSlug || 'skincare-brand'}/answers/${card.id}`}
+          className="group relative flex flex-col md:flex-row bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-slate-100"
+        >
           {/* Media Section */}
           <div className="relative w-full md:w-2/5 h-64 md:h-auto overflow-hidden">
              <Image 
@@ -82,14 +89,14 @@ export function AnswerCardGrid({ cards }: AnswerCardGridProps) {
                       </div>
                     </div>
                   </div>
-                  <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white rounded-xl shadow-md transition-transform active:scale-95">
+                  <div className="w-full bg-slate-900 group-hover:bg-slate-800 text-white rounded-xl shadow-md transition-transform active:scale-95 py-2.5 px-4 text-center font-semibold text-sm cursor-pointer">
                     View Verified Product
-                  </Button>
+                  </div>
                 </div>
               )}
             </div>
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   );

@@ -48,10 +48,10 @@ export function BlockRenderer({ layoutSettings, context }: BlockRendererProps) {
                  <BlockHeading title={props?.title} subtitle={props?.subtitle} />
               </main>
             );
-          case 'AnswerCardGrid':
+            case 'AnswerCardGrid':
             return (
               <main key={`grid-${index}`} className="container mx-auto px-4 mb-16">
-                 <AnswerCardGrid cards={context.answerCards || []} />
+                 <AnswerCardGrid cards={context.answerCards || []} tenantSlug={context.tenantSlug} />
               </main>
             );
           default:
