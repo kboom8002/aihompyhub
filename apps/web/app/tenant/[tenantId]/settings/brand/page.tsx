@@ -79,7 +79,7 @@ export default function BrandSettingsPage({ params }: { params: { tenantId: stri
           <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>URL 접속 식별자 (Slug)</label>
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <span style={{ padding: '0.75rem', background: '#f1f5f9', border: '1px solid #cbd5e1', borderRight: 'none', borderRadius: '4px 0 0 4px', color: '#64748b' }}>
-               aihompyhub.com/
+               aihompy.kr/
             </span>
             <input 
                type="text" 
