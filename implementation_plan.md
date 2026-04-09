@@ -14,6 +14,51 @@
 
 ---
 
+# 스토어프론트 히어로 템플릿 셀렉터 구축 (글래스모피즘 vs 텍스트 릴리즈형)
+
+어드민님의 통찰력이 또 한번 빛났습니다. Vegan-Root처럼 깨끗하고 거대한 타이포그래피만으로 아름다운 뷰티 브랜드가 있는 반면, Dr-Oracle처럼 다양한 유도 장치(버튼, 배지)와 유리 질감(Glassmorphism) 박스를 필요로 하는 브랜드도 있습니다. 한 가지 레이아웃을 모든 테넌트에 강제하는 것은 유연한 빌더의 철학에 맞지 않습니다!
+
+따라서 디자인/테마 관리 화면에서 **"마스터 테마"를 고르듯, 메인 히어로 구역의 렌더링 템플릿 레이아웃도 드롭다운으로 선택**할 수 있도록 옵션을 확장하겠습니다.
+
+## User Review Required
+
+> [!IMPORTANT]  
+> 히어로 레이아웃 템플릿(Hero Template)으로 두 가지 옵션을 지원하도록 설계하겠습니다.
+> 1. `glass_card` (기존 방식): 화면 중앙에 반투명한 박스(Glassmorphism)가 있고 그 안에 배지, 타이틀, 버튼 2개가 꽉 차게 들어가는 형태. (Dr-Oracle 추천)
+> 2. `transparent_text` (비건루트 방식): 박스나 배지 없이 크고 유려한 텍스트가 화면 전체에 뿌려지며 깔끔한 텍스트 그림자로 가독성만 보존되는 형태. 하단 버튼들도 숨기거나 심플하게 배치 가능.
+> 이 두 가지 모드를 마음대로 스위칭할 수 있도록 개발할까요?
+
+## Proposed Changes
+
+### 1. 스토어프론트 우위성 및 속성 확장 (Schema)
+#### [MODIFY] `apps/storefront/lib/designConfig.ts` & `BlockRenderer.tsx`
+- `designConfig.hero` 객체 안에 `heroTemplate?: 'glass_card' | 'transparent_text'` 속성을 추가 선언합니다.
+- BlockRenderer에서 이 값을 꺼내 `BrandHero`의 `template` 프롭스를 주입합니다.
+
+### 2. 스토어프론트 `BrandHero.tsx` 뷰 분기 로직
+#### [MODIFY] `apps/storefront/components/store/BrandHero.tsx`
+- 프롭스로 넘어온 `template` 값을 확인합니다.
+- `transparent_text` 일 경우:
+  - 가운데 둥근 테두리의 반투명 박스(`backdrop-blur`)를 제거합니다.
+  - 보이스 배지를 렌더링하지 않거나 단순 텍스트로 녹입니다.
+  - 버튼을 중앙 정렬하되 박스 안에 가두지 않고 투명하게 깔아줍니다.
+- `glass_card` (기본값) 일 경우: 기존 설계된 UI 로직을 구동합니다.
+
+### 3. 웹(관리자) 디자인 매니저 선택 UI 삽입
+#### [MODIFY] `apps/web/app/tenant/[tenantId]/studio/design/page.tsx`
+- 히어로 편집 구역 폼 최상단에 **히어로 템플릿 형태(Layout)** 도 고를 수 있는 드롭다운(`<select>`)을 하나 더 자그맣게 밀어넣겠습니다.
+- 선택한 값을 저장 시 payload에 바인딩하여 백엔드로 보냅니다.
+
+## Verification Plan
+
+### Manual Verification
+1. `AnswerBiz` 나 `DR.O Skincare` 관리자의 `디자인/테마 관리` 에 진입합니다.
+2. 새롭게 추가된 **"히어로 레이아웃 형태"** 드롭다운에서 `투명 텍스트 강조형 (Transparent)`을 골라 저장합니다.
+3. 스토어프론트에 진입하면 화면을 덮고 있던 둥근 박스가 사라지고 글씨만 깨끗하고 웅장하게 표출되는지 테스트합니다.
+4. 다시 `글래스모피즘 박스형 (Glass Card)`으로 바꿔 제대로 원상복구 되는지 확인합니다.
+
+---
+
 # 스토어프론트 Hero 구역 최고급 커스터마이징 (업로드, IA 드롭다운, 보이스 배지)
 
 말씀해주신 3가지 개선 사항은 완벽한 노코드(No-code) SaaS 플랫폼으로 거듭나기 위한 핵심 기능들입니다. 특히 사용자가 URL을 복사하여 붙여넣는 방식은 불편하므로 파일 업로드(Storage)로 대체하고, 버튼 라우팅도 직관적으로 고를 수 있게 UX를 파격적으로 개선하겠습니다!

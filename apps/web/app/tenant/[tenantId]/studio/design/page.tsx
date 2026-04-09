@@ -16,6 +16,7 @@ export default function DesignManagerPage({ params }: { params: { tenantId: stri
   
   // Hero section states
   const [heroImage, setHeroImage] = useState('');
+  const [heroTemplate, setHeroTemplate] = useState('glass_card');
   const [heroSummary, setHeroSummary] = useState('');
   const [heroDescription, setHeroDescription] = useState('');
   const [primaryCtaText, setPrimaryCtaText] = useState('');
@@ -43,6 +44,7 @@ export default function DesignManagerPage({ params }: { params: { tenantId: stri
             
             if (data.overrides?.hero) {
                setHeroImage(data.overrides.hero.heroImage || '');
+               setHeroTemplate(data.overrides.hero.heroTemplate || 'glass_card');
                setHeroSummary(data.overrides.hero.summary || '');
                setHeroDescription(data.overrides.hero.description || '');
                setPrimaryCtaText(data.overrides.hero.primaryCtaText || '');
@@ -101,6 +103,7 @@ export default function DesignManagerPage({ params }: { params: { tenantId: stri
           ...(bgColor ? { bg: bgColor } : {}),
           hero: {
              heroImage: heroImage,
+             heroTemplate: heroTemplate,
              summary: heroSummary,
              description: heroDescription,
              voiceBadge: voiceBadge,
@@ -194,6 +197,13 @@ export default function DesignManagerPage({ params }: { params: { tenantId: stri
        {/* 3. Hero Overrides */}
        <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem' }}>3. 메인 히어로(Hero) 콘셉트 구역</h3>
        <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '3rem' }}>
+          <div>
+             <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>히어로 레이아웃 템플릿 형태</label>
+             <select value={heroTemplate} onChange={e => setHeroTemplate(e.target.value)} style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px', background: '#f8fafc' }}>
+                <option value="glass_card">글래스모피즘 박스 갤러리형 (버튼 및 배지 포함 권장)</option>
+                <option value="transparent_text">투명 텍스트 강조형 (비건루트 감성, 배경없는 큰 글씨)</option>
+             </select>
+          </div>
           <div>
              <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>메인 배경 이미지 업로드 (File Upload / URL)</label>
              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>

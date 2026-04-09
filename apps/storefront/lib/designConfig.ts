@@ -21,6 +21,7 @@ export interface DesignConfig {
   };
   hero?: {
     heroImage?: string;
+    heroTemplate?: 'glass_card' | 'transparent_text';
     summary?: string;
     description?: string;
     voiceBadge?: string;

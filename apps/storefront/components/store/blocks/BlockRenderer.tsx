@@ -13,6 +13,7 @@ interface BlockRendererProps {
     answerCards: any[];
     heroConfig?: {
       heroImage?: string;
+      heroTemplate?: 'glass_card' | 'transparent_text';
       summary?: string;
       description?: string;
       voiceBadge?: string;
@@ -49,13 +50,14 @@ export function BlockRenderer({ layoutSettings, context }: BlockRendererProps) {
             return (
               <BrandHero 
                 key={index}
-                summary={heroProps.summary || props?.summary || context.brandProfile?.positioning_summary || 'Global Aesthetics Foundation'} 
-                description={heroProps.description || props?.description}
+                heroTemplate={heroProps.heroTemplate || props?.heroTemplate || 'glass_card'}
+                summary={heroProps.summary || props?.summary} 
                 heroImage={heroProps.heroImage || props?.heroImage}
                 primaryCtaText={heroProps.primaryCtaText || props?.primaryCtaText}
                 primaryCtaLink={heroProps.primaryCtaLink || props?.primaryCtaLink}
                 secondaryCtaText={heroProps.secondaryCtaText || props?.secondaryCtaText}
                 secondaryCtaLink={heroProps.secondaryCtaLink || props?.secondaryCtaLink}
+                description={heroProps.description || props?.description}
                 voiceBadge={heroProps.voiceBadge || props?.voiceBadge}
                 voice={voiceStr} 
                 tenantSlug={context.tenantSlug}
