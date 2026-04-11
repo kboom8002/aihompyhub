@@ -4,6 +4,10 @@ import { createClient } from '@supabase/supabase-js';
 import { generateText } from 'ai';
 import { google } from '@ai-sdk/google';
 import { revalidatePath } from 'next/cache';
+import { Resend } from 'resend';
+
+// Initialize Resend
+const resend = new Resend(process.env.RESEND_API_KEY || 'dummy_key');
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL || '',
@@ -27,7 +31,8 @@ export async function sendDealRoomMessageAction(
     senderType: 'customer' | 'tenant',
     content: string,
     baseLanguage: string = 'ko',
-    senderId?: string
+    senderId?: string,
+    customerContact?: string
 ) {
     try {
         console.log(`Sending Deal Room Message. Existing ID: ${inquiryId}`);
@@ -48,7 +53,7 @@ Respond ONLY with a valid JSON document containing the language tags as keys. No
             const prompt = `Message: "${content}"`;
 
             const { text } = await generateText({
-                model: google('gemini-2.5-pro'),
+                model: google('gemini-2.5-pro') as any,
                 system: systemPrompt,
                 prompt: prompt,
                 temperature: 0.1
@@ -66,16 +71,29 @@ Respond ONLY with a valid JSON document containing the language tags as keys. No
             }
         }
 
-        // 2. Resolve Inquiry ID
+        // 2. Resolve & Update Inquiry
         let activeInquiryId = inquiryId;
+        let inquiryContact = null;
+
         if (!activeInquiryId) {
             const { data: newInq, error: inqErr } = await supabaseAdmin.from('inquiries').insert({
                 tenant_id: tenantId,
-                customer_name: 'Storefront Client',
-                status: 'in_progress'
-            }).select('id').single();
+                customer_name: '스토어 고객',
+                status: 'in_progress',
+                customer_contact: customerContact || null
+            }).select('id, customer_contact').single();
             if (inqErr) throw new Error('Failed to create deal thread: ' + inqErr.message);
             activeInquiryId = newInq.id;
+            inquiryContact = newInq.customer_contact;
+        } else {
+            const { data: currentInq } = await supabaseAdmin.from('inquiries').select('customer_contact').eq('id', activeInquiryId).single();
+            inquiryContact = currentInq?.customer_contact;
+            
+            // Auto update contact if customer provided email mid-thread
+            if (customerContact && !inquiryContact && senderType === 'customer') {
+                await supabaseAdmin.from('inquiries').update({ customer_contact: customerContact }).eq('id', activeInquiryId);
+                inquiryContact = customerContact;
+            }
         }
 
         // 3. Insert into DB
@@ -96,6 +114,41 @@ Respond ONLY with a valid JSON document containing the language tags as keys. No
             .from('inquiries')
             .update({ status: 'in_progress', updated_at: new Date().toISOString() })
             .eq('id', activeInquiryId);
+
+        // 4. Dispatch Email Magic Link if tenant is replying and customer has an email
+        if (senderType === 'tenant' && inquiryContact && inquiryContact.includes('@')) {
+            try {
+                // Determine target language translation for customer, fallback to base
+                let targetLang = 'en'; // default assumption if unknown
+                const custMessage = (translationDrafts as any)[targetLang] || content;
+
+                const magicLink = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/ko/brand/contact/dm?inquiryId=${activeInquiryId}`;
+                
+                await resend.emails.send({
+                    from: 'AI Homepage Deal Room <noreply@aihompy.com>',
+                    to: inquiryContact,
+                    subject: '[알림] 브랜드 관리자가 답변을 남겼습니다 / New reply in your deal room',
+                    html: `
+                        <div style="font-family: sans-serif; p-4;">
+                            <h2 style="color: #4f46e5;">브랜드 관리자의 코멘트가 도착했습니다.</h2>
+                            <p>고객님의 질문에 원장님/담당자가 다음과 같이 답변했습니다:</p>
+                            <blockquote style="border-left: 4px solid #e2e8f0; padding-left: 1rem; color: #475569; margin: 1.5rem 0;">
+                                "${custMessage}"
+                            </blockquote>
+                            <a href="${magicLink}" style="display: inline-block; background-color: #4f46e5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">
+                                딜 룸으로 돌아가서 대화 이어가기
+                            </a>
+                            <p style="margin-top: 2rem; font-size: 0.8rem; color: #94a3b8;">
+                                본 메일은 발신 전용이며, Deal Room 을 통해 실시간으로 소통하실 수 있습니다.
+                            </p>
+                        </div>
+                    `
+                });
+                console.log(`Dispatched Magic Link Email to ${inquiryContact}`);
+            } catch (err) {
+                console.error('Failed to dispatch magic link email:', err);
+            }
+        }
 
         revalidatePath(`/inquiry/${activeInquiryId}`);
         

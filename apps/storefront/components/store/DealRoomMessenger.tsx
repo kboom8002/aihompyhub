@@ -85,13 +85,23 @@ export function DealRoomMessenger({ initialInquiryId, locale, userId, tenantSlug
         setInput('');
         setIsTranslating(true);
 
+        // Extract email if customer is typing
+        let extractedEmail: string | undefined = undefined;
+        if (senderType === 'customer') {
+            const emailMatch = content.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+            if (emailMatch) {
+                extractedEmail = emailMatch[0];
+            }
+        }
+
         const res = await sendDealRoomMessageAction(
             inquiryId,
             tenantId,
             senderType,
             content,
             locale,
-            userId
+            userId,
+            extractedEmail
         );
 
         if (res.success && res.inquiryId && !inquiryId) {
