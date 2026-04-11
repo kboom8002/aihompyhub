@@ -21,27 +21,62 @@ export default async function TenantLayout(props: { children: React.ReactNode, p
   // Fetch tenants data for dynamic UI
   let tenantsData = [];
   let currentSlug = tenantId; // default to URL param
+  let currentIndustry = 'skincare';
   try {
      const { createClient } = require('../../../../lib/supabase/server');
      const supabase = await createClient();
      if (userRole === 'super_admin') {
-         const { data, error } = await supabase.from('tenants').select('id, name, slug');
+         // Temporarily ignoring industry_type in global select if not added to types yet,
+         // but assuming DB has it, we fetch it:
+         const { data, error } = await supabase.from('tenants').select('id, name, slug, industry_type');
          if (!error && data) {
             tenantsData = data;
             const current = data.find((t: any) => t.id === tenantId || t.slug === tenantId);
             if (current && current.slug) currentSlug = current.slug;
+            if (current && current.industry_type) currentIndustry = current.industry_type;
          }
      } else {
          const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(tenantId);
-         const { data, error } = await supabase.from('tenants').select('id, name, slug').eq(isUuid ? 'id' : 'slug', tenantId).limit(1);
+         const { data, error } = await supabase.from('tenants').select('id, name, slug, industry_type').eq(isUuid ? 'id' : 'slug', tenantId).limit(1);
          if (!error && data) {
             tenantsData = data;
             if (data[0] && data[0].slug) currentSlug = data[0].slug;
+            if (data[0] && data[0].industry_type) currentIndustry = data[0].industry_type;
          }
      }
   } catch (err) {
       console.error("Failed to fetch tenants:", err);
   }
+
+  // --- Dynamic Dictionary Based on Industry ---
+  const industryLabels: Record<string, Record<string, string>> = {
+     skincare: {
+       creator: '크리에이터 프로필/랜딩 (Creator)',
+       offer: '공동구매/오퍼 랜딩 (Offer)',
+       product: '제품 디테일 (Product)',
+       portfolio: '포트폴리오 (Portfolio)'
+     },
+     clinic: {
+       creator: '원장/의료진 전용 랜딩 (Doctor)',
+       offer: '진료 과목/시술 패키지 (Treatments)',
+       product: '원내 판매 코스메틱 (Product)',
+       portfolio: '치료/시술 전후 사례 (Cases)'
+     },
+     real_estate: {
+       creator: '책임 중개인 프로필 (Agent)',
+       offer: '프리미엄 중개 매물 (Listings)',
+       product: '자산 관리 솔루션 (Services)',
+       portfolio: '계약 완료 레퍼런스 (Records)'
+     },
+     consulting: {
+       creator: '자문 파트너 프로필 (Partner)',
+       offer: '컨설팅 패키지 (Consulting)',
+       product: '유료 보고서/웨비나 (Commodity)',
+       portfolio: '성공 사례/케이스 (Cases)'
+     }
+  };
+
+  const labels = industryLabels[currentIndustry] || industryLabels['skincare'];
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '250px 1fr', minHeight: '100vh', background: '#f9fafb' }}>
@@ -64,9 +99,9 @@ export default async function TenantLayout(props: { children: React.ReactNode, p
               <a href={`/tenant/${currentSlug}/studio/brand_ssot/topic_hub`} style={{ color: '#4b5563', textDecoration: 'none' }}>Topic Hub</a>
               <a href={`/tenant/${currentSlug}/studio/brand_ssot/answer`} style={{ color: '#4b5563', textDecoration: 'none' }}>공식 답변 (Answer)</a>
               <a href={`/tenant/${currentSlug}/studio/brand_ssot/compare`} style={{ color: '#4b5563', textDecoration: 'none' }}>비교 분석 (Compare)</a>
-              <a href={`/tenant/${currentSlug}/studio/brand_ssot/routine`} style={{ color: '#4b5563', textDecoration: 'none' }}>뷰티 루틴 (Routine)</a>
-              <a href={`/tenant/${currentSlug}/studio/brand_ssot/product_fit`} style={{ color: '#4b5563', textDecoration: 'none' }}>제품 적합성 (Fit)</a>
-              <a href={`/tenant/${currentSlug}/studio/brand_ssot/product`} style={{ color: '#4b5563', textDecoration: 'none' }}>제품 디테일 (Product)</a>
+              <a href={`/tenant/${currentSlug}/studio/brand_ssot/routine`} style={{ color: '#4b5563', textDecoration: 'none' }}>뷰티/건강 루틴 (Routine)</a>
+              <a href={`/tenant/${currentSlug}/studio/brand_ssot/product_fit`} style={{ color: '#4b5563', textDecoration: 'none' }}>적합성 진단 (Fit)</a>
+              <a href={`/tenant/${currentSlug}/studio/brand_ssot/product`} style={{ color: '#4b5563', textDecoration: 'none' }}>{labels.product}</a>
               <a href={`/tenant/${currentSlug}/studio/brand_ssot/expert`} style={{ color: '#4b5563', textDecoration: 'none' }}>전문가 위원회 (Experts)</a>
               <a href={`/tenant/${currentSlug}/studio/brand_ssot/trust`} style={{ color: '#4b5563', textDecoration: 'none' }}>신뢰/보증 (Trust)</a>
             </div>
@@ -77,7 +112,8 @@ export default async function TenantLayout(props: { children: React.ReactNode, p
             <div style={{ paddingLeft: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.6rem', fontSize: '0.9rem' }}>
               <a href={`/tenant/${currentSlug}/studio/media_ssot/story`} style={{ color: '#4b5563', textDecoration: 'none' }}>스토리 / 아티클</a>
               <a href={`/tenant/${currentSlug}/studio/media_ssot/guide`} style={{ color: '#4b5563', textDecoration: 'none' }}>가이드 / 설명서</a>
-              <a href={`/tenant/${currentSlug}/studio/media_ssot/review`} style={{ color: '#4b5563', textDecoration: 'none' }}>리뷰 / 케이스</a>
+              <a href={`/tenant/${currentSlug}/studio/media_ssot/review`} style={{ color: '#4b5563', textDecoration: 'none' }}>리뷰 / 평가</a>
+              <a href={`/tenant/${currentSlug}/studio/media_ssot/portfolio`} style={{ color: '#4b5563', textDecoration: 'none' }}>{labels.portfolio}</a>
               <a href={`/tenant/${currentSlug}/studio/media_ssot/insight`} style={{ color: '#4b5563', textDecoration: 'none' }}>인사이트 / 트렌드</a>
               <a href={`/tenant/${currentSlug}/studio/media_ssot/event`} style={{ color: '#4b5563', textDecoration: 'none' }}>이벤트 / 론칭</a>
             </div>
@@ -86,18 +122,18 @@ export default async function TenantLayout(props: { children: React.ReactNode, p
           <details>
             <summary style={{ fontWeight: 'bold', cursor: 'pointer', marginBottom: '0.5rem', marginTop: '0.5rem', color: '#1f2937' }}>🛍️ Answer Commerce</summary>
             <div style={{ paddingLeft: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.6rem', fontSize: '0.9rem' }}>
-              <a href={`/tenant/${currentSlug}/studio/commerce/answer_block`} style={{ color: '#4b5563', textDecoration: 'none' }}>제품 답변 블록</a>
+              <a href={`/tenant/${currentSlug}/studio/commerce/answer_block`} style={{ color: '#4b5563', textDecoration: 'none' }}>연관 답변 블록</a>
               <a href={`/tenant/${currentSlug}/studio/commerce/bundle`} style={{ color: '#4b5563', textDecoration: 'none' }}>번들 구성 (Set)</a>
               <a href={`/tenant/${currentSlug}/studio/commerce/consultation`} style={{ color: '#4b5563', textDecoration: 'none' }}>맞춤 상담 CTA</a>
-              <a href={`/tenant/${currentSlug}/studio/commerce/diagnostic`} style={{ color: '#4b5563', textDecoration: 'none' }}>진단 / 리셋 파인더</a>
+              <a href={`/tenant/${currentSlug}/studio/commerce/diagnostic`} style={{ color: '#4b5563', textDecoration: 'none' }}>리드 수집 파인더</a>
             </div>
           </details>
 
           <details open>
             <summary style={{ fontWeight: 'bold', cursor: 'pointer', marginBottom: '0.5rem', marginTop: '0.5rem', color: '#1f2937' }}>🚀 Traffic & SNS</summary>
             <div style={{ paddingLeft: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.6rem', fontSize: '0.9rem' }}>
-              <a href={`/tenant/${currentSlug}/studio/sns/creator`} style={{ color: '#4b5563', textDecoration: 'none' }}>크리에이터 프로필/랜딩 (Creator)</a>
-              <a href={`/tenant/${currentSlug}/studio/sns/offer`} style={{ color: '#4b5563', textDecoration: 'none' }}>공동구매/오퍼 랜딩 (Offer)</a>
+              <a href={`/tenant/${currentSlug}/studio/sns/creator`} style={{ color: '#4b5563', textDecoration: 'none' }}>{labels.creator}</a>
+              <a href={`/tenant/${currentSlug}/studio/sns/offer`} style={{ color: '#4b5563', textDecoration: 'none' }}>{labels.offer}</a>
             </div>
           </details>
           

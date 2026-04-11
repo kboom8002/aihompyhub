@@ -90,6 +90,23 @@ export const CONTENT_TYPE_SCHEMAS: Record<string, FormFieldSchema[]> = {
     { name: 'related_answers', label: '💡 자주 묻는 질문 (FAQ)', type: 'relation', relationTarget: 'answer' },
     { name: 'related_topics', label: '📚 해결 가능한 문제 허브 (Topic)', type: 'relation', relationTarget: 'topic_hub' }
   ],
+  portfolio: [
+    { name: 'client_or_context', label: '클라이언트 / 의뢰 맥락', type: 'text', required: true, placeholder: '예: 30대 후반, 급격한 탄력 저하 고민 환자' },
+    { name: 'challenge', label: '도전 과제 (Problem/Challenge)', type: 'textarea', placeholder: '해결해야만 했던 구체적 증상이나 사업적 한계를 입력하세요' },
+    { name: 'approach', label: '접근 방식 (Approach)', type: 'textarea', placeholder: '문제를 해결하기 위해 어떤 방법/시술/솔루션을 적용했는지 요약' },
+    { name: 'outcome', label: '최종 결과 (Outcome)', type: 'textarea', placeholder: '도입 전후 비교 및 성과' },
+    { name: 'visual_assets', label: '시각 증명 에셋 URL', type: 'textarea', helpText: 'Before/After 사진 또는 VR 매물 등. 쉼표로 구분하여 여러 개 입력 가능' },
+    { name: 'body', label: '상세 케이스 스터디 (RichText)', type: 'richtext' },
+    { name: 'related_offer', label: '🎁 관련 오퍼/진료과목', type: 'relation', relationTarget: 'offer', helpText: '이 결과물을 만든 실제 제공 상품/패키지 연결' },
+    { name: 'related_answers', label: '💡 도중 자주 발생한 질문/답변', type: 'relation', relationTarget: 'answer' }
+  ],
+  readiness_checker: [
+    { name: 'target_audience', label: '주 타겟 고객', type: 'text', placeholder: '예: 시리즈 A 이상 스타트업 B2B 기업' },
+    { name: 'not_fit_criteria', label: '우리가 돕지 못하는 분들 (Not fit)', type: 'textarea', helpText: '줄바꿈으로 여러 개 작성. 상담을 미리 필터링하기 위한 필수 요건입니다.' },
+    { name: 'expected_budget', label: '예상 소요 예산/단가', type: 'text', placeholder: '예: 월 300만원 ~ 500만원 선' },
+    { name: 'prerequisites', label: '사전 준비/요구 사항', type: 'textarea', placeholder: '상담 전 고객이 파악해야 할 지점' },
+    { name: 'body', label: '세부 안내 사항 (RichText)', type: 'richtext' }
+  ],
   default: [
     { name: 'body', label: '콘텐츠 본문 (Rich Tiptap Body)', type: 'richtext' },
     { name: 'related_experts', label: '🩺 연관 전문가 (Reviewer)', type: 'relation', relationTarget: 'expert' },
