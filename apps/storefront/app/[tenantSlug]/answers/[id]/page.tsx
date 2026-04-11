@@ -39,7 +39,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
   if (answerData) {
      title = answerData.structured_body?.title || answerData.topics?.title || title;
-     desc = answerData.structured_body?.content?.substring(0, 160) || desc;
+     desc = answerData.structured_body?.summary?.substring(0, 160) || answerData.structured_body?.content?.substring(0, 160) || desc;
   } else {
     const { data: content } = await supabaseAdmin
       .from('universal_content_assets')
@@ -111,8 +111,11 @@ export default async function AnswerDetailPage(props: Props) {
     updatedAt = content.updated_at || content.created_at || new Date().toISOString();
   }
 
+  const summary = payload.summary || '';
+  const cautions = payload.cautions || '';
+
   const baseUrl = process.env.NEXT_PUBLIC_STOREFRONT_URL || 'http://localhost:3001';
-  const escapedBody = htmlBody.replace(/(<([^>]+)>)/gi, "");
+  const escapedBody = summary ? summary.replace(/(<([^>]+)>)/gi, "") : htmlBody.replace(/(<([^>]+)>)/gi, "");
 
   let reviewerLink = undefined;
   const reviewerName = payload.reviewer || "Brand Official";
@@ -193,7 +196,23 @@ export default async function AnswerDetailPage(props: Props) {
       />
 
       <div className="mt-12 pt-8 border-t border-[var(--theme-border)]">
+        {summary && (
+           <div className="mb-8 p-6 bg-[var(--theme-border)]/20 rounded-xl border-l-4 border-black" itemProp="abstract">
+              <h3 className="text-sm font-bold opacity-50 uppercase tracking-widest mb-2">Direct Answer</h3>
+              <p className="text-lg font-medium leading-relaxed">{summary}</p>
+           </div>
+        )}
         <ProseReader html={htmlBody} />
+        
+        {cautions && (
+           <div className="mt-12 p-6 bg-red-50 border border-red-100 rounded-xl text-red-800">
+              <div className="flex items-center gap-2 mb-2 font-bold">
+                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                 의학적 주의사항 및 참고
+              </div>
+              <p className="text-sm leading-relaxed opacity-90 whitespace-pre-wrap">{cautions}</p>
+           </div>
+        )}
       </div>
 
       <CrossLinker 

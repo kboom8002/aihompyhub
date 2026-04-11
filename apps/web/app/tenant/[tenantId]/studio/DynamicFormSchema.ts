@@ -40,7 +40,9 @@ export const CONTENT_TYPE_SCHEMAS: Record<string, FormFieldSchema[]> = {
     { name: 'body', label: '상세 이력 (RichText)', type: 'richtext' }
   ],
   answer: [
-    { name: 'body', label: '공식 답변 본문 (RichText)', type: 'richtext' },
+    { name: 'summary', label: '핵심 요약 (Summary / Direct Answer)', type: 'textarea', helpText: 'AI 검색기 및 최상단에 노출될 가장 직접적인 한 문단 답변.' },
+    { name: 'body', label: '상세 본문 (Why it matters / How to apply)', type: 'richtext', helpText: '자세한 방식과 이유를 작성합니다.' },
+    { name: 'cautions', label: '의학적 주의사항 / 경계 문구 (Cautions)', type: 'textarea', helpText: '시술 대체나 효과 보장으로 읽히지 않도록 방어하는 문구 (EEAT 필수).' },
     { name: 'related_experts', label: '🩺 연관 전문가 (Reviewer)', type: 'relation', relationTarget: 'expert', helpText: '이 답변을 검수하거나 보증한 전문가를 연결합니다.' },
     { name: 'related_evidence', label: '🔬 연관 신뢰 근거 (Evidence)', type: 'relation', relationTarget: 'trust', helpText: '이 답변의 근거가 된 임상, 논문, 특허 자료를 연결합니다.' },
     { name: 'related_topics', label: '📚 상위 토픽 허브 (Topic)', type: 'relation', relationTarget: 'topic_hub', helpText: '이 답변이 속한 대분류 지식 허브를 연결합니다.' }
