@@ -32,34 +32,47 @@ export async function GET() {
   }
 }
 
-export async function PATCH(req: Request) {
-  try {
-    const body = await req.json();
-    const { layout } = body;
+  export async function PATCH(req: Request) {
+    try {
+      const body = await req.json();
+      const { layout, template } = body;
+      const activeTemplate = template || 'universal';
+  
+      const { data: existing } = await getSupabaseAdmin()
+        .from('universal_content_assets')
+        .select('id, json_payload')
+        .eq('tenant_id', CURRENT_TENANT_ID)
+        .eq('type', 'curation_config')
+        .eq('category', 'system')
+        .single();
+  
+      const existingPayload = existing?.json_payload || {};
+      const newLayouts = { ...(existingPayload.layouts || {}) };
+      newLayouts[activeTemplate] = layout || [];
 
-    const { data: existing } = await getSupabaseAdmin()
-      .from('universal_content_assets')
-      .select('id')
-      .eq('tenant_id', CURRENT_TENANT_ID)
-      .eq('type', 'curation_config')
-      .eq('category', 'system')
-      .single();
-
-    const payload = {
-       title: 'Homepage Layout Curation',
-       type: 'curation_config',
-       category: 'system',
-       tenant_id: CURRENT_TENANT_ID,
-       status: 'active',
-       json_payload: {
-          layout: layout || []
-       }
-    };
-
-    let dbError = null;
-    if (existing) {
-       const { error } = await getSupabaseAdmin().from('universal_content_assets').update({ json_payload: payload.json_payload, updated_at: new Date().toISOString() }).eq('id', existing.id);
-       dbError = error;
+      // Also update the flat layout array if universal (backward compat)
+      let flatLayout = existingPayload.layout || [];
+      if (activeTemplate === 'universal') {
+         flatLayout = layout || [];
+      }
+  
+      const payload = {
+         title: 'Homepage Layout Curation',
+         type: 'curation_config',
+         category: 'system',
+         tenant_id: CURRENT_TENANT_ID,
+         status: 'active',
+         json_payload: {
+            ...existingPayload,
+            layout: flatLayout,
+            layouts: newLayouts
+         }
+      };
+  
+      let dbError = null;
+      if (existing) {
+         const { error } = await getSupabaseAdmin().from('universal_content_assets').update({ json_payload: payload.json_payload, updated_at: new Date().toISOString() }).eq('id', existing.id);
+         dbError = error;
     } else {
        const { error } = await getSupabaseAdmin().from('universal_content_assets').insert(payload);
        dbError = error;

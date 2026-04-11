@@ -15,7 +15,7 @@ export default function DesignManagerPage({ params }: { params: { tenantId: stri
   const [bgColor, setBgColor] = useState('');
   const [homeTemplate, setHomeTemplate] = useState('universal');
   
-  // Hero section states
+  // Hero section states (universal)
   const [heroImage, setHeroImage] = useState('');
   const [heroTemplate, setHeroTemplate] = useState('glass_card');
   const [heroSummary, setHeroSummary] = useState('');
@@ -25,6 +25,10 @@ export default function DesignManagerPage({ params }: { params: { tenantId: stri
   const [secondaryCtaText, setSecondaryCtaText] = useState('');
   const [secondaryCtaLink, setSecondaryCtaLink] = useState('');
   const [voiceBadge, setVoiceBadge] = useState('');
+
+  // Semantic Hero states (question-first)
+  const [semanticSummary, setSemanticSummary] = useState('');
+  const [semanticDescription, setSemanticDescription] = useState('');
 
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(true);
@@ -54,6 +58,10 @@ export default function DesignManagerPage({ params }: { params: { tenantId: stri
                setSecondaryCtaText(data.overrides.hero.secondaryCtaText || '');
                setSecondaryCtaLink(data.overrides.hero.secondaryCtaLink || '');
                setVoiceBadge(data.overrides.hero.voiceBadge || '');
+            }
+            if (data.overrides?.semanticHero) {
+               setSemanticSummary(data.overrides.semanticHero.summary || '');
+               setSemanticDescription(data.overrides.semanticHero.description || '');
             }
          }
          
@@ -114,6 +122,10 @@ export default function DesignManagerPage({ params }: { params: { tenantId: stri
              primaryCtaLink: primaryCtaLink,
              secondaryCtaText: secondaryCtaText,
              secondaryCtaLink: secondaryCtaLink
+          },
+          semanticHero: {
+             summary: semanticSummary,
+             description: semanticDescription
           }
        }
     };
@@ -211,61 +223,82 @@ export default function DesignManagerPage({ params }: { params: { tenantId: stri
       </div>
 
        {/* 3. Hero Overrides */}
-       <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem' }}>3. 메인 히어로(Hero) 콘셉트 구역</h3>
-       <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '3rem' }}>
-          <div>
-             <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>히어로 레이아웃 템플릿 형태</label>
-             <select value={heroTemplate} onChange={e => setHeroTemplate(e.target.value)} style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px', background: '#f8fafc' }}>
-                <option value="glass_card">글래스모피즘 박스 갤러리형 (버튼 및 배지 포함 권장)</option>
-                <option value="transparent_text">투명 텍스트 강조형 (비건루트 감성, 배경없는 큰 글씨)</option>
-             </select>
-          </div>
-          <div>
-             <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>메인 배경 이미지 업로드 (File Upload / URL)</label>
-             <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-                <input type="file" accept="image/*" onChange={handleFileUpload} style={{ padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '6px' }} />
-                {isUploading && <span style={{ fontSize: '0.9rem', color: '#3b82f6' }}>업로드 중...</span>}
-             </div>
-             <input type="text" value={heroImage} onChange={e => setHeroImage(e.target.value)} placeholder="업로드된 클라우드 URL (또는 직접 입력)" style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px', marginTop: '0.5rem' }} />
-             {heroImage && (
-                <div style={{ marginTop: '0.5rem', maxWidth: '300px', borderRadius: '6px', overflow: 'hidden', border: '1px solid #e5e7eb' }}>
-                   <img src={heroImage} alt="Hero Preview" style={{ width: '100%', height: 'auto', display: 'block' }} />
-                </div>
-             )}
-          </div>
-          <div>
-             <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>보이스 배지 텍스트 (Voice Badge)</label>
-             <input type="text" value={voiceBadge} onChange={e => setVoiceBadge(e.target.value)} placeholder="e.g. 프리미엄 스킨 리셋 VOICE (비워두면 브랜드 SSoT 설정 따름)" style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px' }} />
-          </div>
-          <div>
-             <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>메인 타이틀 (Summary)</label>
-             <input type="text" value={heroSummary} onChange={e => setHeroSummary(e.target.value)} placeholder="e.g. Premium Botanical Skincare" style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px' }} />
-          </div>
-          <div>
-             <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>서브 설명글 (Description)</label>
-             <textarea value={heroDescription} onChange={e => setHeroDescription(e.target.value)} placeholder="e.g. AI-Crafted canonical answers and routines for absolute trust..." style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px', minHeight: '80px' }} />
-          </div>
-          <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', borderTop: '1px solid #e5e7eb', paddingTop: '1.5rem' }}>
-             <div style={{ flex: 1 }}>
-                <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>메인 버튼 텍스트 (Primary CTA)</label>
-                <input type="text" value={primaryCtaText} onChange={e => setPrimaryCtaText(e.target.value)} placeholder="e.g. 내 루틴/리셋 찾기" style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px' }} />
-             </div>
-             <div style={{ flex: 1 }}>
-                <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>메인 버튼 링크 (Primary Link)</label>
-                <input type="text" list="ia-nodes" value={primaryCtaLink} onChange={e => setPrimaryCtaLink(e.target.value)} placeholder="e.g. /routines" style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px' }} />
-             </div>
-          </div>
-          <div style={{ display: 'flex', gap: '1rem' }}>
-             <div style={{ flex: 1 }}>
-                <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>서브 버튼 텍스트 (Secondary CTA)</label>
-                <input type="text" value={secondaryCtaText} onChange={e => setSecondaryCtaText(e.target.value)} placeholder="e.g. 고민별 공식 답변 보기" style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px' }} />
-             </div>
-             <div style={{ flex: 1 }}>
-                <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>서브 버튼 링크 (Secondary Link)</label>
-                <input type="text" list="ia-nodes" value={secondaryCtaLink} onChange={e => setSecondaryCtaLink(e.target.value)} placeholder="e.g. /solutions" style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px' }} />
-             </div>
-          </div>
-       </div>
+       {homeTemplate === 'universal' ? (
+         <>
+           <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem' }}>3. 메인 히어로(Hero) 콘셉트 구역 (Universal Template)</h3>
+           <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '3rem' }}>
+              <div>
+                 <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>히어로 레이아웃 템플릿 형태</label>
+                 <select value={heroTemplate} onChange={e => setHeroTemplate(e.target.value)} style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px', background: '#f8fafc' }}>
+                    <option value="glass_card">글래스모피즘 박스 갤러리형 (버튼 및 배지 포함 권장)</option>
+                    <option value="transparent_text">투명 텍스트 강조형 (비건루트 감성, 배경없는 큰 글씨)</option>
+                 </select>
+              </div>
+              <div>
+                 <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>메인 배경 이미지 업로드 (File Upload / URL)</label>
+                 <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                    <input type="file" accept="image/*" onChange={handleFileUpload} style={{ padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '6px' }} />
+                    {isUploading && <span style={{ fontSize: '0.9rem', color: '#3b82f6' }}>업로드 중...</span>}
+                 </div>
+                 <input type="text" value={heroImage} onChange={e => setHeroImage(e.target.value)} placeholder="업로드된 클라우드 URL (또는 직접 입력)" style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px', marginTop: '0.5rem' }} />
+                 {heroImage && (
+                    <div style={{ marginTop: '0.5rem', maxWidth: '300px', borderRadius: '6px', overflow: 'hidden', border: '1px solid #e5e7eb' }}>
+                       <img src={heroImage} alt="Hero Preview" style={{ width: '100%', height: 'auto', display: 'block' }} />
+                    </div>
+                 )}
+              </div>
+              <div>
+                 <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>보이스 배지 텍스트 (Voice Badge)</label>
+                 <input type="text" value={voiceBadge} onChange={e => setVoiceBadge(e.target.value)} placeholder="e.g. 프리미엄 스킨 리셋 VOICE (비워두면 브랜드 SSoT 설정 따름)" style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px' }} />
+              </div>
+              <div>
+                 <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>메인 타이틀 (Summary)</label>
+                 <input type="text" value={heroSummary} onChange={e => setHeroSummary(e.target.value)} placeholder="e.g. Premium Botanical Skincare" style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px' }} />
+              </div>
+              <div>
+                 <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>서브 설명글 (Description)</label>
+                 <textarea value={heroDescription} onChange={e => setHeroDescription(e.target.value)} placeholder="e.g. AI-Crafted canonical answers and routines for absolute trust..." style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px', minHeight: '80px' }} />
+              </div>
+              <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', borderTop: '1px solid #e5e7eb', paddingTop: '1.5rem' }}>
+                 <div style={{ flex: 1 }}>
+                    <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>메인 버튼 텍스트 (Primary CTA)</label>
+                    <input type="text" value={primaryCtaText} onChange={e => setPrimaryCtaText(e.target.value)} placeholder="e.g. 내 루틴/리셋 찾기" style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px' }} />
+                 </div>
+                 <div style={{ flex: 1 }}>
+                    <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>메인 버튼 링크 (Primary Link)</label>
+                    <input type="text" list="ia-nodes" value={primaryCtaLink} onChange={e => setPrimaryCtaLink(e.target.value)} placeholder="e.g. /routines" style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px' }} />
+                 </div>
+              </div>
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                 <div style={{ flex: 1 }}>
+                    <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>서브 버튼 텍스트 (Secondary CTA)</label>
+                    <input type="text" value={secondaryCtaText} onChange={e => setSecondaryCtaText(e.target.value)} placeholder="e.g. 고민별 공식 답변 보기" style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px' }} />
+                 </div>
+                 <div style={{ flex: 1 }}>
+                    <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>서브 버튼 링크 (Secondary Link)</label>
+                    <input type="text" list="ia-nodes" value={secondaryCtaLink} onChange={e => setSecondaryCtaLink(e.target.value)} placeholder="e.g. /solutions" style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px' }} />
+                 </div>
+              </div>
+           </div>
+         </>
+       ) : (
+         <>
+           <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#4f46e5' }}>3. 대화형 AI 질의 히어로 설정 (Semantic Search Hero)</h3>
+           <div style={{ background: '#eef2ff', border: '1px solid #c7d2fe', borderRadius: '8px', padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '3rem' }}>
+              <p style={{ fontSize: '0.875rem', color: '#4338ca', marginBottom: '-0.5rem' }}>
+                 Question-First 템플릿(DR.O 모델)에 특화된 단순화 폼입니다. 고객이 자신의 '상황'을 직접 입력할 수 있도록 유도하는 카피라이트를 작성해주세요. 메인 배경 이미지는 사용되지 않습니다.
+              </p>
+              <div>
+                 <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>검색 유도 메인 타이틀 (Summary)</label>
+                 <textarea value={semanticSummary} onChange={e => setSemanticSummary(e.target.value)} placeholder="e.g. 오늘 어떤 피부 고민으로 정확한 타이밍의 리셋이 필요하신가요?" style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px', minHeight: '80px' }} />
+              </div>
+              <div>
+                 <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>서브 설명글 (Description)</label>
+                 <textarea value={semanticDescription} onChange={e => setSemanticDescription(e.target.value)} placeholder="e.g. 무너진 피부 상태를 가장 빠르게 정상화하는 클리닉 로직을 질문해 보세요." style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px', minHeight: '80px' }} />
+              </div>
+           </div>
+         </>
+       )}
 
       <datalist id="ia-nodes">
         {iaNodes.map(node => (

@@ -31,6 +31,10 @@ export interface DesignConfig {
     secondaryCtaText?: string;
     secondaryCtaLink?: string;
   };
+  semanticHero?: {
+    summary?: string;
+    description?: string;
+  };
 }
 
 export async function getTenantDesignConfig(tenantSlug: string): Promise<DesignConfig> {
@@ -94,7 +98,8 @@ export async function getTenantDesignConfig(tenantSlug: string): Promise<DesignC
            radius: overrides.radius || parsed.radii?.md || '8px',
            homeTemplate: overrides.homeTemplate || 'universal',
            layout: overrides.layout || parsed.layout || undefined,
-           hero: overrides.hero || undefined
+           hero: overrides.hero || undefined,
+           semanticHero: overrides.semanticHero || undefined
         };
      }
   } catch (err) {

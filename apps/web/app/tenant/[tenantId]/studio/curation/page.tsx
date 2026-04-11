@@ -17,15 +17,37 @@ export default function CurationManagerPage() {
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(true);
 
+  const [homeTemplate, setHomeTemplate] = useState('universal');
+  
   useEffect(() => {
-    fetch('/api/v1/tenant/curation')
-      .then(res => res.json())
-      .then(data => {
-         if (data && data.layout) {
-            setLayout(data.layout);
-         }
-         setLoading(false);
-      });
+    Promise.all([
+       fetch('/api/v1/tenant/curation').then(res => res.json()),
+       fetch(`/api/v1/tenant/design`, { headers: { 'x-tenant-id': '00000000-0000-0000-0000-000000000001' } }).then(res => res.json())
+    ]).then(([curationData, designData]) => {
+       let activeTpl = 'universal';
+       if (designData && designData.overrides?.homeTemplate) {
+          activeTpl = designData.overrides.homeTemplate;
+       }
+       setHomeTemplate(activeTpl);
+
+       if (curationData) {
+          // Two-track 렌더링 데이터 우선 파싱
+          if (curationData.layouts && curationData.layouts[activeTpl]) {
+             setLayout(curationData.layouts[activeTpl]);
+          } else if (activeTpl === 'universal' && curationData.layout) {
+             setLayout(curationData.layout);
+          } else if (activeTpl === 'question-first') {
+             // 아무 설정이 없는 question-first 라면 기본 프리셋 노출
+             setLayout([
+                { type: 'SemanticSearchHero' },
+                { type: 'BlockHeading', props: { title: 'Your SSoT Guide', subtitle: '전문가가 제안하는 검증된 답변과 루틴' } },
+                { type: 'SituationCurationGrid', props: { situations: [{ id: 'clinic', title: '시술 후 관리 Q&A', desc: '집에서 시술 효과를 극대화하는 법' }, { id: 'trouble', title: '응급 트러블 진정', desc: '열감, 붉은기 등 빠른 대처가 필요할 때' }] } },
+                { type: 'AnswerCardGrid' }
+             ]);
+          }
+       }
+       setLoading(false);
+    });
   }, []);
 
   const handleSave = async () => {
@@ -33,7 +55,7 @@ export default function CurationManagerPage() {
     await fetch('/api/v1/tenant/curation', {
        method: 'PATCH',
        headers: { 'Content-Type': 'application/json' },
-       body: JSON.stringify({ layout })
+       body: JSON.stringify({ layout, template: homeTemplate })
     });
     setStatus('큐레이션 완료! 스토어프론트에 즉시 반영됩니다.');
     alert('홈페이지 큐레이션 및 레이아웃 배치가 퍼블리싱 되었습니다.');

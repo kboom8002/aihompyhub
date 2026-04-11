@@ -61,10 +61,17 @@ export default async function TenantB2CHomepage(props: { params: Promise<{ tenan
      ];
   }
 
-  // Fetch Curation Config (Overrides logic only if layout array explicitly passed in JSON)
+  // Fetch Curation Config (Overrides logic using two-track template layouts)
   const { data: dbCuration } = await supabaseAdmin.from('universal_content_assets').select('json_payload').eq('tenant_id', tenantId).eq('type', 'curation_config').single();
-  if (dbCuration && dbCuration.json_payload?.layout?.length > 0) {
-      layoutSettings = dbCuration.json_payload.layout;
+  
+  if (dbCuration && dbCuration.json_payload) {
+      const templateKey = designConfig.homeTemplate || 'universal';
+      if (dbCuration.json_payload.layouts && dbCuration.json_payload.layouts[templateKey]) {
+          layoutSettings = dbCuration.json_payload.layouts[templateKey];
+      } else if (templateKey === 'universal' && dbCuration.json_payload.layout?.length > 0) {
+          // Backward compatibility for legacy flat layout
+          layoutSettings = dbCuration.json_payload.layout;
+      }
   }
 
   const { data: dbBrandProfile } = await supabaseAdmin.from('brand_profiles').select('*').eq('tenant_id', tenantId).single();
@@ -118,12 +125,15 @@ export default async function TenantB2CHomepage(props: { params: Promise<{ tenan
         </div>
       )}
 
-      {!isPreparing && (
-        <BlockRenderer 
-          layoutSettings={layoutSettings}
-          context={{ tenantSlug, brandProfile, answerCards: answerCards || [], heroConfig: designConfig.hero }}
-        />
-      )}
+      {!isPreparing && (() => {
+        const activeHeroConfig = designConfig.homeTemplate === 'question-first' ? designConfig.semanticHero : designConfig.hero;
+        return (
+          <BlockRenderer 
+            layoutSettings={layoutSettings}
+            context={{ tenantSlug, brandProfile, answerCards: answerCards || [], heroConfig: activeHeroConfig }}
+          />
+        );
+      })()}
     </div>
   );
 }
