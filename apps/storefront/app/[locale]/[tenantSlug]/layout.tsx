@@ -23,7 +23,7 @@ export default async function TenantLayout(props: { children: React.ReactNode, p
   
   let iaNodes = null;
   if (tenantId) {
-     const { data } = await supabaseAdmin.from('universal_content_assets').select('json_payload, translations').eq('tenant_id', tenantId).eq('type', 'ia_config').single();
+     const { data } = await supabaseAdmin.from('universal_content_assets').select('json_payload').eq('tenant_id', tenantId).eq('type', 'ia_config').single();
      if (data && data.json_payload?.nodes) {
          let payloadData = data.json_payload;
          if (data.translations && data.translations[locale]) {

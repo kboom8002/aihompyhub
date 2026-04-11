@@ -46,7 +46,7 @@ export default async function ExpertsIndexPage(props: { params: Promise<{ tenant
 
   const { data: experts } = await supabaseAdmin
     .from('universal_content_assets')
-    .select('id, title, updated_at, created_at, json_payload, translations')
+    .select('id, title, updated_at, created_at, json_payload')
     .eq('tenant_id', tenantId)
     .eq('type', 'expert')
     .order('created_at', { ascending: false });

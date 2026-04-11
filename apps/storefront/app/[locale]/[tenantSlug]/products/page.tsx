@@ -14,7 +14,7 @@ export default async function ProductsIndexPage(props: { params: Promise<{ tenan
 
   const { data: assets } = await supabaseAdmin
     .from('universal_content_assets')
-    .select('id, title, updated_at, created_at, json_payload, translations')
+    .select('id, title, updated_at, created_at, json_payload')
     .eq('tenant_id', tenantId)
     .in('type', ['product', 'bundle'])
     .order('created_at', { ascending: false });

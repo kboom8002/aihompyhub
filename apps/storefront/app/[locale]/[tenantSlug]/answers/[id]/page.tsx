@@ -90,7 +90,7 @@ export default async function AnswerDetailPage(props: Props) {
 
   let { data: answerData } = await supabaseAdmin
     .from('answer_cards')
-    .select('*, topics(title), translations')
+    .select('*, topics(title)')
     .eq('id', id)
     .eq('tenant_id', tenantId)
     .single();
@@ -108,7 +108,7 @@ export default async function AnswerDetailPage(props: Props) {
     // 2. Fetch from Universal CMS payload (Fallback Schema)
     let { data: content, error } = await supabaseAdmin
       .from('universal_content_assets')
-      .select('*, translations')
+      .select('*')
       .eq('id', id)
       .eq('tenant_id', tenantId)
       .single();
