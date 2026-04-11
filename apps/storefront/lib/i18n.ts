@@ -31,8 +31,14 @@ export const I18N_DICT: Record<string, Record<string, string>> = {
     '주요 시술 및 FAQ': '주요 시술 및 FAQ',
     '성공 케이스 보기': '성공 케이스 보기',
     '고민별 공식 답변 보기': '고민별 공식 답변 보기',
+    // List Pages UI
+    '← 홈으로 돌아가기': '← 홈으로 돌아가기',
+    '솔루션 허브': '솔루션 허브',
+    '고민별 상황별 최적의 솔루션을 제안합니다.': '고민별 상황별 최적의 솔루션을 제안합니다.',
+    '아직 작성된 항목이 없습니다.': '아직 작성된 항목이 없습니다.',
   },
   en: {
+    // Menu
     '고민별 솔루션': 'Solutions',
     '공식 답변': 'Official Answers',
     '비교': 'Compare',
@@ -48,6 +54,7 @@ export const I18N_DICT: Record<string, Record<string, string>> = {
     '의료진 소개': 'Medical Staff',
     '원내 화장품': 'Clinic Cosmetics',
     
+    // Page / Presets
     'Consultation & SSoT Guide': 'Consultation & SSoT Guide',
     '검증된 케이스와 명확한 진단 기준을 우선 확인하세요.': 'Check verified cases and diagnostic criteria first.',
     '시술 후 관리 Q&A': 'Post-Treatment Care Q&A',
@@ -55,14 +62,22 @@ export const I18N_DICT: Record<string, Record<string, string>> = {
     '응급 트러블 진정': 'Emergency Trouble Relief',
     '열감, 붉은기 등 빠른 대처가 필요할 때': 'Fast response for heat, redness, etc.',
     
+    // Brand Hero CTA
     '진료/예약하기': 'Book Treatment',
     '사전 상담 신청': 'Request Consultation',
     '내 루틴/리셋 찾기': 'Find My Routine / Reset',
     '주요 시술 및 FAQ': 'Key Treatments & FAQ',
     '성공 케이스 보기': 'View Success Cases',
     '고민별 공식 답변 보기': 'View Official Answers',
+
+    // List Pages UI
+    '← 홈으로 돌아가기': '← Go Back Home',
+    '솔루션 허브': 'Solution Hub',
+    '고민별 상황별 최적의 솔루션을 제안합니다.': 'We propose the optimal solution for your concern.',
+    '아직 작성된 항목이 없습니다.': 'No items written yet.',
   },
   ja: {
+    // Menu
     '고민별 솔루션': 'お悩み別解決',
     '공식 답변': '公式回答',
     '비교': '比較',
@@ -78,6 +93,7 @@ export const I18N_DICT: Record<string, Record<string, string>> = {
     '의료진 소개': '医療スタッフ',
     '원내 화장품': '院内処方コスメ',
 
+    // Page / Presets
     'Consultation & SSoT Guide': 'コンサルテーションガイド',
     '검증된 케이스와 명확한 진단 기준을 우선 확인하세요.': '検証済みの事例と明確な診断基準をまず確認してください。',
     '시술 후 관리 Q&A': '施術後のケアQ&A',
@@ -85,14 +101,22 @@ export const I18N_DICT: Record<string, Record<string, string>> = {
     '응급 트러블 진정': '緊急トラブル鎮静',
     '열감, 붉은기 등 빠른 대처가 필요할 때': '熱帯び、赤みなどの早い対処が必要な時',
 
+    // Brand Hero CTA
     '진료/예약하기': '診療/予約',
     '사전 상담 신청': '事前相談申込',
     '내 루틴/리셋 찾기': 'ルーティンを探す',
     '주요 시술 및 FAQ': '主要施術＆FAQ',
     '성공 케이스 보기': '成功事例',
     '고민별 공식 답변 보기': 'お悩み別公式回答',
+
+    // List Pages UI
+    '← 홈으로 돌아가기': '← ホームに戻る',
+    '솔루션 허브': 'ソリューションハブ',
+    '고민별 상황별 최적의 솔루션을 제안합니다.': 'お悩みに合わせた最適な解決策を提案します。',
+    '아직 작성된 항목이 없습니다.': 'まだ作成された項目はありません。',
   },
   zh: {
+    // Menu
     '고민별 솔루션': '问题解决方案',
     '공식 답변': '官方回答',
     '비교': '对比',
@@ -108,6 +132,7 @@ export const I18N_DICT: Record<string, Record<string, string>> = {
     '의료진 소개': '医疗团队',
     '원내 화장품': '院内化妆品',
     
+    // Page / Presets
     'Consultation & SSoT Guide': '咨询指南',
     '검증된 케이스와 명확한 진단 기준을 우선 확인하세요.': '请首先确认经过验证的案例和明确的诊断标准。',
     '시술 후 관리 Q&A': '术后护理Q&A',
@@ -115,14 +140,22 @@ export const I18N_DICT: Record<string, Record<string, string>> = {
     '응급 트러블 진정': '紧急急救',
     '열감, 붉은기 등 빠른 대처가 필요할 때': '需要快速处理发热、红肿等情况时',
     
+    // Brand Hero CTA
     '진료/예약하기': '诊疗/预约',
     '사전 상담 신청': '申请前期咨询',
     '내 루틴/리셋 찾기': '寻找我的护理方案',
     '주요 시술 및 FAQ': '主要手术及FAQ',
     '성공 케이스 보기': '查看成功案例',
     '고민별 공식 답변 보기': '查看问题官方回答',
+
+    // List Pages UI
+    '← 홈으로 돌아가기': '← 返回主页',
+    '솔루션 허브': '解决方案中心',
+    '고민별 상황별 최적의 솔루션을 제안합니다.': '我们为您提供最适合的解决方案。',
+    '아직 작성된 항목이 없습니다.': '尚未撰写任何项目。',
   },
   es: {
+    // Menu
     '고민별 솔루션': 'Soluciones',
     '공식 답변': 'Respuestas Oficiales',
     '비교': 'Comparar',
@@ -138,6 +171,7 @@ export const I18N_DICT: Record<string, Record<string, string>> = {
     '의료진 소개': 'Personal Médico',
     '원내 화장품': 'Cosméticos',
 
+    // Page / Presets
     'Consultation & SSoT Guide': 'Guía de Consulta',
     '검증된 케이스와 명확한 진단 기준을 우선 확인하세요.': 'Verifique primero los casos validados y los criterios.',
     '시술 후 관리 Q&A': 'Cuidado Post-Tratamiento',
@@ -145,12 +179,19 @@ export const I18N_DICT: Record<string, Record<string, string>> = {
     '응급 트러블 진정': 'Alivio de Emergencia',
     '열감, 붉은기 등 빠른 대처가 필요할 때': 'Respuesta rápida para el calor o el enrojecimiento',
 
+    // Brand Hero CTA
     '진료/예약하기': 'Reservar',
     '사전 상담 신청': 'Solicitar Consulta',
     '내 루틴/리셋 찾기': 'Buscar Rutina',
     '주요 시술 및 FAQ': 'Tratamientos & FAQ',
     '성공 케이스 보기': 'Casos de Éxito',
     '고민별 공식 답변 보기': 'Ver Respuestas Oficiales',
+
+    // List Pages UI
+    '← 홈으로 돌아가기': '← Volver al inicio',
+    '솔루션 허브': 'Centro de Soluciones',
+    '고민별 상황별 최적의 솔루션을 제안합니다.': 'Proponemos la solución óptima para su caso.',
+    '아직 작성된 항목이 없습니다.': 'No hay elementos escritos aún.',
   }
 };
 
