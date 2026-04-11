@@ -4,6 +4,8 @@ import { AnswerCardGrid } from '../AnswerCardGrid';
 import { BlockHeading } from './BlockHeading';
 import { CompareQuickDecision } from '../CompareQuickDecision';
 import { RoutineStepCard } from '../RoutineStepCard';
+import { SemanticSearchHero } from '../SemanticSearchHero';
+import { SituationCurationGrid } from '../SituationCurationGrid';
 
 interface BlockRendererProps {
   layoutSettings: { type: string; props?: any }[];
@@ -65,6 +67,24 @@ export function BlockRenderer({ layoutSettings, context }: BlockRendererProps) {
               />
             );
           }
+          case 'SemanticSearchHero': {
+            const heroProps = context.heroConfig || {};
+            return (
+              <SemanticSearchHero 
+                key={index}
+                tenantSlug={context.tenantSlug}
+                summary={heroProps.summary || props?.summary}
+                description={heroProps.description || props?.description}
+                {...props}
+              />
+            );
+          }
+          case 'SituationCurationGrid':
+            return (
+              <main key={`curation-${index}`} className="container mx-auto px-4 mb-20 mt-12 w-full">
+                 <SituationCurationGrid tenantSlug={context.tenantSlug} answerCards={context.answerCards || []} />
+              </main>
+            );
           case 'BlockHeading':
             return (
               <main key={`heading-${index}`} className="container mx-auto px-4 mt-16">
