@@ -14,6 +14,7 @@ export default function DesignManagerPage({ params }: { params: { tenantId: stri
   const [radius, setRadius] = useState('');
   const [bgColor, setBgColor] = useState('');
   const [homeTemplate, setHomeTemplate] = useState('universal');
+  const [logoUrl, setLogoUrl] = useState('');
   
   // Hero section states (universal)
   const [heroImage, setHeroImage] = useState('');
@@ -33,6 +34,7 @@ export default function DesignManagerPage({ params }: { params: { tenantId: stri
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
+  const [isLogoUploading, setIsLogoUploading] = useState(false);
   const [iaNodes, setIaNodes] = useState<{id: string, label: string}[]>([]);
 
   useEffect(() => {
@@ -47,6 +49,7 @@ export default function DesignManagerPage({ params }: { params: { tenantId: stri
             setRadius(data.overrides?.radius || '');
             setBgColor(data.overrides?.bg || '');
             setHomeTemplate(data.overrides?.homeTemplate || 'universal');
+            setLogoUrl(data.overrides?.logo_url || '');
             
             if (data.overrides?.hero) {
                setHeroImage(data.overrides.hero.heroImage || '');
@@ -103,6 +106,32 @@ export default function DesignManagerPage({ params }: { params: { tenantId: stri
      }
   };
 
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+     const file = e.target.files?.[0];
+     if (!file) return;
+
+     setIsLogoUploading(true);
+     try {
+       const formData = new FormData();
+       formData.append('file', file);
+       const res = await fetch('/api/v1/tenant/upload', {
+         method: 'POST',
+         headers: { 'x-tenant-id': params.tenantId },
+         body: formData
+       });
+       const data = await res.json();
+       if (data.url) {
+         setLogoUrl(data.url);
+       } else {
+         alert('로고 업로드 실패: ' + (data.error || '알 수 없는 오류'));
+       }
+     } catch (err) {
+       alert('로고 업로드 중 오류 발생');
+     } finally {
+       setIsLogoUploading(false);
+     }
+  };
+
   const handleSave = async () => {
     setStatus('저장 중...');
     const payload = {
@@ -111,6 +140,7 @@ export default function DesignManagerPage({ params }: { params: { tenantId: stri
           ...(primaryColor ? { primary_color: primaryColor } : {}),
           ...(radius ? { radius: radius } : {}),
           ...(bgColor ? { bg: bgColor } : {}),
+          ...(logoUrl ? { logo_url: logoUrl } : {}),
           homeTemplate: homeTemplate,
           hero: {
              heroImage: heroImage,
@@ -189,6 +219,22 @@ export default function DesignManagerPage({ params }: { params: { tenantId: stri
                <p style={{ fontSize: '0.875rem', color: '#6b7280' }}>{theme.desc}</p>
             </div>
          ))}
+      </div>
+
+      {/* 1.1 Brand Identity (Logo) */}
+      <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', marginTop: '2rem' }}>1.1. 브랜드 아이덴티티 설정</h3>
+      <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '2rem', marginBottom: '3rem' }}>
+         <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>메인 GNB 로고 이미지 최우선 적용 (File Upload / URL)</label>
+         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            <input type="file" accept="image/*" onChange={handleLogoUpload} style={{ padding: '0.5rem', border: '1px solid #d1d5db', borderRadius: '6px' }} />
+            {isLogoUploading && <span style={{ fontSize: '0.9rem', color: '#3b82f6' }}>업로드 중...</span>}
+         </div>
+         <input type="text" value={logoUrl} onChange={e => setLogoUrl(e.target.value)} placeholder="로고 URL (설정 시 텍스트 대신 좌측 상단 로고 노출)" style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px', marginTop: '0.5rem' }} />
+         {logoUrl && (
+            <div style={{ marginTop: '0.5rem', maxWidth: '200px', borderRadius: '6px', overflow: 'hidden', border: '1px solid #e5e7eb', background: '#f8fafc', padding: '1rem' }}>
+               <img src={logoUrl} alt="Logo Preview" style={{ width: '100%', height: 'auto', display: 'block', objectFit: 'contain' }} />
+            </div>
+         )}
       </div>
 
       {/* 2. Micro Overrides */}
@@ -285,12 +331,25 @@ export default function DesignManagerPage({ params }: { params: { tenantId: stri
          <>
            <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem', color: '#4f46e5' }}>3. 대화형 AI 질의 히어로 설정 (Semantic Search Hero)</h3>
            <div style={{ background: '#eef2ff', border: '1px solid #c7d2fe', borderRadius: '8px', padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '3rem' }}>
-              <p style={{ fontSize: '0.875rem', color: '#4338ca', marginBottom: '-0.5rem' }}>
-                 Question-First 템플릿(DR.O 모델)에 특화된 단순화 폼입니다. 고객이 자신의 '상황'을 직접 입력할 수 있도록 유도하는 카피라이트를 작성해주세요. 메인 배경 이미지는 사용되지 않습니다.
+             <p style={{ fontSize: '0.875rem', color: '#4338ca', marginBottom: '-0.5rem' }}>
+                 Question-First 템플릿(DR.O 모델)에 특화된 단순화 폼입니다. 고객이 자신의 '상황'을 직접 입력할 수 있도록 유도하는 카피라이트를 작성해주세요. 설정된 배경 이미지는 검색 화면 뒤편에 은은하게 투영됩니다.
               </p>
               <div>
+                 <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>메인 배경 이미지 업로드 (File Upload / URL)</label>
+                 <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                    <input type="file" accept="image/*" onChange={handleFileUpload} style={{ padding: '0.5rem', border: '1px solid #c7d2fe', borderRadius: '6px' }} />
+                    {isUploading && <span style={{ fontSize: '0.9rem', color: '#4f46e5' }}>업로드 중...</span>}
+                 </div>
+                 <input type="text" value={heroImage} onChange={e => setHeroImage(e.target.value)} placeholder="업로드된 클라우드 URL (또는 직접 입력)" style={{ width: '100%', padding: '0.75rem', border: '1px solid #c7d2fe', borderRadius: '6px', marginTop: '0.5rem' }} />
+                 {heroImage && (
+                    <div style={{ marginTop: '0.5rem', maxWidth: '300px', borderRadius: '6px', overflow: 'hidden', border: '1px solid #c7d2fe' }}>
+                       <img src={heroImage} alt="Hero Preview" style={{ width: '100%', height: 'auto', display: 'block' }} />
+                    </div>
+                 )}
+              </div>
+              <div>
                  <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>검색 유도 메인 타이틀 (Summary)</label>
-                 <textarea value={semanticSummary} onChange={e => setSemanticSummary(e.target.value)} placeholder="e.g. 오늘 어떤 피부 고민으로 정확한 타이밍의 리셋이 필요하신가요?" style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px', minHeight: '80px' }} />
+                 <textarea value={semanticSummary} onChange={e => setSemanticSummary(e.target.value)} placeholder="e.g. 오늘 어떤 피부 고민으로 정확한 타이밍의 리셋이 필요하신가요?" style={{ width: '100%', padding: '0.75rem', border: '1px solid #c7d2fe', borderRadius: '6px', minHeight: '80px' }} />
               </div>
               <div>
                  <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>서브 설명글 (Description)</label>
