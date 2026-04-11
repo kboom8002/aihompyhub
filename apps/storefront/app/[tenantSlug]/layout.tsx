@@ -5,7 +5,7 @@ import { ThemeProvider } from '../../components/store/ThemeProvider';
 import { AnalyticsProvider } from '../../components/store/AnalyticsProvider';
 
 import { supabaseAdmin } from '../../lib/supabase';
-import { resolveTenantId } from '../../lib/tenant';
+import { resolveTenantId, resolveTenant } from '../../lib/tenant';
 
 export const revalidate = 0;
 
@@ -15,7 +15,9 @@ export default async function TenantLayout(props: { children: React.ReactNode, p
   const designConfig = await getTenantDesignConfig(tenantSlug);
   const tenantName = designConfig.brand_name;
 
-  const tenantId = await resolveTenantId(tenantSlug);
+  const tenantData = await resolveTenant(tenantSlug);
+  const tenantId = tenantData?.id;
+  const industryType = tenantData?.industry_type || 'skincare';
   
   let iaNodes = null;
   if (tenantId) {
@@ -26,7 +28,7 @@ export default async function TenantLayout(props: { children: React.ReactNode, p
   }
 
   return (
-    <ThemeProvider config={designConfig}>
+    <ThemeProvider config={designConfig} industryType={industryType}>
       {/* Global GNB Navigation for Storefront */}
       <StoreHeader tenantName={tenantName} tenantSlug={tenantSlug} customNodes={iaNodes} />
       

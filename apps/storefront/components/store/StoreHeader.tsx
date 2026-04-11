@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useIndustry } from './ThemeProvider';
 
 interface StoreHeaderProps {
   tenantName: string;
@@ -9,22 +10,49 @@ interface StoreHeaderProps {
   customNodes?: { id: string, label: string, enabled: boolean }[];
 }
 
-const DEFAULT_NODES = [
-  { id: 'solutions', label: '고민별 솔루션', enabled: true },
-  { id: 'answers', label: '공식 답변', enabled: true },
-  { id: 'compare', label: '비교', enabled: true },
-  { id: 'media', label: '스토리·가이드·리뷰', enabled: true },
-  { id: 'trust', label: '신뢰(Trust)', enabled: true },
-  { id: 'trust/experts', label: '전문가 위원회', enabled: true },
-  { id: 'routines', label: '루틴', enabled: true },
-  { id: 'products', label: '제품·번들', enabled: true }
-];
+const INDUSTRY_NODES: Record<string, { id: string, label: string, enabled: boolean }[]> = {
+  skincare: [
+    { id: 'solutions', label: '고민별 솔루션', enabled: true },
+    { id: 'answers', label: '공식 답변', enabled: true },
+    { id: 'compare', label: '비교', enabled: true },
+    { id: 'media', label: '스토리·가이드·리뷰', enabled: true },
+    { id: 'trust', label: '신뢰(Trust)', enabled: true },
+    { id: 'trust/experts', label: '전문가 위원회', enabled: true },
+    { id: 'routines', label: '루틴', enabled: true },
+    { id: 'products', label: '제품·번들', enabled: true }
+  ],
+  clinic: [
+    { id: 'solutions', label: '진료 과목', enabled: true },
+    { id: 'answers', label: '시술 FAQ', enabled: true },
+    { id: 'media', label: '치료 케이스', enabled: true },
+    { id: 'trust', label: '의학적 신뢰', enabled: true },
+    { id: 'trust/experts', label: '의료진 소개', enabled: true },
+    { id: 'products', label: '원내 화장품', enabled: true }
+  ],
+  real_estate: [
+    { id: 'solutions', label: '테마별 매물', enabled: true },
+    { id: 'answers', label: '계약 절차/가이드', enabled: true },
+    { id: 'media', label: '거래 완료 레퍼런스', enabled: true },
+    { id: 'trust', label: '중개 법인 정보', enabled: true },
+    { id: 'trust/experts', label: '책임 중개인', enabled: true }
+  ],
+  consulting: [
+    { id: 'solutions', label: '컨설팅 솔루션', enabled: true },
+    { id: 'answers', label: '진행 절차/과정', enabled: true },
+    { id: 'media', label: '인사이트 칼럼', enabled: true },
+    { id: 'trust', label: 'Why Us', enabled: true },
+    { id: 'trust/experts', label: '주요 파트너', enabled: true },
+    { id: 'portfolio', label: '성공 사례', enabled: true }
+  ]
+};
 
 export function StoreHeader({ tenantName, tenantSlug, customNodes }: StoreHeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const industry = useIndustry();
+  const defaultNodes = INDUSTRY_NODES[industry] || INDUSTRY_NODES['skincare'];
 
   // Merge custom nodes over default nodes
-  let activeNodes = DEFAULT_NODES.map(def => {
+  let activeNodes = defaultNodes.map(def => {
      if (!customNodes) return def;
      const found = customNodes.find((n: any) => n.id === def.id);
      return found ? { ...def, label: found.label, enabled: found.enabled } : def;

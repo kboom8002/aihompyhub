@@ -1,7 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import { Button } from "@/components/ui/button";
-
+import { useIndustry } from './ThemeProvider';
 import Link from 'next/link';
 
 interface BrandHeroProps {
@@ -22,6 +22,16 @@ interface BrandHeroProps {
 
 export function BrandHero({ summary, voice, skinTheme, tenantSlug, heroImage, heroTemplate = 'glass_card', description, textMode = 'dark', voiceBadge, primaryCtaText, primaryCtaLink, secondaryCtaText, secondaryCtaLink }: BrandHeroProps) {
   const isLightText = textMode === 'dark'; // 'dark' mode means dark background -> needs light text
+  const industry = useIndustry();
+
+  // 업종별 기본 라벨 오버라이딩 처리
+  const defaultCta1 = industry === 'clinic' ? '진료/예약하기' : 
+                      industry === 'real_estate' ? '매물 의뢰하기' : 
+                      industry === 'consulting' ? '사전 상담 신청' : '내 루틴/리셋 찾기';
+
+  const defaultCta2 = industry === 'clinic' ? '주요 시술 및 FAQ' :
+                      industry === 'real_estate' ? '계약 및 중개 절차' :
+                      industry === 'consulting' ? '성공 케이스 보기' : '고민별 공식 답변 보기';
 
   return (
     <div className="relative w-full h-[450px] md:h-[500px] min-h-[45vh] flex items-center justify-center overflow-hidden">
@@ -52,12 +62,12 @@ export function BrandHero({ summary, voice, skinTheme, tenantSlug, heroImage, he
           <div className="mt-10 flex gap-4 justify-center">
             <Link href={primaryCtaLink || `/${tenantSlug || 'skincare-brand'}/routines`}>
                <Button size="lg" style={{ background: 'var(--theme-primary)', color: 'var(--theme-surface)', borderRadius: 'var(--theme-radius)' }} className="hover:opacity-90 px-8 tracking-wider border-none font-semibold">
-                 {primaryCtaText || '내 루틴/리셋 찾기'}
+                 {primaryCtaText || defaultCta1}
                </Button>
             </Link>
             <Link href={secondaryCtaLink || `/${tenantSlug || 'skincare-brand'}/solutions`}>
                <Button size="lg" style={{ borderColor: 'var(--theme-primary)', color: 'var(--theme-surface)', backgroundColor: 'rgba(0,0,0,0.4)', borderRadius: 'var(--theme-radius)' }} className="border-2 hover:bg-black/60 px-8 tracking-wider font-semibold">
-                 {secondaryCtaText || '고민별 공식 답변 보기'}
+                 {secondaryCtaText || defaultCta2}
                </Button>
             </Link>
           </div>
@@ -74,17 +84,17 @@ export function BrandHero({ summary, voice, skinTheme, tenantSlug, heroImage, he
           )}
           {(primaryCtaText || secondaryCtaText) && (
             <div className="mt-12 flex gap-6 justify-center">
-              {primaryCtaText && (
+              {primaryCtaText || defaultCta1 && (
                 <Link href={primaryCtaLink || `/${tenantSlug || 'skincare-brand'}/routines`}>
                    <Button size="lg" style={{ background: isLightText ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)', color: isLightText ? '#fff' : '#000', borderRadius: 'var(--theme-radius)', backdropFilter: 'blur(10px)' }} className="hover:bg-white/20 px-10 tracking-widest border border-white/30 font-semibold shadow-lg text-lg py-6">
-                     {primaryCtaText}
+                     {primaryCtaText || defaultCta1}
                    </Button>
                 </Link>
               )}
-              {secondaryCtaText && (
+              {secondaryCtaText || defaultCta2 && (
                 <Link href={secondaryCtaLink || `/${tenantSlug || 'skincare-brand'}/solutions`}>
                    <Button size="lg" variant="ghost" style={{ color: isLightText ? '#fff' : '#000', borderRadius: 'var(--theme-radius)' }} className="hover:bg-white/10 px-8 tracking-widest font-semibold text-lg py-6 underline underline-offset-4">
-                     {secondaryCtaText}
+                     {secondaryCtaText || defaultCta2}
                    </Button>
                 </Link>
               )}

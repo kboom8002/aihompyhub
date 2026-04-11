@@ -1,14 +1,24 @@
 'use client';
-import React from 'react';
+import React, { createContext, useContext } from 'react';
+
+// Create a Context to broadcast the industry_type down the tree
+export const IndustryContext = createContext<string>('skincare');
+
+export function useIndustry() {
+  return useContext(IndustryContext);
+}
 
 // We pass down pre-fetched config rather than fetching it in client to avoid waterfall.
 export function ThemeProvider({ 
   children, 
-  config 
+  config,
+  industryType
 }: { 
   children: React.ReactNode, 
-  config: any 
+  config: any,
+  industryType?: string
 }) {
+  const currentIndustry = industryType || 'skincare';
   
   // Maps the Design Config JSON to raw CSS custom properties
   const themeStyles = {
@@ -28,16 +38,14 @@ export function ThemeProvider({
   } as React.CSSProperties;
 
   return (
-    <div 
-      suppressHydrationWarning
-      style={themeStyles} 
-      className="main-theme-wrapper w-full h-full min-h-screen text-[var(--theme-text)] bg-[var(--theme-bg)] font-[family-name:var(--theme-font)]"
-    >
-      {/* 
-        By nesting it here, all components underneath can use these variables:
-        e.g. className="bg-[var(--theme-surface)] border-[var(--theme-border)] text-[var(--theme-primary)]"
-      */}
-      {children}
-    </div>
+    <IndustryContext.Provider value={currentIndustry}>
+      <div 
+        suppressHydrationWarning
+        style={themeStyles} 
+        className="main-theme-wrapper w-full h-full min-h-screen text-[var(--theme-text)] bg-[var(--theme-bg)] font-[family-name:var(--theme-font)]"
+      >
+        {children}
+      </div>
+    </IndustryContext.Provider>
   );
 }
