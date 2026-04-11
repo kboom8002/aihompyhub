@@ -3,6 +3,7 @@ import { StoreHeader } from '../../components/store/StoreHeader';
 import { getTenantDesignConfig } from '../../lib/designConfig';
 import { ThemeProvider } from '../../components/store/ThemeProvider';
 import { AnalyticsProvider } from '../../components/store/AnalyticsProvider';
+import { BoundaryWarning } from '../../components/store/BoundaryWarning';
 
 import { supabaseAdmin } from '../../lib/supabase';
 import { resolveTenantId, resolveTenant } from '../../lib/tenant';
@@ -34,6 +35,9 @@ export default async function TenantLayout(props: { children: React.ReactNode, p
       
       {/* Analytics Provider (App-wide) */}
       {tenantId && <AnalyticsProvider tenantId={tenantId} />}
+
+      {/* Industry Specific Components */}
+      <BoundaryWarning />
 
       {/* Page Content */}
       <div className="flex-1">
