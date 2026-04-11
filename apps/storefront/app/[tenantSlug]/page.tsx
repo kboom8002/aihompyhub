@@ -51,11 +51,22 @@ export default async function TenantB2CHomepage(props: { params: Promise<{ tenan
   
   let layoutSettings = designConfig.layout?.homepage || [];
 
+  // Fetch Brand Profile and Answer Cards
+  const { data: dbBrandProfile } = await supabaseAdmin.from('brand_profiles').select('*').eq('tenant_id', tenantId).single();
+  const { data: dbAnswerCards } = await supabaseAdmin.from('answer_cards').select('*, topics(title)').eq('tenant_id', tenantId);
+
+  // Fetch Brand Hero injected separately
+  const { data: dbBrandHero } = await supabaseAdmin.from('universal_content_assets').select('json_payload').eq('tenant_id', tenantId).eq('type', 'brand_hero').single();
+
+  let brandProfile = dbBrandProfile;
+  let answerCards = dbAnswerCards;
+
   // Template Routing: inject custom presets if specific template is selected
-  if (designConfig.homeTemplate === 'question-first') {
+  if (designConfig.homeTemplate === 'question-first' || brandProfile?.industry_type === 'consulting') {
+     designConfig.homeTemplate = 'question-first'; // Ensure activeHeroConfig resolver knows
      layoutSettings = [
         { type: 'SemanticSearchHero' },
-        { type: 'BlockHeading', props: { title: 'Your SSoT Guide', subtitle: '전문가가 제안하는 검증된 답변과 루틴' } },
+        { type: 'BlockHeading', props: { title: 'Consultation & SSoT Guide', subtitle: '검증된 케이스와 명확한 진단 기준을 우선 확인하세요.' } },
         { type: 'SituationCurationGrid' },
         { type: 'AnswerCardGrid' }
      ];
@@ -74,14 +85,7 @@ export default async function TenantB2CHomepage(props: { params: Promise<{ tenan
       }
   }
 
-  const { data: dbBrandProfile } = await supabaseAdmin.from('brand_profiles').select('*').eq('tenant_id', tenantId).single();
-  const { data: dbAnswerCards } = await supabaseAdmin.from('answer_cards').select('*, topics(title)').eq('tenant_id', tenantId);
-
-  let brandProfile = dbBrandProfile;
-  let answerCards = dbAnswerCards;
-
-
-  const isPreparing = !brandProfile;
+  const isPreparing = (!brandProfile && !dbBrandHero);
 
   const baseUrl = process.env.NEXT_PUBLIC_STOREFRONT_URL || 'http://localhost:3001';
   
@@ -126,7 +130,10 @@ export default async function TenantB2CHomepage(props: { params: Promise<{ tenan
       )}
 
       {!isPreparing && (() => {
-        const activeHeroConfig = designConfig.homeTemplate === 'question-first' ? designConfig.semanticHero : designConfig.hero;
+        let activeHeroConfig = designConfig.homeTemplate === 'question-first' ? designConfig.semanticHero : designConfig.hero;
+        if (dbBrandHero && dbBrandHero.json_payload) {
+             activeHeroConfig = { ...(activeHeroConfig || {}), ...dbBrandHero.json_payload };
+        }
         return (
           <BlockRenderer 
             layoutSettings={layoutSettings}

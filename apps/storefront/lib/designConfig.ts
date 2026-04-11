@@ -50,7 +50,7 @@ export async function getTenantDesignConfig(tenantSlug: string): Promise<DesignC
                .select('json_payload')
                .eq('tenant_id', tenantId)
                .eq('type', 'design_config')
-               .eq('category', 'system')
+               .eq('category', 'system_config')
                .single();
                
             if (data && data.json_payload) {

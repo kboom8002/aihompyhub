@@ -16,8 +16,8 @@ export function PortfolioCard({ portfolio, tenantSlug, industryType = 'skincare'
 
   // Extract first image if exists
   let firstThumb = '/skincare_texture_1775271187123.png'; // fallback
-  if (portfolio.structured_body?.visual_assets) {
-     const assets = portfolio.structured_body.visual_assets.split(',');
+  if (portfolio.json_payload?.visual_assets) {
+     const assets = portfolio.json_payload.visual_assets.split(',');
      if (assets[0]) firstThumb = assets[0].trim();
   }
 
@@ -27,7 +27,7 @@ export function PortfolioCard({ portfolio, tenantSlug, industryType = 'skincare'
       <div className="relative w-full h-[240px] bg-slate-100 overflow-hidden">
         <Image 
           src={firstThumb}
-          alt={portfolio.structured_body?.client_or_context || 'Portfolio Image'}
+          alt={portfolio.json_payload?.client_or_context || 'Portfolio Image'}
           fill
           className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
         />
@@ -43,7 +43,7 @@ export function PortfolioCard({ portfolio, tenantSlug, industryType = 'skincare'
           {isRealEstate ? '계약 및 거래건' : isClinic ? '시술 적용례' : '성공 사례'}
         </Badge>
         <CardTitle className="text-xl font-bold leading-snug">
-          {portfolio.structured_body?.client_or_context || '의뢰 맥락 미상'} 
+          {portfolio.json_payload?.client_or_context || '의뢰 맥락 미상'} 
         </CardTitle>
       </CardHeader>
       
@@ -54,7 +54,7 @@ export function PortfolioCard({ portfolio, tenantSlug, industryType = 'skincare'
             {isClinic ? '기존 병증/고민' : '도전 과제 (Challenge)'}
           </h4>
           <p className="text-sm font-medium text-slate-800 line-clamp-2 leading-relaxed">
-            {portfolio.structured_body?.challenge || '상세 내용 없음'}
+            {portfolio.json_payload?.challenge || '상세 내용 없음'}
           </p>
         </div>
         
@@ -64,7 +64,7 @@ export function PortfolioCard({ portfolio, tenantSlug, industryType = 'skincare'
             {isClinic ? '치료 성과' : '최종 결과 (Outcome)'}
           </h4>
           <p className="text-sm text-slate-600 line-clamp-2 leading-relaxed">
-            {portfolio.structured_body?.outcome || '결과 요약 없음'}
+            {portfolio.json_payload?.outcome || '결과 요약 없음'}
           </p>
         </div>
       </CardContent>

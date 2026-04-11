@@ -7,7 +7,7 @@ interface ReadinessCheckerProps {
   notFitCriteria: string[];
   prerequisites: string[];
   expectedBudget?: string;
-  onReady: () => void;
+  onReady?: () => void;
   brandName?: string;
 }
 
