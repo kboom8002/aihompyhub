@@ -117,10 +117,10 @@ export default function UniversalContentEditView() {
          </Link>
       </div>
 
-      <PageHeader 
-        title={`콘텐츠 수정 (Edit)`} 
-        subtitle={`ID: ${id} 의 내용을 동적 스키마 폼으로 덮어씁니다.`} 
-      />
+      <div style={{ marginBottom: '2rem' }}>
+        <h1 style={{ fontSize: '1.8rem', fontWeight: 'bold' }}>콘텐츠 수정 (Edit)</h1>
+        <p style={{ color: '#666', marginTop: '0.5rem' }}>ID: {id} 의 내용을 동적 스키마 폼으로 덮어씁니다.</p>
+      </div>
       
       <div className="surface" style={{ maxWidth: '900px', marginBottom: '2rem' }}>
         

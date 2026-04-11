@@ -56,7 +56,7 @@ export default function TenantI18nSettingsPage({
                 {results[record.id] === 'error' && <AlertCircle className="text-red-500" size={20} />}
                 
                 <button
-                  onClick={() => handleTranslate(record.id, record.table, record.fields)}
+                  onClick={() => handleTranslate(record.id, record.table, record.fields as Record<string, string>)}
                   disabled={translating[record.id]}
                   className="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 disabled:opacity-50 transition-colors"
                 >

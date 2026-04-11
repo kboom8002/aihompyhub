@@ -23,8 +23,8 @@ export default async function TenantLayout(props: { children: React.ReactNode, p
   let currentSlug = tenantId; // default to URL param
   let currentIndustry = 'skincare';
   try {
-     const { createClient } = require('../../../../lib/supabase/server');
-     const supabase = await createClient();
+     const { createClient } = require('@supabase/supabase-js');
+     const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL || '', process.env.SUPABASE_SERVICE_ROLE_KEY || '');
      if (userRole === 'super_admin') {
          // Temporarily ignoring industry_type in global select if not added to types yet,
          // but assuming DB has it, we fetch it:

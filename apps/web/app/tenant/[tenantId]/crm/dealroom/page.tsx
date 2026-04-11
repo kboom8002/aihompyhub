@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { User, Phone, BrainCircuit, MessageSquare, AlertCircle, Inbox, Send, Lightbulb, Database, Edit3, RefreshCw, Save } from 'lucide-react';
 import { fetchInquiriesAction, runPreVisitCoachAction, updateInquiryManualAction } from '../../../../actions/dealroom-actions';
+import { DealRoomMessenger } from '@/components/DealRoomMessenger';
 
 export default function TenantDealRoomPage() {
     const params = useParams();
@@ -221,11 +222,23 @@ export default function TenantDealRoomPage() {
                                 <div className="mt-8 relative z-10 text-right">
                                     <button className="bg-white text-indigo-900 font-bold py-3 px-6 rounded-xl shadow-lg hover:bg-slate-100 transition flex items-center gap-2 inline-flex">
                                         <Send size={16}/>
-                                        전화 상담하기 / 완료처리
+                                        실무자 통화 접수 완료처리
                                     </button>
                                 </div>
                             </div>
                         )}
+                        
+                        {/* Live Deal Room Messenger for B2B side */}
+                        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 mt-4 overflow-hidden h-96 flex flex-col">
+                            <DealRoomMessenger 
+                                initialInquiryId={selected.id}
+                                locale={'ko'}
+                                tenantSlug={''}
+                                tenantId={tenantId}
+                                senderType={'tenant'} 
+                            />
+                        </div>
+
                     </div>
                 ) : (
                     <div className="flex h-full items-center justify-center text-slate-400 flex-col">
