@@ -52,7 +52,7 @@ export async function GET(request: Request) {
   };
 
   // 1. Map Universal Content Assets
-  assets?.forEach((asset) => {
+  assets?.forEach((asset: any) => {
     const payload = asset.json_payload || {};
     let color = '#d4d4d8'; // default
     if (asset.type === 'expert') color = '#3b82f6';
@@ -83,7 +83,7 @@ export async function GET(request: Request) {
   });
 
   // 2. Map Answers
-  answers?.forEach((ans) => {
+  answers?.forEach((ans: any) => {
     const payload = ans.structured_body || {};
     const title = payload.title || ans.topics?.title || '공식 답변';
     addNode(ans.id, title, 'answer', '#14b8a6'); // Teal
