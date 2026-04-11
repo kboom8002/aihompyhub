@@ -13,6 +13,7 @@ export default function DesignManagerPage({ params }: { params: { tenantId: stri
   const [primaryColor, setPrimaryColor] = useState('');
   const [radius, setRadius] = useState('');
   const [bgColor, setBgColor] = useState('');
+  const [homeTemplate, setHomeTemplate] = useState('universal');
   
   // Hero section states
   const [heroImage, setHeroImage] = useState('');
@@ -41,6 +42,7 @@ export default function DesignManagerPage({ params }: { params: { tenantId: stri
             setPrimaryColor(data.overrides?.primary_color || '');
             setRadius(data.overrides?.radius || '');
             setBgColor(data.overrides?.bg || '');
+            setHomeTemplate(data.overrides?.homeTemplate || 'universal');
             
             if (data.overrides?.hero) {
                setHeroImage(data.overrides.hero.heroImage || '');
@@ -101,6 +103,7 @@ export default function DesignManagerPage({ params }: { params: { tenantId: stri
           ...(primaryColor ? { primary_color: primaryColor } : {}),
           ...(radius ? { radius: radius } : {}),
           ...(bgColor ? { bg: bgColor } : {}),
+          homeTemplate: homeTemplate,
           hero: {
              heroImage: heroImage,
              heroTemplate: heroTemplate,
@@ -140,6 +143,19 @@ export default function DesignManagerPage({ params }: { params: { tenantId: stri
             {status}
          </div>
       )}
+
+      {/* 0. Home Template Selection */}
+      <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem' }}>0. 홈페이지 구조 템플릿 (Layout Structure)</h3>
+      <div style={{ background: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', padding: '2rem', marginBottom: '3rem' }}>
+         <label style={{ display: 'block', fontWeight: '600', marginBottom: '0.5rem' }}>메인 페이지 렌더링 템플릿</label>
+         <select value={homeTemplate} onChange={e => setHomeTemplate(e.target.value)} style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '6px', background: '#f8fafc' }}>
+            <option value="universal">Universal (보편적인 커머스/브랜드 기본 구조)</option>
+            <option value="question-first">Question-First (검색 및 상황 문답 중심 특화 구조 - DR.O 호환)</option>
+         </select>
+         <p style={{ marginTop: '0.5rem', fontSize: '0.85rem', color: '#64748b' }}>
+            선택한 템플릿에 따라 스토어프론트 메인 페이지의 프리셋 레이아웃 블록 배열이 동적으로 교체됩니다.
+         </p>
+      </div>
 
       {/* 1. Base Theme Selection */}
       <h3 style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1rem' }}>1. 마스터 테마 (Base Template) 선택</h3>

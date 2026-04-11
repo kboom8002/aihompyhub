@@ -48,9 +48,20 @@ export default async function TenantB2CHomepage(props: { params: Promise<{ tenan
 
   // Fetch the design config to get layout schema
   const designConfig = await getTenantDesignConfig(tenantSlug);
+  
   let layoutSettings = designConfig.layout?.homepage || [];
 
-  // Fetch Curation Config (Overrides YAML Layout if set)
+  // Template Routing: inject custom presets if specific template is selected
+  if (designConfig.homeTemplate === 'question-first') {
+     layoutSettings = [
+        { type: 'SemanticSearchHero' },
+        { type: 'BlockHeading', props: { title: 'Your SSoT Guide', subtitle: '전문가가 제안하는 검증된 답변과 루틴' } },
+        { type: 'SituationCurationGrid' },
+        { type: 'AnswerCardGrid' }
+     ];
+  }
+
+  // Fetch Curation Config (Overrides logic only if layout array explicitly passed in JSON)
   const { data: dbCuration } = await supabaseAdmin.from('universal_content_assets').select('json_payload').eq('tenant_id', tenantId).eq('type', 'curation_config').single();
   if (dbCuration && dbCuration.json_payload?.layout?.length > 0) {
       layoutSettings = dbCuration.json_payload.layout;

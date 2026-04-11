@@ -16,6 +16,7 @@ export interface DesignConfig {
   primary_color: string;
   font_family: string;
   radius: string;
+  homeTemplate?: string;
   layout?: {
     homepage?: { type: string; props?: any }[];
   };
@@ -91,6 +92,7 @@ export async function getTenantDesignConfig(tenantSlug: string): Promise<DesignC
            primary_color: overrides.primary_color || parsed.colors?.primary || '#000000',
            font_family: parsed.fonts?.heading || 'inherit',
            radius: overrides.radius || parsed.radii?.md || '8px',
+           homeTemplate: overrides.homeTemplate || 'universal',
            layout: overrides.layout || parsed.layout || undefined,
            hero: overrides.hero || undefined
         };
