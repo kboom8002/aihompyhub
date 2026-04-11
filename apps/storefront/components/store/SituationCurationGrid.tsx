@@ -4,24 +4,28 @@ import Link from 'next/link';
 interface Props {
   tenantSlug: string;
   answerCards: any[];
+  situations?: { id: string, title: string, desc: string }[];
 }
 
-export function SituationCurationGrid({ tenantSlug, answerCards }: Props) {
+export function SituationCurationGrid({ tenantSlug, answerCards, situations }: Props) {
   // If there are no real categorized answers, just show them as a masonry grid
   // with a "Context-first" header or group them randomly for demo purposes.
   // Real implementation would group by "related_reset_moment" or "intent" in json_payload.
 
-  const situations = [
+  const currentSituations = situations || [
     { id: 'clinic', title: '시술 후 관리 Q&A', desc: '집에서 시술 효과를 극대화하는 법' },
     { id: 'trouble', title: '응급 트러블 진정', desc: '열감, 붉은기 등 빠른 대처가 필요할 때' }
   ];
 
-  // Distribute cards for demo
-  const midPoint = Math.ceil(answerCards.length / 2);
-  const groupedData = {
-    'clinic': answerCards.slice(0, midPoint),
-    'trouble': answerCards.slice(midPoint)
-  };
+  // Distribute cards dynamically for demo if no strict relation mapping is enforced
+  // Real implementation would use card.json_payload.intent === situation.id
+  const groupedData: Record<string, any[]> = {};
+  currentSituations.forEach((sit, idx) => {
+     // Evenly distribute cards into the number of situations provided
+     const total = answerCards.length;
+     const chunkSize = Math.ceil(total / currentSituations.length);
+     groupedData[sit.id] = answerCards.slice(idx * chunkSize, (idx + 1) * chunkSize);
+  });
 
   return (
     <div className="w-full">
@@ -31,7 +35,7 @@ export function SituationCurationGrid({ tenantSlug, answerCards }: Props) {
       </div>
 
       <div className="flex flex-col gap-16 max-w-6xl mx-auto px-4 md:px-0">
-        {situations.map(situation => (
+        {currentSituations.map(situation => (
            <div key={situation.id} className="w-full">
               <div className="mb-6 flex flex-col md:flex-row md:items-end md:justify-between border-b border-[var(--theme-border)] pb-4">
                  <div>

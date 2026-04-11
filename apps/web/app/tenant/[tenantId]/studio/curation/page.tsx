@@ -4,7 +4,9 @@ import React, { useEffect, useState } from 'react';
 
 const AVAILABLE_BLOCKS = [
   { type: 'BrandHero', label: '메인 히어로 영역', defaultProps: { alignment: 'center', textMode: 'dark' } },
+  { type: 'SemanticSearchHero', label: '대화형 시맨틱 질의 히어로 (DR.O)', defaultProps: {} },
   { type: 'BlockHeading', label: '섹션 제목', defaultProps: { title: 'New Category', subtitle: 'Live Trust' } },
+  { type: 'SituationCurationGrid', label: '상황(Situation) 맞춤 큐레이션 보드', defaultProps: { situations: [{ id: 'clinic', title: '시술 후 집중 관리', desc: '시술 효과를 극대화하는 홈케어' }, { id: 'trouble', title: '응급 트러블 진정', desc: '열감 대처 및 장벽 복구' }] } },
   { type: 'AnswerCardGrid', label: 'SSoT 콘텐츠 큐레이션 (답변 그리드)', defaultProps: { columns: 3 } },
   { type: 'CompareQuickDecision', label: '제품/루틴 비교 브리프', defaultProps: { profileA: { name: '비교 옵션 A', pros: [], cons: [] }, profileB: { name: '비교 옵션 B', pros: [], cons: [] } } },
   { type: 'RoutineStepCard', label: '멀티스텝 루틴 뷰어', defaultProps: { steps: [{ stepNumber: 1, title: 'Step 1' }, { stepNumber: 2, title: 'Step 2' }] } }

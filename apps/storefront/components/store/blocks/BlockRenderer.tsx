@@ -82,7 +82,7 @@ export function BlockRenderer({ layoutSettings, context }: BlockRendererProps) {
           case 'SituationCurationGrid':
             return (
               <main key={`curation-${index}`} className="container mx-auto px-4 mb-20 mt-12 w-full">
-                 <SituationCurationGrid tenantSlug={context.tenantSlug} answerCards={context.answerCards || []} />
+                 <SituationCurationGrid tenantSlug={context.tenantSlug} answerCards={context.answerCards || []} situations={props?.situations} />
               </main>
             );
           case 'BlockHeading':
