@@ -8,9 +8,10 @@ interface Props {
   tenantSlug: string;
   summary?: string;
   description?: string;
+  heroImage?: string;
 }
 
-export function SemanticSearchHero({ tenantSlug, summary, description }: Props) {
+export function SemanticSearchHero({ tenantSlug, summary, description, heroImage }: Props) {
   const router = useRouter();
   const [query, setQuery] = useState('');
   const industry = useIndustry();
@@ -63,10 +64,23 @@ export function SemanticSearchHero({ tenantSlug, summary, description }: Props) 
     router.push(`/${tenantSlug}/search?q=${encodeURIComponent(q)}`);
   };
 
+  let finalBgImage = heroImage;
+  if (!finalBgImage && industry === 'consulting') {
+     finalBgImage = '/welby-bg.png';
+  }
+
   return (
     <section className="relative w-full overflow-hidden bg-gradient-to-b from-[#f8fafc] to-white border-b border-[var(--theme-border)]">
-      {/* Abstract Background pattern */}
-      <div className="absolute inset-0 opacity-40 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#e2e8f0 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+      {/* Background Layer */}
+      {finalBgImage ? (
+         <div className="absolute inset-0 pointer-events-none z-0">
+            <img src={finalBgImage} alt="Hero Background" className="w-full h-full object-cover opacity-25" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#f8fafc] via-white/80 to-transparent" />
+            <div className="absolute inset-0 bg-[var(--theme-surface)] opacity-30 mix-blend-overlay" />
+         </div>
+      ) : (
+         <div className="absolute inset-0 opacity-40 pointer-events-none z-0" style={{ backgroundImage: 'radial-gradient(#e2e8f0 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
+      )}
       
       <div className="container relative z-10 mx-auto px-4 py-20 md:py-32 flex flex-col items-center justify-center text-center">
         
