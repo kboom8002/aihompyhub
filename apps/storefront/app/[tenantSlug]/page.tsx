@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { resolveTenantId } from '../../lib/tenant';
+import { resolveTenantId, resolveTenant } from '../../lib/tenant';
 import { supabaseAdmin } from '../../lib/supabase';
 import { BrandHero } from '../../components/store/BrandHero';
 import { AnswerCardGrid } from '../../components/store/AnswerCardGrid';
@@ -41,10 +41,12 @@ export default async function TenantB2CHomepage(props: { params: Promise<{ tenan
   const params = await props.params;
   const { tenantSlug } = params;
   
-  const tenantId = await resolveTenantId(tenantSlug);
-  if (!tenantId) {
+  const tenantInfo = await resolveTenant(tenantSlug);
+  if (!tenantInfo) {
     notFound();
   }
+  const tenantId = tenantInfo.id;
+  const industryType = tenantInfo.industry_type;
 
   // Fetch the design config to get layout schema
   const designConfig = await getTenantDesignConfig(tenantSlug);
@@ -62,7 +64,7 @@ export default async function TenantB2CHomepage(props: { params: Promise<{ tenan
   let answerCards = dbAnswerCards;
 
   // Template Routing: inject custom presets if specific template is selected
-  if (designConfig.homeTemplate === 'question-first' || brandProfile?.industry_type === 'consulting') {
+  if (designConfig.homeTemplate === 'question-first' || industryType === 'consulting') {
      designConfig.homeTemplate = 'question-first'; // Ensure activeHeroConfig resolver knows
      layoutSettings = [
         { type: 'SemanticSearchHero' },
