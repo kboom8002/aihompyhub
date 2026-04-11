@@ -53,6 +53,17 @@ export const I18N_DICT: Record<string, Record<string, string>> = {
     '아직 작성된 항목이 없습니다.': '아직 작성된 항목이 없습니다.',
   },
   en: {
+    '공식 홈': 'Official Home',
+    '홈으로 돌아가기': 'Go Back Home',
+    '매거진/스토리': 'Magazine & Stories',
+    '더 나은 선택을 돕는 가이드와 실제 사용자들의 리뷰.': 'Guides and real user reviews to help you make better decisions.',
+    '해결 과제': 'Challenges',
+    '진행 절차/과정': 'Procedures / Process',
+    '인사이트 칼럼': 'Insight Columns',
+    'Why Welby': 'Why Welby',
+    '주요 파트너': 'Key Partners',
+    '포트폴리오': 'Portfolio',
+
     // Menu
     '고민별 솔루션': 'Solutions',
     '공식 답변': 'Official Answers',
@@ -107,6 +118,17 @@ export const I18N_DICT: Record<string, Record<string, string>> = {
     '아직 작성된 항목이 없습니다.': 'No items written yet.',
   },
   ja: {
+    '공식 홈': '公式ホーム',
+    '홈으로 돌아가기': 'ホームに戻る',
+    '매거진/스토리': 'マガジンとストーリー',
+    '더 나은 선택을 돕는 가이드와 실제 사용자들의 리뷰.': 'より良い選択を支援するガイドと実際のユーザーレビュー。',
+    '해결 과제': '課題',
+    '진행 절차/과정': '進行手順/プロセス',
+    '인사이트 칼럼': 'インサイトコラム',
+    'Why Welby': 'なぜウェルビーなのか',
+    '주요 파트너': '主要パートナー',
+    '포트폴리오': 'ポートフォリオ',
+
     // Menu
     '고민별 솔루션': 'お悩み別解決',
     '공식 답변': '公式回答',
@@ -161,6 +183,17 @@ export const I18N_DICT: Record<string, Record<string, string>> = {
     '아직 작성된 항목이 없습니다.': 'まだ作成された項目はありません。',
   },
   zh: {
+    '공식 홈': '官方主页',
+    '홈으로 돌아가기': '返回首页',
+    '매거진/스토리': '杂志与故事',
+    '더 나은 선택을 돕는 가이드와 실제 사용자들의 리뷰.': '指南和真实用户评论，帮助您做出更好的选择。',
+    '해결 과제': '挑战',
+    '진행 절차/과정': '程序/流程',
+    '인사이트 칼럼': '洞察专栏',
+    'Why Welby': '为什么选择 Welby',
+    '주요 파트너': '主要合作伙伴',
+    '포트폴리오': '投资组合',
+
     // Menu
     '고민별 솔루션': '问题解决方案',
     '공식 답변': '官方回答',
@@ -215,6 +248,17 @@ export const I18N_DICT: Record<string, Record<string, string>> = {
     '아직 작성된 항목이 없습니다.': '尚未撰写任何项目。',
   },
   es: {
+    '공식 홈': 'Inicio Oficial',
+    '홈으로 돌아가기': 'Volver al Inicio',
+    '매거진/스토리': 'Revista e Historias',
+    '더 나은 선택을 돕는 가이드와 실제 사용자들의 리뷰.': 'Guías y reseñas de usuarios reales para ayudarle a tomar mejores decisiones.',
+    '해결 과제': 'Desafíos',
+    '진행 절차/과정': 'Procedimientos/Proceso',
+    '인사이트 칼럼': 'Columnas de Insight',
+    'Why Welby': 'Por Qué Welby',
+    '주요 파트너': 'Socios Clave',
+    '포트폴리오': 'Portafolio',
+
     // Menu
     '고민별 솔루션': 'Soluciones',
     '공식 답변': 'Respuestas Oficiales',

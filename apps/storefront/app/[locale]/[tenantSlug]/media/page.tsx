@@ -26,8 +26,8 @@ export default async function MediaIndexPage(props: { params: Promise<{ tenantSl
       </Link>
       
       <div className="mb-12 border-b border-[var(--theme-border)] pb-8">
-        <h1 className="text-4xl font-light tracking-tight font-[family-name:var(--theme-font)] mb-4">매거진/스토리</h1>
-        <p className="opacity-70">더 나은 선택을 돕는 가이드와 실제 사용자들의 리뷰.</p>
+        <h1 className="text-4xl font-light tracking-tight font-[family-name:var(--theme-font)] mb-4">{t(locale, '매거진/스토리')}</h1>
+        <p className="opacity-70">{t(locale, '더 나은 선택을 돕는 가이드와 실제 사용자들의 리뷰.')}</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">

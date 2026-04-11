@@ -90,7 +90,7 @@ export function StoreHeader({ tenantName, tenantSlug, locale = 'ko', customNodes
               ) : (
                 tenantName
               )}
-              <span className="text-muted-foreground font-normal ml-2 text-sm hidden sm:inline">| 공식 홈</span>
+              <span className="text-muted-foreground font-normal ml-2 text-sm hidden sm:inline">| {t(locale, '공식 홈')}</span>
             </Link>
           </div>
           
