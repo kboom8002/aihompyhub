@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { useIndustry } from './ThemeProvider';
 import Link from 'next/link';
 
+import { t } from '@/lib/i18n';
+
 interface BrandHeroProps {
   summary: string;
   voice: string;
@@ -19,20 +21,21 @@ interface BrandHeroProps {
   primaryCtaLink?: string;
   secondaryCtaText?: string;
   secondaryCtaLink?: string;
+  locale?: string;
 }
 
-export function BrandHero({ summary, voice, skinTheme, tenantSlug, heroImage, heroTemplate = 'glass_card', description, textMode = 'dark', voiceBadge, primaryCtaText, primaryCtaLink, secondaryCtaText, secondaryCtaLink }: BrandHeroProps) {
+export function BrandHero({ summary, voice, skinTheme, tenantSlug, heroImage, heroTemplate = 'glass_card', description, textMode = 'dark', voiceBadge, primaryCtaText, primaryCtaLink, secondaryCtaText, secondaryCtaLink, locale = 'ko' }: BrandHeroProps) {
   const isLightText = textMode === 'dark'; // 'dark' mode means dark background -> needs light text
   const industry = useIndustry();
 
   // 업종별 기본 라벨 오버라이딩 처리
-  const defaultCta1 = industry === 'clinic' ? '진료/예약하기' : 
+  const defaultCta1 = t(locale, industry === 'clinic' ? '진료/예약하기' : 
                       industry === 'real_estate' ? '매물 의뢰하기' : 
-                      industry === 'consulting' ? '사전 상담 신청' : '내 루틴/리셋 찾기';
+                      industry === 'consulting' ? '사전 상담 신청' : '내 루틴/리셋 찾기');
 
-  const defaultCta2 = industry === 'clinic' ? '주요 시술 및 FAQ' :
+  const defaultCta2 = t(locale, industry === 'clinic' ? '주요 시술 및 FAQ' :
                       industry === 'real_estate' ? '계약 및 중개 절차' :
-                      industry === 'consulting' ? '성공 케이스 보기' : '고민별 공식 답변 보기';
+                      industry === 'consulting' ? '성공 케이스 보기' : '고민별 공식 답변 보기');
 
   return (
     <div className="relative w-full h-[450px] md:h-[500px] min-h-[45vh] flex items-center justify-center overflow-hidden">

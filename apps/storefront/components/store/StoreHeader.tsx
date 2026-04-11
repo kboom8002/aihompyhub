@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useIndustry } from './ThemeProvider';
+import { t } from '@/lib/i18n';
 
 interface StoreHeaderProps {
   tenantName: string;
@@ -56,9 +57,12 @@ export function StoreHeader({ tenantName, tenantSlug, locale = 'ko', customNodes
 
   // Merge custom nodes over default nodes
   let activeNodes = defaultNodes.map(def => {
-     if (!customNodes) return def;
-     const found = customNodes.find((n: any) => n.id === def.id);
-     return found ? { ...def, label: found.label, enabled: found.enabled } : def;
+     let label = def.label;
+     if (customNodes) {
+         const found = customNodes.find((n: any) => n.id === def.id);
+         if (found) label = found.label;
+     }
+     return { ...def, label: t(locale, label) };
   });
 
   // Filter out disabled nodes

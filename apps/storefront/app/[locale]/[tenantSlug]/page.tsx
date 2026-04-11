@@ -6,6 +6,7 @@ import { AnswerCardGrid } from '@/components/store/AnswerCardGrid';
 import { getTenantDesignConfig } from '@/lib/designConfig';
 import { BlockRenderer } from '@/components/store/blocks/BlockRenderer';
 import { Metadata } from 'next';
+import { t } from '@/lib/i18n';
 
 export const revalidate = 0; // Edge Caching: 개발/테스트 중이므로 캐시 비활성화 (프로덕션 시 3600 등 조절)
 
@@ -74,19 +75,19 @@ export default async function TenantB2CHomepage(props: { params: Promise<{ tenan
   let answerCards = dbAnswerCards?.map((c: any) => applyTranslations(c, locale)) || [];
   if (dbBrandHero) dbBrandHero = applyTranslations(dbBrandHero, locale);
 
-  // Template Routing: inject custom presets if specific template is selected
+// Template Routing: inject custom presets if specific template is selected
   if (designConfig.homeTemplate === 'question-first' || industryType === 'consulting') {
      designConfig.homeTemplate = 'question-first'; // Ensure activeHeroConfig resolver knows
      layoutSettings = [
         { type: 'SemanticSearchHero' },
-        { type: 'BlockHeading', props: { title: 'Consultation & SSoT Guide', subtitle: '검증된 케이스와 명확한 진단 기준을 우선 확인하세요.' } },
+        { type: 'BlockHeading', props: { title: t(locale, 'Consultation & SSoT Guide'), subtitle: t(locale, '검증된 케이스와 명확한 진단 기준을 우선 확인하세요.') } },
         { type: 'SituationCurationGrid', props: { 
              situations: industryType === 'consulting' ? [
                  { id: 'strategy', title: '전략 기획 및 구조화', desc: '초기 매출 부진 시 빠른 리빌딩 전략' },
                  { id: 'marketing', title: '마케팅 / CRM 세일즈', desc: 'VIP 유치 및 객단가 상승 최적화 가이드' }
              ] : [
-                 { id: 'clinic', title: '시술 후 관리 Q&A', desc: '집에서 시술 효과를 극대화하는 법' },
-                 { id: 'trouble', title: '응급 트러블 진정', desc: '열감, 붉은기 등 빠른 대처가 필요할 때' }
+                 { id: 'clinic', title: t(locale, '시술 후 관리 Q&A'), desc: t(locale, '집에서 시술 효과를 극대화하는 법') },
+                 { id: 'trouble', title: t(locale, '응급 트러블 진정'), desc: t(locale, '열감, 붉은기 등 빠른 대처가 필요할 때') }
              ]
         } },
         { type: 'AnswerCardGrid' }
@@ -94,13 +95,15 @@ export default async function TenantB2CHomepage(props: { params: Promise<{ tenan
   }
 
   // Fetch Curation Config (Overrides logic using two-track template layouts)
-  const { data: dbCuration } = await supabaseAdmin.from('universal_content_assets').select('json_payload').eq('tenant_id', tenantId).eq('type', 'curation_config').single();
+  let { data: dbCuration } = await supabaseAdmin.from('universal_content_assets').select('json_payload, translations').eq('tenant_id', tenantId).eq('type', 'curation_config').single();
   
   if (dbCuration && dbCuration.json_payload) {
+      dbCuration = applyTranslations(dbCuration, locale);
+      
       const templateKey = designConfig.homeTemplate || 'universal';
-      if (dbCuration.json_payload.layouts && dbCuration.json_payload.layouts[templateKey]) {
+      if (dbCuration?.json_payload?.layouts && dbCuration.json_payload.layouts[templateKey]) {
           layoutSettings = dbCuration.json_payload.layouts[templateKey];
-      } else if (templateKey === 'universal' && dbCuration.json_payload.layout?.length > 0) {
+      } else if (templateKey === 'universal' && dbCuration?.json_payload?.layout && dbCuration.json_payload.layout.length > 0) {
           // Backward compatibility for legacy flat layout
           layoutSettings = dbCuration.json_payload.layout;
       }
