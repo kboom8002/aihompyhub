@@ -61,6 +61,35 @@ export const CONTENT_TYPE_SCHEMAS: Record<string, FormFieldSchema[]> = {
     { name: 'related_experts', label: '🩺 에디터/인터뷰이 (Expert)', type: 'relation', relationTarget: 'expert' },
     { name: 'related_answers', label: '💡 연관 SSoT 공식 답변', type: 'relation', relationTarget: 'answer' }
   ],
+  creator: [
+    { name: 'handle', label: '소셜 핸들 (SNS ID)', type: 'text', required: true, placeholder: '예: @creator_name' },
+    { name: 'platform', label: '주 활동 플랫폼', type: 'text', placeholder: '예: Instagram, TikTok, YouTube' },
+    { name: 'bio_short', label: '한 줄 소개 (Bio)', type: 'textarea', placeholder: '해당 크리에이터를 설명하는 핵심 멘트.' },
+    { name: 'proof_assets', label: '비포/애프터 및 인증 영상 URL', type: 'textarea', helpText: '쉼표로 구분하여 여러 개의 이미지/영상 링크 입력 가능' },
+    { name: 'body', label: '크리에이터 코멘트 / 심층 스토리', type: 'richtext' },
+    { name: 'related_answers', label: '💡 자주 묻는 질문 (FAQ)', type: 'relation', relationTarget: 'answer', helpText: '이 크리에이터 랜딩에서 미리 답해줄 SSoT 공식 답변 연결' }
+  ],
+  offer: [
+    { name: 'offer_type', label: '오퍼 유형', type: 'text', placeholder: '예: jointbuy, launch, bundle, campaign' },
+    { name: 'campaign_period', label: '캠페인 진행 기간', type: 'text', placeholder: '예: 2026.04.11 ~ 2026.04.15' },
+    { name: 'price_regular', label: '정상가', type: 'text' },
+    { name: 'price_offer', label: '공동구매/오퍼 할인가', type: 'text' },
+    { name: 'countdown_end_at', label: '타이머 종료 일시', type: 'text', placeholder: '예: 2026-04-15T23:59:59 (ISO 형태 권장)' },
+    { name: 'fit_summary', label: '이 오퍼가 잘 맞는 타겟 (Fit Summary)', type: 'textarea' },
+    { name: 'body', label: '오퍼 상세 설명 (RichText)', type: 'richtext' },
+    { name: 'related_creator', label: '협업 크리에이터 (Creator)', type: 'relation', relationTarget: 'creator' },
+    { name: 'related_answers', label: '💡 연관 FAQ 및 정책 답변', type: 'relation', relationTarget: 'answer', helpText: '배송/환불 정책 등 이 오퍼에서 방어해야 할 필수 답변 연결' }
+  ],
+  product: [
+    { name: 'one_liner', label: '제품 한 줄 정의 (One-liner)', type: 'textarea', required: true },
+    { name: 'fit_summary', label: '이 제품과 맞는 타겟 (Best Fit for)', type: 'textarea' },
+    { name: 'not_fit_summary', label: '이 제품과 맞지 않는 타겟 (Not Fit for)', type: 'textarea' },
+    { name: 'benefits', label: '핵심 효익 요약', type: 'textarea' },
+    { name: 'ingredients_or_key_points', label: '주요 성분 / 차별화 포인트', type: 'textarea' },
+    { name: 'body', label: '제품 상세 스토리 (RichText)', type: 'richtext' },
+    { name: 'related_answers', label: '💡 자주 묻는 질문 (FAQ)', type: 'relation', relationTarget: 'answer' },
+    { name: 'related_topics', label: '📚 해결 가능한 문제 허브 (Topic)', type: 'relation', relationTarget: 'topic_hub' }
+  ],
   default: [
     { name: 'body', label: '콘텐츠 본문 (Rich Tiptap Body)', type: 'richtext' },
     { name: 'related_experts', label: '🩺 연관 전문가 (Reviewer)', type: 'relation', relationTarget: 'expert' },

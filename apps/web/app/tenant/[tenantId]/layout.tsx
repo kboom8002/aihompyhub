@@ -92,6 +92,14 @@ export default async function TenantLayout(props: { children: React.ReactNode, p
               <a href={`/tenant/${currentSlug}/studio/commerce/diagnostic`} style={{ color: '#4b5563', textDecoration: 'none' }}>진단 / 리셋 파인더</a>
             </div>
           </details>
+
+          <details open>
+            <summary style={{ fontWeight: 'bold', cursor: 'pointer', marginBottom: '0.5rem', marginTop: '0.5rem', color: '#1f2937' }}>🚀 Traffic & SNS</summary>
+            <div style={{ paddingLeft: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.6rem', fontSize: '0.9rem' }}>
+              <a href={`/tenant/${currentSlug}/studio/sns/creator`} style={{ color: '#4b5563', textDecoration: 'none' }}>크리에이터 프로필/랜딩 (Creator)</a>
+              <a href={`/tenant/${currentSlug}/studio/sns/offer`} style={{ color: '#4b5563', textDecoration: 'none' }}>공동구매/오퍼 랜딩 (Offer)</a>
+            </div>
+          </details>
           
           <hr style={{ border: 'none', borderTop: '1px solid #e5e7eb', margin: '0.5rem 0' }}/>
           <a href={`/tenant/${currentSlug}/studio/design`} style={{ color: '#4b5563', textDecoration: 'none', fontWeight: '600' }}>🎨 디자인/테마 관리</a>

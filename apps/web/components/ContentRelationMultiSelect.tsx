@@ -61,6 +61,9 @@ export function ContentRelationMultiSelect({
           case 'trust': return '🔬';
           case 'answer': return '💡';
           case 'topic_hub': return '📚';
+          case 'creator': return '📸';
+          case 'product': return '🛍️';
+          case 'offer': return '🎁';
           default: return '🔗';
       }
   };
