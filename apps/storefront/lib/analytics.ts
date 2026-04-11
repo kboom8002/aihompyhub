@@ -26,16 +26,24 @@ export const initializeGlobalAttribution = () => {
 
     // Smart Referrer Override (detect AI search engines)
     const refHost = referrer ? new URL(referrer).hostname : '';
-    if (refHost.includes('perplexity.ai')) {
+    if (refHost.includes('gemini.google.com') || refHost.includes('bard.google.com')) {
+        // Explicitly catch Gemini Workspace/Web interactions
+        baseSource = 'gemini';
+        baseMedium = 'ai_search';
+    } else if (refHost.includes('perplexity.ai')) {
         baseSource = 'perplexity';
         baseMedium = 'ai_search';
     } else if (refHost.includes('chatgpt.com') || refHost.includes('openai.com')) {
         baseSource = 'chatgpt';
         baseMedium = 'ai_search';
     } else if (refHost.includes('google.com')) {
-        // Only override if not already explicitly set by UTM parameters
+        // For Google AI Overviews (SGE), the referrer is typically google.com.
+        // If utm_source is explicitly set to SGE by our partner links, we respect it.
         if (!baseSource) baseSource = 'google';
-        if (!baseMedium) baseMedium = 'organic_search';
+        
+        // We classify this primarily as ai_search since SGE is our main target context, 
+        // unless it's a paid ads click (cpc) which should be preserved.
+        if (!baseMedium) baseMedium = 'organic_or_ai_search';
     }
 
     const attribution = {
