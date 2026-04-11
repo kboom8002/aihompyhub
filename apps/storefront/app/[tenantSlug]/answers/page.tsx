@@ -2,8 +2,32 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { supabaseAdmin } from '../../../lib/supabase';
 import { resolveTenantId } from '../../../lib/tenant';
+import { Metadata } from 'next';
 
 export const revalidate = 60;
+
+export async function generateMetadata(props: { params: Promise<{ tenantSlug: string }> }): Promise<Metadata> {
+  const params = await props.params;
+  const tenantId = await resolveTenantId(params.tenantSlug);
+  
+  if (!tenantId) {
+    const brandName = params.tenantSlug.replace('-', ' ').toUpperCase();
+    return { title: `${brandName} Official Answers`, description: 'Verified official answers collection' };
+  }
+
+  const { data: dbBrandProfile } = await supabaseAdmin.from('brand_profiles').select('brand_name').eq('tenant_id', tenantId).single();
+  const brandName = dbBrandProfile?.brand_name || params.tenantSlug.replace('-', ' ').toUpperCase();
+
+  return {
+    title: `${brandName} Official Answers Hub`,
+    description: `Browse verified canonical answers and official SSoT documents from ${brandName}.`,
+    openGraph: {
+      title: `${brandName} Official Answers Hub`,
+      description: `Browse verified canonical answers and official SSoT documents from ${brandName}.`,
+      type: 'website'
+    }
+  }
+}
 
 export default async function AnswersIndexPage(props: { params: Promise<{ tenantSlug: string }> }) {
   const params = await props.params;

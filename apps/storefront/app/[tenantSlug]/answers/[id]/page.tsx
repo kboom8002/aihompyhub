@@ -6,6 +6,9 @@ import { resolveTenantId } from '../../../../lib/tenant';
 import { HeroQuestionBlock } from '../../../../components/store/HeroQuestionBlock';
 import { TrustStrip } from '../../../../components/store/TrustStrip';
 import { ProseReader } from '../../../../components/store/ProseReader';
+import { CrossLinker } from '../../../../components/store/CrossLinker';
+
+import { Metadata } from 'next';
 
 export const revalidate = 60; // 1 min ISR caching
 
@@ -14,6 +17,54 @@ interface Props {
     tenantSlug: string;
     id: string;
   }>;
+}
+
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
+  const tenantId = await resolveTenantId(params.tenantSlug);
+  
+  if (!tenantId) {
+    return { title: 'Answer Detail', description: 'SSoT Document' };
+  }
+
+  const { data: answerData } = await supabaseAdmin
+    .from('answer_cards')
+    .select('*, topics(title)')
+    .eq('id', params.id)
+    .eq('tenant_id', tenantId)
+    .single();
+
+  let title = 'Brand SSoT Document';
+  let desc = 'Official verified answer from the brand.';
+
+  if (answerData) {
+     title = answerData.structured_body?.title || answerData.topics?.title || title;
+     desc = answerData.structured_body?.content?.substring(0, 160) || desc;
+  } else {
+    const { data: content } = await supabaseAdmin
+      .from('universal_content_assets')
+      .select('*')
+      .eq('id', params.id)
+      .eq('tenant_id', tenantId)
+      .single();
+    if (content) {
+      title = content.title || title;
+      desc = content.json_payload?.body?.substring(0, 160) || content.json_payload?.answer?.substring(0, 160) || desc;
+    }
+  }
+
+  // Strip HTML for desc
+  desc = desc.replace(/(<([^>]+)>)/gi, "").substring(0, 160);
+
+  return {
+    title: `${title} | SSoT Answer`,
+    description: desc,
+    openGraph: {
+       title,
+       description: desc,
+       type: 'article',
+    }
+  };
 }
 
 export default async function AnswerDetailPage(props: Props) {
@@ -60,8 +111,69 @@ export default async function AnswerDetailPage(props: Props) {
     updatedAt = content.updated_at || content.created_at || new Date().toISOString();
   }
 
+  const baseUrl = process.env.NEXT_PUBLIC_STOREFRONT_URL || 'http://localhost:3001';
+  const escapedBody = htmlBody.replace(/(<([^>]+)>)/gi, "");
+
+  let reviewerLink = undefined;
+  const reviewerName = payload.reviewer || "Brand Official";
+  let matchedExpertId = null;
+  
+  if (reviewerName && reviewerName !== "Brand Official") {
+     const { data: matchedExpert } = await supabaseAdmin
+       .from('universal_content_assets')
+       .select('id')
+       .eq('tenant_id', tenantId)
+       .eq('type', 'expert')
+       .eq('title', reviewerName)
+       .single();
+     if (matchedExpert) {
+        matchedExpertId = matchedExpert.id;
+        reviewerLink = `/${params.tenantSlug}/trust/experts/${matchedExpert.id}`;
+     }
+  }
+
+  // Cross-linking logic
+  const resolveRelations = async (relationData: any) => {
+     if (!relationData) return [];
+     const ids = Array.isArray(relationData) ? relationData : [relationData].filter(Boolean);
+     if (ids.length === 0) return [];
+     const { data } = await supabaseAdmin.from('universal_content_assets').select('id, title').in('id', ids);
+     return data || [];
+  };
+
+  const crossExperts = await resolveRelations(payload.related_experts);
+  const crossEvidence = await resolveRelations(payload.related_evidence);
+  const crossTopics = await resolveRelations(payload.related_topics);
+
+  const JSON_LD_AUTHOR = matchedExpertId 
+    ? { "@type": "Person", "@id": `${baseUrl}/${params.tenantSlug}/trust/experts/${matchedExpertId}`, name: reviewerName } 
+    : { "@type": "Organization", name: params.tenantSlug };
+
+  const JSON_LD_CITATIONS = crossEvidence.map((ev: any) => ({
+    "@type": "WebPage", "@id": `${baseUrl}/${params.tenantSlug}/trust/${ev.id}`, name: ev.title
+  }));
+
+  const qaLd = {
+    '@context': 'https://schema.org',
+    '@type': 'QAPage',
+    mainEntity: {
+      '@type': 'Question',
+      name: title,
+      text: title,
+      answerCount: 1,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: escapedBody,
+        url: `${baseUrl}/${params.tenantSlug}/answers/${params.id}`,
+        author: JSON_LD_AUTHOR,
+        citation: JSON_LD_CITATIONS.length > 0 ? JSON_LD_CITATIONS : undefined
+      }
+    }
+  };
+
   return (
     <article className="container mx-auto py-8 text-[var(--theme-text)] px-4 md:px-0">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(qaLd) }} />
       <Link href={`/${params.tenantSlug}/answers`} className="text-sm border border-[var(--theme-border)] px-3 py-1 rounded-full mb-8 inline-block hover:bg-black/5 transition-colors">
         &larr; 모든 질문 목록
       </Link>
@@ -75,13 +187,21 @@ export default async function AnswerDetailPage(props: Props) {
 
       <TrustStrip 
         sources={payload.sources || []}
-        reviewerName={payload.reviewer || "Brand Official"}
+        reviewerName={reviewerName}
+        reviewerLink={reviewerLink}
         updatedAt={new Date(updatedAt).toLocaleDateString()}
       />
 
       <div className="mt-12 pt-8 border-t border-[var(--theme-border)]">
         <ProseReader html={htmlBody} />
       </div>
+
+      <CrossLinker 
+        tenantSlug={params.tenantSlug}
+        experts={crossExperts}
+        evidence={crossEvidence}
+        topics={crossTopics}
+      />
 
     </article>
   );

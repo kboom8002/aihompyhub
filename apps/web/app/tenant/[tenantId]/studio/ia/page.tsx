@@ -8,6 +8,7 @@ const DEFAULT_NODES = [
   { id: 'compare', label: '비교', defaultLabel: '비교', enabled: true },
   { id: 'media', label: '스토리·가이드·리뷰', defaultLabel: '스토리·가이드·리뷰', enabled: true },
   { id: 'trust', label: '신뢰(Trust)', defaultLabel: '신뢰(Trust)', enabled: true },
+  { id: 'trust/experts', label: '전문가 위원회', defaultLabel: '전문가 위원회', enabled: true },
   { id: 'routines', label: '루틴', defaultLabel: '루틴', enabled: true },
   { id: 'products', label: '제품·번들', defaultLabel: '제품·번들', enabled: true }
 ];

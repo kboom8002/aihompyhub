@@ -58,10 +58,22 @@ export default function TenantSeoPage() {
                </div>
             )}
 
-            <div style={{ background: '#1e293b', color: '#e2e8f0', padding: '1.5rem', borderRadius: '8px', overflowX: 'auto', maxHeight: '600px', fontFamily: 'var(--font-geist-mono), monospace', fontSize: '0.85rem', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.3)' }}>
-               {isLoading ? '그래프 매핑 데이터를 생성/로딩 중...' : (
-                   <pre style={{ margin: 0 }}>{JSON.stringify(graphData, null, 2)}</pre>
-               )}
+            <div style={{ marginTop: '2rem' }}>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1rem' }}>🗺️ 인터랙티브 지식 지형도 (Visual Explorer)</h3>
+                <iframe 
+                   src={process.env.NODE_ENV === 'production' ? `https://aihompy.vercel.app/${tenantSlug}/explore` : `http://localhost:3001/${tenantSlug}/explore`} 
+                   style={{ width: '100%', height: '600px', border: '1px solid #cbd5e1', borderRadius: '8px' }}
+                   title="Knowledge Graph Visualizer"
+                />
+            </div>
+
+            <div style={{ marginTop: '2rem' }}>
+                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.5rem' }}>📄 JSON-LD Raw Data (For Bots)</h3>
+                <div style={{ background: '#1e293b', color: '#e2e8f0', padding: '1.5rem', borderRadius: '8px', overflowX: 'auto', maxHeight: '400px', fontFamily: 'var(--font-geist-mono), monospace', fontSize: '0.85rem', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.3)' }}>
+                   {isLoading ? '그래프 매핑 데이터를 생성/로딩 중...' : (
+                       <pre style={{ margin: 0 }}>{JSON.stringify(graphData, null, 2)}</pre>
+                   )}
+                </div>
             </div>
             
             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', background: '#f8fafc', padding: '1rem', borderRadius: '6px', border: '1px solid #cbd5e1' }}>

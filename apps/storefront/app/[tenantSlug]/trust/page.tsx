@@ -41,8 +41,10 @@ export default async function TrustIndexPage(props: { params: Promise<{ tenantSl
                  
                  
 
-                 <div className="text-xs font-bold text-[var(--theme-primary)] tracking-widest uppercase mb-1">
-                    {asset.json_payload?.type || 'TRUST SSoT'}
+                 <div className="flex items-center gap-2 mb-2">
+                   <div className="text-xs font-bold bg-[var(--theme-primary)]/10 text-[var(--theme-primary)] px-2 py-1 rounded-full tracking-widest uppercase inline-block">
+                      {asset.json_payload?.evidenceType || asset.json_payload?.type || 'TRUST SSoT'}
+                   </div>
                  </div>
                  <h2 className="text-xl font-semibold font-[family-name:var(--theme-font)] group-hover:underline decoration-[var(--theme-border)] underline-offset-4">
                    {asset.title}

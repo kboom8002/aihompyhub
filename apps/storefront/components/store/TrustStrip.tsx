@@ -1,6 +1,6 @@
 import React from 'react';
 
-export function TrustStrip({ sources, updatedAt, reviewerName }: { sources?: string[], updatedAt?: string, reviewerName?: string }) {
+export function TrustStrip({ sources, updatedAt, reviewerName, reviewerLink }: { sources?: string[], updatedAt?: string, reviewerName?: string, reviewerLink?: string }) {
   return (
     <div className="flex flex-wrap items-center gap-3 py-3 px-4 bg-[var(--theme-surface)] border border-[var(--theme-border)] rounded-[var(--theme-radius)] shadow-sm text-xs text-[var(--theme-text)] opacity-90 my-6">
       <div className="flex items-center gap-1.5 font-medium text-green-700">
@@ -13,7 +13,13 @@ export function TrustStrip({ sources, updatedAt, reviewerName }: { sources?: str
       {reviewerName && (
         <div className="flex items-center gap-1.5 opacity-80">
           <span>Reviewed by:</span>
-          <span className="font-semibold">{reviewerName}</span>
+          {reviewerLink ? (
+             <a href={reviewerLink} className="font-semibold text-[var(--theme-primary)] hover:underline decoration-[var(--theme-primary)] underline-offset-2 transition-colors">
+               {reviewerName}
+             </a>
+          ) : (
+             <span className="font-semibold">{reviewerName}</span>
+          )}
         </div>
       )}
 

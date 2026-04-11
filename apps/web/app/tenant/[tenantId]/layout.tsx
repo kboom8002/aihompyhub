@@ -67,6 +67,7 @@ export default async function TenantLayout(props: { children: React.ReactNode, p
               <a href={`/tenant/${currentSlug}/studio/brand_ssot/routine`} style={{ color: '#4b5563', textDecoration: 'none' }}>뷰티 루틴 (Routine)</a>
               <a href={`/tenant/${currentSlug}/studio/brand_ssot/product_fit`} style={{ color: '#4b5563', textDecoration: 'none' }}>제품 적합성 (Fit)</a>
               <a href={`/tenant/${currentSlug}/studio/brand_ssot/product`} style={{ color: '#4b5563', textDecoration: 'none' }}>제품 디테일 (Product)</a>
+              <a href={`/tenant/${currentSlug}/studio/brand_ssot/expert`} style={{ color: '#4b5563', textDecoration: 'none' }}>전문가 위원회 (Experts)</a>
               <a href={`/tenant/${currentSlug}/studio/brand_ssot/trust`} style={{ color: '#4b5563', textDecoration: 'none' }}>신뢰/보증 (Trust)</a>
             </div>
           </details>

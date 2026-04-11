@@ -9,24 +9,37 @@ import { Metadata } from 'next';
 
 export const revalidate = 0; // Edge Caching: 개발/테스트 중이므로 캐시 비활성화 (프로덕션 시 3600 등 조절)
 
-// Phase 2: Dynamic SEO Metadata
-export async function generateMetadata({ params }: { params: { tenantSlug: string } }): Promise<Metadata> {
-  const { tenantSlug } = await params;
-  const title = tenantSlug === 'dr-oracle' ? 'Dr.Oracle Official' : `${tenantSlug.replace('-', ' ').toUpperCase()} Official Store`;
+export async function generateMetadata(props: { params: Promise<{ tenantSlug: string }> }): Promise<Metadata> {
+  const params = await props.params;
+  const { tenantSlug } = params;
   
+  const tenantId = await resolveTenantId(tenantSlug);
+  if (!tenantId) {
+    const title = `${tenantSlug.replace('-', ' ').toUpperCase()} Official Store`;
+    return { title, description: 'AI-Crafted canonical storefront' };
+  }
+
+  const { data: dbBrandProfile } = await supabaseAdmin.from('brand_profiles').select('*').eq('tenant_id', tenantId).single();
+  const { data: payload } = await supabaseAdmin.from('universal_content_assets').select('title, json_payload').eq('tenant_id', tenantId).eq('type', 'curation_config').single();
+  
+  const brandName = dbBrandProfile?.brand_name || tenantSlug.replace('-', ' ').toUpperCase();
+  const description = dbBrandProfile?.brand_story || payload?.json_payload?.description || 'AI-Crafted canonical storefront ensuring absolute trust and transparency.';
+
   return {
-    title,
-    description: 'AI-Crafted canonical storefront ensuring absolute trust and transparency.',
+    title: `${brandName} Official SSoT`,
+    description,
     openGraph: {
-      title,
-      description: 'Experience verified aesthetics and zero trust-gap commerce.',
+      title: `${brandName} Official SSoT`,
+      description,
       type: 'website',
+      siteName: brandName,
     }
   };
 }
 
-export default async function TenantB2CHomepage({ params }: { params: { tenantSlug: string } }) {
-  const { tenantSlug } = await params;
+export default async function TenantB2CHomepage(props: { params: Promise<{ tenantSlug: string }> }) {
+  const params = await props.params;
+  const { tenantSlug } = params;
   
   const tenantId = await resolveTenantId(tenantSlug);
   if (!tenantId) {
@@ -52,22 +65,40 @@ export default async function TenantB2CHomepage({ params }: { params: { tenantSl
 
   const isPreparing = !brandProfile;
 
-  const jsonLd = {
+  const baseUrl = process.env.NEXT_PUBLIC_STOREFRONT_URL || 'http://localhost:3001';
+  
+  const organizationLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: brandProfile?.brand_name || tenantSlug,
+    url: `${baseUrl}/${tenantSlug}`,
+    description: brandProfile?.brand_story || 'Brand SSoT Official Interface',
+    logo: designConfig.hero?.image_url || '',
+  };
+
+  const faqLd = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
     mainEntity: (answerCards || []).map((card: any) => ({
       '@type': 'Question',
-      name: card.structured_body?.title || 'Common Question',
+      name: card.structured_body?.title || card.topics?.title || 'Common Question',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: card.structured_body?.content || 'Verified Information'
+        text: (card.structured_body?.content || 'Verified Information').replace(/(<([^>]+)>)/gi, "")
       }
     }))
   };
 
+  const jsonLdScripts = [
+    { type: 'application/ld+json', dangerouslySetInnerHTML: { __html: JSON.stringify(organizationLd) } },
+    { type: 'application/ld+json', dangerouslySetInnerHTML: { __html: JSON.stringify(faqLd) } }
+  ];
+
   return (
     <div className="flex flex-col font-sans">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      {jsonLdScripts.map((scriptProps, idx) => (
+        <script key={idx} {...scriptProps} />
+      ))}
 
       {isPreparing && (
         <div className="m-auto text-center p-8">
