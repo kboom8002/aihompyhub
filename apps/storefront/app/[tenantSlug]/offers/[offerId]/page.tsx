@@ -119,10 +119,13 @@ export default async function OfferLandingPage(props: { params: Promise<{ tenant
        )}
 
        {/* CTA */}
-       <div className="sticky bottom-6 left-0 right-0 z-50 mt-12 flex justify-center px-4">
-          <button disabled={isClosed} className={`w-full max-w-sm py-4 rounded-full font-bold text-lg shadow-xl transition-all ${isClosed ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-black text-white hover:scale-105'}`}>
+       <div className="sticky bottom-6 left-0 right-0 z-50 mt-12 flex justify-center px-4 gap-4">
+          <button disabled={isClosed} className={`flex-1 max-w-xs py-4 rounded-full font-bold text-lg shadow-xl transition-all ${isClosed ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-black text-white hover:scale-105'}`}>
              {isClosed ? '마감되었습니다' : '구매하기 (장바구니 이동)'}
           </button>
+          <a href={`/${tenantSlug}/contact/dm?context=offer&offerId=${offerId}`} className="flex-1 max-w-[120px] flex items-center justify-center py-4 rounded-full font-bold text-indigo-700 bg-white border border-indigo-200 shadow-xl hover:bg-indigo-50 transition-all">
+             문의하기
+          </a>
        </div>
     </div>
   );

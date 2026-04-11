@@ -79,9 +79,13 @@ export default async function CreatorLandingPage(props: { params: Promise<{ tena
          </div>
        )}
 
-       <div className="text-center mt-12">
-          <a href={`/${tenantSlug}`} className="inline-block px-8 py-4 bg-indigo-600 text-white rounded-full font-bold shadow-lg shadow-indigo-200">
-             브랜드 공식 홈으로 이동
+       {/* CTA */}
+       <div className="text-center mt-12 flex flex-col gap-4 items-center">
+          <a href={`/${tenantSlug}`} className="inline-block px-8 py-4 bg-indigo-600 text-white rounded-full font-bold shadow-lg shadow-indigo-200 w-full max-w-sm">
+             진행 중인 스페셜 오퍼 보기
+          </a>
+          <a href={`/${tenantSlug}/contact/dm?context=creator&creatorId=${creatorId}`} className="inline-block px-8 py-3 bg-white text-indigo-600 border border-indigo-200 rounded-full font-bold shadow-sm w-full max-w-sm">
+             이 크리에이터 관련 1:1 피부 상담
           </a>
        </div>
     </div>
