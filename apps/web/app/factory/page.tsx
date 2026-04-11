@@ -24,7 +24,7 @@ export default async function FactoryDashboardPage() {
   const { data: allUsers } = await supabaseAdmin.from('user_profiles').select('*').order('created_at', { ascending: false });
 
   // Fetch available tenants to assign
-  const { data: tenants } = await supabaseAdmin.from('tenants').select('id, name, slug, status').order('created_at', { ascending: true });
+  const { data: tenants } = await supabaseAdmin.from('tenants').select('id, name, slug, status, industry_type').order('created_at', { ascending: true });
 
   const pendingUsers = allUsers?.filter((u: any) => u.role === 'pending_admin') || [];
   const activeUsers = allUsers?.filter((u: any) => u.role !== 'pending_admin') || [];
@@ -71,7 +71,7 @@ export default async function FactoryDashboardPage() {
                         <option value="">-- 할당할 테넌트 선택 --</option>
                         {tenants?.map((t: any) => (
                            <option key={t.id} value={t.id}>
-                             {t.name} (/{t.slug || 'no-slug'})
+                             [{t.industry_type || 'skincare'}] {t.name} (/{t.slug || 'no-slug'})
                            </option>
                         ))}
                       </select>
