@@ -73,7 +73,7 @@ export default async function TenantB2CHomepage(props: { params: Promise<{ tenan
     name: brandProfile?.brand_name || tenantSlug,
     url: `${baseUrl}/${tenantSlug}`,
     description: brandProfile?.brand_story || 'Brand SSoT Official Interface',
-    logo: designConfig.hero?.image_url || '',
+    logo: designConfig.hero?.heroImage || '',
   };
 
   const faqLd = {
