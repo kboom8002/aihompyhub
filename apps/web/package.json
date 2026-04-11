@@ -11,6 +11,7 @@
   "dependencies": {
     "@aihompyhub/database": "*",
     "@aihompyhub/ui": "*",
+    "@google/genai": "^1.49.0",
     "@hookform/resolvers": "^5.2.2",
     "@supabase/ssr": "^0.10.0",
     "@supabase/supabase-js": "^2.102.1",

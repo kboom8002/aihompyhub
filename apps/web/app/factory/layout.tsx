@@ -15,6 +15,8 @@ export default function FactoryLayout({ children }: { children: React.ReactNode 
           <li><Link href="/factory/systemic-rca" style={{ color: '#ccc', textDecoration: 'none', display: 'block', padding: '0.5rem', borderRadius: '4px' }}>⌘ Systemic RCAs</Link></li>
           <li><Link href="/factory/tenants" style={{ color: '#ccc', textDecoration: 'none', display: 'block', padding: '0.5rem', borderRadius: '4px' }}>⌘ Tenant Registry</Link></li>
           <li><Link href="/factory/templates" style={{ color: '#ccc', textDecoration: 'none', display: 'block', padding: '0.5rem', borderRadius: '4px' }}>⌘ Prompt Templates</Link></li>
+          <li><Link href="/factory/qis" style={{ color: '#ccc', textDecoration: 'none', display: 'block', padding: '0.5rem', borderRadius: '4px' }}>⌘ Question Capital</Link></li>
+          <li><Link href="/factory/analytics" style={{ color: '#ec4899', textDecoration: 'none', display: 'block', padding: '0.5rem', borderRadius: '4px', fontWeight: 'bold' }}>⌘ Deal Room Analytics</Link></li>
         </ul>
       </nav>
 

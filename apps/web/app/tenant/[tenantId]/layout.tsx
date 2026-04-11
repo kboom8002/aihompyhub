@@ -103,9 +103,12 @@ export default async function TenantLayout(props: { children: React.ReactNode, p
         <TenantSwitcher currentTenantId={currentSlug} userRole={userRole} tenants={tenantsData} />
 
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', overflowY: 'auto' }}>
-          <a href={`/tenant/${currentSlug}/settings/brand`} style={{ color: '#000', textDecoration: 'none', fontWeight: '800', marginBottom: '0.5rem' }}>⚙️ 브랜드 기본 설정</a>
+          <a href={`/tenant/${currentSlug}/settings/brand`} style={{ color: '#000', textDecoration: 'none', fontWeight: '800', marginBottom: '0.2rem' }}>⚙️ 브랜드 기본 설정</a>
+          <a href={`/tenant/${currentSlug}/settings/prompts`} style={{ color: '#ec4899', textDecoration: 'none', fontWeight: '800', marginBottom: '0.5rem' }}>✨ AI 톤앤매너 프롬프트</a>
           <a href={`/tenant/${currentSlug}/home`} style={{ color: '#4b5563', textDecoration: 'none', fontWeight: '600' }}>🏠 홈 대시보드</a>
-          <a href={`/tenant/${currentSlug}/questions/clusters`} style={{ color: '#4b5563', textDecoration: 'none', fontWeight: '600' }}>💬 질문 자산 (Clusters)</a>
+          <a href={`/tenant/${currentSlug}/studio/foundation/qis`} style={{ color: '#ec4899', textDecoration: 'none', fontWeight: 'bold' }}>🧠 질문 자산 분류기 (QIS)</a>
+          <a href={`/tenant/${currentSlug}/studio/foundation/pool`} style={{ color: '#ec4899', textDecoration: 'none', fontWeight: 'bold' }}>🛒 본사 스탠다드 Pool</a>
+          <a href={`/tenant/${currentSlug}/questions/clusters`} style={{ color: '#4b5563', textDecoration: 'none', fontWeight: '600' }}>💬 내 질문 자산 (Clusters)</a>
           
           <hr style={{ border: 'none', borderTop: '1px solid #e5e7eb', margin: '0.5rem 0' }}/>
           
@@ -135,13 +138,14 @@ export default async function TenantLayout(props: { children: React.ReactNode, p
             </div>
           </details>
 
-          <details>
+          <details open>
             <summary style={{ fontWeight: 'bold', cursor: 'pointer', marginBottom: '0.5rem', marginTop: '0.5rem', color: '#1f2937' }}>🛍️ Answer Commerce</summary>
             <div style={{ paddingLeft: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.6rem', fontSize: '0.9rem' }}>
               <a href={`/tenant/${currentSlug}/studio/commerce/answer_block`} style={{ color: '#4b5563', textDecoration: 'none' }}>연관 답변 블록</a>
               <a href={`/tenant/${currentSlug}/studio/commerce/bundle`} style={{ color: '#4b5563', textDecoration: 'none' }}>번들 구성 (Set)</a>
               <a href={`/tenant/${currentSlug}/studio/commerce/consultation`} style={{ color: '#4b5563', textDecoration: 'none' }}>맞춤 상담 CTA</a>
               <a href={`/tenant/${currentSlug}/studio/commerce/diagnostic`} style={{ color: '#4b5563', textDecoration: 'none' }}>리드 수집 파인더</a>
+              <a href={`/tenant/${currentSlug}/crm/dealroom`} style={{ color: '#ec4899', textDecoration: 'none', fontWeight: 'bold' }}>💼 지식 기반 Deal Room</a>
             </div>
           </details>
 

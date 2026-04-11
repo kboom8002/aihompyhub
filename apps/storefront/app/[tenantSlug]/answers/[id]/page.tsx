@@ -222,6 +222,18 @@ export default async function AnswerDetailPage(props: Props) {
         topics={crossTopics}
       />
 
+      <div className="mt-16 bg-gradient-to-r from-indigo-50 to-pink-50 p-8 rounded-2xl border border-indigo-100 flex flex-col items-center text-center mb-10">
+        <h3 className="text-xl font-bold text-slate-800 mb-2">방금 읽으신 공식 답변에 대해 더 궁금한 점이 있으신가요?</h3>
+        <p className="text-slate-600 mb-6">AI 수석 실장이 고객님의 고민에 맞춰 즉시 상담해 드립니다.</p>
+        <Link 
+            href={`/${params.tenantSlug}/contact/dm?contextType=answer&contextId=${params.id}&contextTitle=${encodeURIComponent(title)}`}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-3 rounded-full flex items-center gap-2 transition-transform hover:scale-105 shadow-lg"
+        >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
+            수석 실장에게 질문하기 (AI 상담)
+        </Link>
+      </div>
+
     </article>
   );
 }

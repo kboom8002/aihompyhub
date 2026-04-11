@@ -1,12 +1,13 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { PageHeader } from '../../../../../../../components/PageHeader';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { RichTextEditor } from '../../../../../../../../components/RichTextEditor';
 import { CONTENT_TYPE_SCHEMAS } from '../../../../DynamicFormSchema';
 import { ContentRelationMultiSelect } from '../../../../../../../../components/ContentRelationMultiSelect';
+import { generateAiPairDraftAction } from '../../../../../../../actions/ai-pair-actions';
+import { Wand2 } from 'lucide-react';
 
 export default function UniversalContentEditView() {
   const params = useParams();
@@ -18,6 +19,7 @@ export default function UniversalContentEditView() {
 
   const [submitStatus, setSubmitStatus] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isAiGenerating, setIsAiGenerating] = useState(false);
 
   const { register, handleSubmit, setValue, watch, formState: { isSubmitting } } = useForm({
     defaultValues: {
@@ -58,6 +60,20 @@ export default function UniversalContentEditView() {
       })
       .catch(() => setIsLoading(false));
   }, [id, setValue, schema]);
+
+  const handleAIPairGenerate = async () => {
+     setIsAiGenerating(true);
+     const promptKey = type === 'article' ? 'article_generation' : 'aeo_answer_generation';
+     const res = await generateAiPairDraftAction(tenantId, id, promptKey);
+     if (res.success && res.result) {
+         // Identify which field is the richtext body. In most schemas it's 'body'
+         setValue('body' as any, res.result);
+         alert('AI 최적화 초안이 성공적으로 작성되었습니다. 내용을 데스킹(수정)한 후 저장해주세요.');
+     } else {
+         alert('AI 생성 실패: ' + res.error);
+     }
+     setIsAiGenerating(false);
+  };
 
   const onSubmit = async (data: any) => {
     const { title, thumbnail, tags, ...dynamicFields } = data;
@@ -115,6 +131,25 @@ export default function UniversalContentEditView() {
         )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex-col" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          
+          {(type === 'answer' || type === 'article') && (
+              <div style={{ padding: '1.5rem', background: 'linear-gradient(to right, #ec4899, #8b5cf6)', borderRadius: '8px', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                      <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 'bold' }}>✨ AI-Pair: 지식 그래프 기반 초안 작성</h4>
+                      <p style={{ margin: 0, marginTop: '0.25rem', fontSize: '0.85rem', opacity: 0.9 }}>QIS 인텐트와 기본 지식을 참고하여 AEO 최적화 구조를 에디터에 자동 스케치합니다.</p>
+                  </div>
+                  <button 
+                      type="button" 
+                      onClick={handleAIPairGenerate} 
+                      disabled={isAiGenerating}
+                      style={{ background: 'white', color: '#ec4899', border: 'none', padding: '0.75rem 1.25rem', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                  >
+                      <Wand2 size={18} />
+                      {isAiGenerating ? '생성 중...' : '지금 바로 초안 작성 (E-to-E)'}
+                  </button>
+              </div>
+          )}
+
           <div>
             <label style={{ fontWeight: 600, display: 'block', marginBottom: '0.5rem' }}>콘텐츠 제목 (Title)</label>
             <input 
