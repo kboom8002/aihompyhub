@@ -17,8 +17,9 @@ export const CONTENT_TYPE_SCHEMAS: Record<string, FormFieldSchema[]> = {
     { name: 'profileB.name', label: '[Option B] 이름', type: 'text', required: true, placeholder: '예: 메디글로우 모델링' },
     { name: 'profileB.targetFit', label: '[Option B] 추천 타겟 (Best For)', type: 'text', placeholder: '예: 데일리 장벽 강화' },
     { name: 'profileB.description', label: '[Option B] 기본 설명', type: 'textarea', placeholder: '선택 군의 주요 특징이나 기능을 입력하세요.' },
-    
+    { name: 'conclusion', label: '최종 결론 (Conclusion)', type: 'textarea', helpText: 'AI가 파싱할 1줄 결론 (예: 어떤 타겟은 A, 어떤 타겟은 B)' },
     { name: 'body', label: '상세 비교 딥다이브 (Rich Text)', type: 'richtext', helpText: '하단에 텍스트 형태로 부연 설명할 디테일한 비교글을 작성합니다.' },
+    { name: 'cautions', label: '병용 / 선택 주의사항 (Cautions)', type: 'textarea' },
     
     { name: 'related_topics', label: '🔗 연관 Topic Hub 연결', type: 'relation', relationTarget: 'topic_hub', helpText: '이 콘텐츠 하단에 아코디언 위젯으로 띄워줄 연관 지식들을 검색하여 엮어둡니다.' },
     { name: 'related_experts', label: '🩺 제안/감수 전문가', type: 'relation', relationTarget: 'expert' },
@@ -48,11 +49,14 @@ export const CONTENT_TYPE_SCHEMAS: Record<string, FormFieldSchema[]> = {
     { name: 'related_topics', label: '📚 상위 토픽 허브 (Topic)', type: 'relation', relationTarget: 'topic_hub', helpText: '이 답변이 속한 대분류 지식 허브를 연결합니다.' }
   ],
   routine: [
+    { name: 'summary', label: '핵심 루틴 요약 (How-to Summary)', type: 'textarea', helpText: 'AI가 파싱할 1~3단계의 간결한 순서 요약' },
     { name: 'body', label: '루틴 가이드 본문 (RichText)', type: 'richtext' },
+    { name: 'cautions', label: '루틴 수행 시 주의사항 (Cautions)', type: 'textarea' },
     { name: 'related_experts', label: '🩺 제안/감수 전문가', type: 'relation', relationTarget: 'expert' },
     { name: 'related_answers', label: '💡 연관 SSoT 공식 답변', type: 'relation', relationTarget: 'answer' }
   ],
   story: [
+    { name: 'summary', label: '아티클 초록 (Article Abstract)', type: 'textarea', helpText: 'AI 검색기 및 카드 목록에 노출될 아티클의 핵심 요약' },
     { name: 'body', label: '아티클 본문 (RichText)', type: 'richtext' },
     { name: 'related_experts', label: '🩺 에디터/인터뷰이 (Expert)', type: 'relation', relationTarget: 'expert' },
     { name: 'related_answers', label: '💡 연관 SSoT 공식 답변', type: 'relation', relationTarget: 'answer' }

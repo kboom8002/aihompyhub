@@ -63,10 +63,27 @@ export default async function CompareDetailPage(props: { params: Promise<{ tenan
 
       <CompareQuickDecision profileA={pA} profileB={pB} />
 
+      {payload.conclusion && (
+         <div className="mt-10 mb-6 p-6 bg-[var(--theme-border)]/20 rounded-xl border-l-4 border-black" itemProp="abstract">
+            <h3 className="text-sm font-bold opacity-50 uppercase tracking-widest mb-2">Conclusion (최종 결론)</h3>
+            <p className="text-lg font-medium leading-relaxed">{payload.conclusion}</p>
+         </div>
+      )}
+
       {payload.body && (
-        <div className="mt-16 pt-8 border-t border-[var(--theme-border)] max-w-3xl mx-auto">
+        <div className="mt-10 pt-8 border-t border-[var(--theme-border)] max-w-3xl mx-auto">
           <ProseReader html={payload.body} />
         </div>
+      )}
+
+      {payload.cautions && (
+         <div className="mt-8 mb-8 max-w-3xl mx-auto p-6 bg-red-50 border border-red-100 rounded-xl text-red-800">
+            <div className="flex items-center gap-2 mb-2 font-bold">
+               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+               선택 및 병용 시 주의사항
+            </div>
+            <p className="text-sm leading-relaxed opacity-90 whitespace-pre-wrap">{payload.cautions}</p>
+         </div>
       )}
 
       {relatedTopicsData.length > 0 && (
