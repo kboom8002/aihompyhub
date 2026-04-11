@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,7 +16,7 @@ export function PortfolioCard({ portfolio, tenantSlug, industryType = 'skincare'
   const isRealEstate = industryType === 'real_estate';
 
   // Extract first image if exists
-  let firstThumb = '/skincare_texture_1775271187123.png'; // fallback
+  let firstThumb = '/welby-bg.png'; // fallback
   if (portfolio.json_payload?.visual_assets) {
      const assets = portfolio.json_payload.visual_assets.split(',');
      if (assets[0]) firstThumb = assets[0].trim();
@@ -24,7 +25,7 @@ export function PortfolioCard({ portfolio, tenantSlug, industryType = 'skincare'
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow bg-white flex flex-col h-full border-slate-200 group">
       {/* Visual Asset Header */}
-      <div className="relative w-full h-[240px] bg-slate-100 overflow-hidden">
+      <Link href={`/${tenantSlug}/portfolio/${portfolio.id}`} className="relative w-full h-[240px] bg-slate-100 overflow-hidden block">
         <Image 
           src={firstThumb}
           alt={portfolio.json_payload?.client_or_context || 'Portfolio Image'}
@@ -36,14 +37,16 @@ export function PortfolioCard({ portfolio, tenantSlug, industryType = 'skincare'
              의료법 준수 Case
            </div>
         )}
-      </div>
+      </Link>
 
       <CardHeader className="pb-3 border-b border-slate-50 relative">
         <Badge variant="outline" className="w-fit mb-2 bg-slate-50 text-slate-500 font-semibold uppercase tracking-wider text-[10px]">
           {isRealEstate ? '계약 및 거래건' : isClinic ? '시술 적용례' : '성공 사례'}
         </Badge>
         <CardTitle className="text-xl font-bold leading-snug">
-          {portfolio.json_payload?.client_or_context || '의뢰 맥락 미상'} 
+          <Link href={`/${tenantSlug}/portfolio/${portfolio.id}`} className="hover:text-[var(--theme-primary)] transition-colors">
+            {portfolio.json_payload?.client_or_context || '의뢰 맥락 미상'} 
+          </Link>
         </CardTitle>
       </CardHeader>
       
@@ -70,10 +73,12 @@ export function PortfolioCard({ portfolio, tenantSlug, industryType = 'skincare'
       </CardContent>
 
       <CardFooter className="pt-4 border-t border-slate-50 bg-slate-50/50">
-        <Button variant="ghost" className="w-full justify-between hover:bg-slate-100/80 font-semibold text-slate-700">
-           <span>상세 내용 및 갤러리 보기</span>
-           <span>→</span>
-        </Button>
+        <Link href={`/${tenantSlug}/portfolio/${portfolio.id}`} className="w-full block">
+          <Button variant="ghost" className="w-full justify-between hover:bg-slate-100/80 font-semibold text-slate-700">
+             <span>상세 내용 및 갤러리 보기</span>
+             <span>→</span>
+          </Button>
+        </Link>
       </CardFooter>
     </Card>
   );
