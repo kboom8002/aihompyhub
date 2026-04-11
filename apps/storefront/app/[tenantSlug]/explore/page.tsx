@@ -1,6 +1,6 @@
 import React from 'react';
 import { Metadata } from 'next';
-import KnowledgeGraphRenderer from '../../../../components/store/KnowledgeGraphRenderer';
+import KnowledgeGraphRenderer from '../../../components/store/KnowledgeGraphRenderer';
 
 export const metadata: Metadata = {
   title: 'Brand Knowledge Graph Explorer | SSoT',
