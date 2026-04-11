@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useForm } from 'react-hook-form';
 import { RichTextEditor } from '../../../../../../../components/RichTextEditor';
 import { CONTENT_TYPE_SCHEMAS } from '../../../DynamicFormSchema';
-import { TopicRelationMultiSelect } from '../../../../../../../components/TopicRelationMultiSelect';
+import { ContentRelationMultiSelect } from '../../../../../../../components/ContentRelationMultiSelect';
 
 export default function UniversalContentNewView() {
   const params = useParams();
@@ -154,10 +154,12 @@ export default function UniversalContentNewView() {
                         />
                       )}
 
-                      {field.type === 'relation' && field.relationTarget === 'topic_hub' && (
-                        <TopicRelationMultiSelect 
+                      {field.type === 'relation' && (
+                        <ContentRelationMultiSelect 
                            value={watch(field.name as any) || []} 
                            onChange={(val) => setValue(field.name as any, val)} 
+                           tenantId={tenantId}
+                           relationTarget={field.relationTarget || 'topic_hub'}
                         />
                       )}
                     </div>
