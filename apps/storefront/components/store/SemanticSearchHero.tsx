@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useIndustry } from './ThemeProvider';
 
 interface Props {
   tenantSlug: string;
@@ -12,13 +13,44 @@ interface Props {
 export function SemanticSearchHero({ tenantSlug, summary, description }: Props) {
   const router = useRouter();
   const [query, setQuery] = useState('');
+  const industry = useIndustry();
 
-  const resetMoments = [
+  let resetMoments = [
     { label: '🔥 토닝 후 열감 (After Toning)', q: '토닝 후 열감 진정' },
     { label: '⚡ 시술 후 집중 관리 (Clinic-Care)', q: '시술 후 관리' },
     { label: '✨ 중요한 날 전 (Special Day)', q: '중요한 날 광채' },
     { label: '🛡️ 장벽 붕괴 응급 (Barrier Emergency)', q: '피부 장벽 복구' }
   ];
+  let badgeText = "The Interval &middot; Home Derma Reset";
+  let defaultTitle = "오늘 어떤 피부 고민으로\n정확한 타이밍의 리셋이 필요하신가요?";
+  let defaultDesc = "일반 스킨케어가 아닙니다. 무너진 피부 상태를 가장 빠르게 정상화하는 SSoT 클리닉 로직을 질문해 보세요.";
+  let placeholder = "예) 리프팅 후 페이스라인 정리는 어떻게 하나요?";
+  let queryTitle = "Quick Reset Moments";
+
+  if (industry === 'consulting') {
+     resetMoments = [
+       { label: '🚀 A-to-Z 신규 개원 런칭', q: '신규 개원 브랜딩' },
+       { label: '💎 VIP 멤버십 구조화', q: 'VIP 재방문 전략' },
+       { label: '🚨 매출 정체기 타개', q: '매출 상승 전략' },
+       { label: '📋 내부 SOP 구축', q: '시스템 매뉴얼 구축' }
+     ];
+     badgeText = "Global Standard &middot; Medical Consulting";
+     defaultTitle = "메디컬 컨설팅의 기준,\n어떤 레퍼런스 체계가 필요하신가요?";
+     defaultDesc = "단순한 인사이트가 아닙니다. 압도적 글로벌 리조트/스파 런칭 경험이 축적된 Welby의 SSoT 방법론에 질문해 보세요.";
+     placeholder = "예) VIP 고객을 위한 객단가 상승 전략은 무엇인가요?";
+     queryTitle = "Quick Strategy Moments";
+  } else if (industry === 'real_estate') {
+     resetMoments = [
+       { label: '🏢 하이엔드 테넌트 유치', q: '하이엔드 테넌트 입점' },
+       { label: '💰 꼬마빌딩 밸류업', q: '건물 가치 상승 리모델링' },
+       { label: '📝 상업용 임대차 계약', q: '상가 임대차 계약 주의사항' }
+     ];
+     badgeText = "Premium Asset &middot; Commercial Real Estate";
+     defaultTitle = "상업용 부동산 성공을 위한\n가장 확실한 매물을 찾고 계신가요?";
+     defaultDesc = "허위 매물 없는 철저한 권리 분석. 최고의 수익률을 위한 부동산 자산 관리 플랜을 지금 확인해 보세요.";
+     placeholder = "예) 수익용 꼬마빌딩 리모델링 레퍼런스 보여줘";
+     queryTitle = "Quick Search Moments";
+  }
 
   const handleSearch = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -38,16 +70,17 @@ export function SemanticSearchHero({ tenantSlug, summary, description }: Props) 
       
       <div className="container relative z-10 mx-auto px-4 py-20 md:py-32 flex flex-col items-center justify-center text-center">
         
-        <span className="inline-block py-1 px-3 rounded-full bg-black/5 text-[#0f172a] text-xs font-bold tracking-widest uppercase mb-6">
-          The Interval &middot; Home Derma Reset
-        </span>
+        <span 
+           className="inline-block py-1 px-3 rounded-full bg-black/5 text-[#0f172a] text-xs font-bold tracking-widest uppercase mb-6"
+           dangerouslySetInnerHTML={{ __html: badgeText }}
+        />
 
-        <h1 className="text-4xl md:text-6xl font-[family-name:var(--theme-font)] tracking-tight text-gray-900 mb-6 font-semibold max-w-4xl leading-tight">
-          {summary || "오늘 어떤 피부 고민으로\n정확한 타이밍의 리셋이 필요하신가요?"}
+        <h1 className="text-4xl md:text-6xl font-[family-name:var(--theme-font)] tracking-tight text-gray-900 mb-6 font-semibold max-w-4xl leading-tight whitespace-pre-wrap">
+          {summary || defaultTitle}
         </h1>
         
         <p className="text-lg md:text-xl text-gray-500 mb-12 max-w-2xl font-light">
-          {description || "일반 스킨케어가 아닙니다. 무너진 피부 상태를 가장 빠르게 정상화하는 SSoT 클리닉 로직을 질문해 보세요."}
+          {description || defaultDesc}
         </p>
 
         {/* Semantic Search Bar */}
@@ -60,7 +93,7 @@ export function SemanticSearchHero({ tenantSlug, summary, description }: Props) 
           <input
             type="text"
             className="w-full pl-16 pr-6 py-5 rounded-2xl bg-white border border-gray-200 shadow-sm text-lg outline-none focus:ring-4 ring-[var(--theme-primary)]/20 focus:border-[var(--theme-primary)] transition-all font-medium text-gray-800 placeholder:text-gray-400 placeholder:font-normal"
-            placeholder="예) 리프팅 후 페이스라인 정리는 어떻게 하나요?"
+            placeholder={placeholder}
             value={query}
             onChange={e => setQuery(e.target.value)}
           />
@@ -71,7 +104,7 @@ export function SemanticSearchHero({ tenantSlug, summary, description }: Props) 
 
         {/* Moments Chips */}
         <div className="flex flex-col items-center w-full max-w-4xl">
-          <span className="text-xs font-bold text-gray-400 tracking-widest uppercase mb-4">Quick Reset Moments</span>
+          <span className="text-xs font-bold text-gray-400 tracking-widest uppercase mb-4">{queryTitle}</span>
           <div className="flex flex-wrap justify-center gap-3">
             {resetMoments.map((moment, idx) => (
               <button

@@ -73,8 +73,8 @@ export function BlockRenderer({ layoutSettings, context }: BlockRendererProps) {
               <SemanticSearchHero 
                 key={index}
                 tenantSlug={context.tenantSlug}
-                summary={heroProps.summary || props?.summary}
-                description={heroProps.description || props?.description}
+                summary={heroProps.summary || (heroProps as any).title || props?.summary || props?.title}
+                description={heroProps.description || (heroProps as any).body || props?.description || props?.body}
                 {...props}
               />
             );

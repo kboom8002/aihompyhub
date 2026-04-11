@@ -69,7 +69,15 @@ export default async function TenantB2CHomepage(props: { params: Promise<{ tenan
      layoutSettings = [
         { type: 'SemanticSearchHero' },
         { type: 'BlockHeading', props: { title: 'Consultation & SSoT Guide', subtitle: '검증된 케이스와 명확한 진단 기준을 우선 확인하세요.' } },
-        { type: 'SituationCurationGrid' },
+        { type: 'SituationCurationGrid', props: { 
+             situations: industryType === 'consulting' ? [
+                 { id: 'strategy', title: '전략 기획 및 구조화', desc: '초기 매출 부진 시 빠른 리빌딩 전략' },
+                 { id: 'marketing', title: '마케팅 / CRM 세일즈', desc: 'VIP 유치 및 객단가 상승 최적화 가이드' }
+             ] : [
+                 { id: 'clinic', title: '시술 후 관리 Q&A', desc: '집에서 시술 효과를 극대화하는 법' },
+                 { id: 'trouble', title: '응급 트러블 진정', desc: '열감, 붉은기 등 빠른 대처가 필요할 때' }
+             ]
+        } },
         { type: 'AnswerCardGrid' }
      ];
   }
