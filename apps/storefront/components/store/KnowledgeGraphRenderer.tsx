@@ -12,6 +12,7 @@ import {
   MarkerType,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+// @ts-ignore
 import dagre from 'dagre';
 import { useRouter } from 'next/navigation';
 
