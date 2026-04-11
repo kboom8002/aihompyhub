@@ -100,9 +100,21 @@ export const CONTENT_TYPE_SCHEMAS: Record<string, FormFieldSchema[]> = {
     { name: 'related_offer', label: '🎁 관련 오퍼/진료과목', type: 'relation', relationTarget: 'offer', helpText: '이 결과물을 만든 실제 제공 상품/패키지 연결' },
     { name: 'related_answers', label: '💡 도중 자주 발생한 질문/답변', type: 'relation', relationTarget: 'answer' }
   ],
+  product_fit: [
+    { name: 'skin_type_fit', label: '추천 대상 (Best Fit)', type: 'textarea', placeholder: '예: 극건성, 수분 부족형 지성' },
+    { name: 'skin_type_not_fit', label: '비추천 대상 (Not Fit)', type: 'textarea', placeholder: '예: 화농성 여드름 진행 중인 피부' },
+    { name: 'body', label: '적합성 진단 상세 (RichText)', type: 'richtext' }
+  ],
+  workflow: [
+    { name: 'summary', label: '워크플로우 요약 (Summary)', type: 'textarea', helpText: '단계별 핵심 요약입니다.' },
+    { name: 'body', label: '상세 워크플로우 (RichText)', type: 'richtext' },
+    { name: 'cautions', label: '과정 중 주의사항 (Cautions)', type: 'textarea' },
+    { name: 'related_experts', label: '🩺 제안/감수 전문가', type: 'relation', relationTarget: 'expert' },
+    { name: 'related_answers', label: '💡 연관 SSoT 공식 답변', type: 'relation', relationTarget: 'answer' }
+  ],
   readiness_checker: [
     { name: 'target_audience', label: '주 타겟 고객', type: 'text', placeholder: '예: 시리즈 A 이상 스타트업 B2B 기업' },
-    { name: 'not_fit_criteria', label: '우리가 돕지 못하는 분들 (Not fit)', type: 'textarea', helpText: '줄바꿈으로 여러 개 작성. 상담을 미리 필터링하기 위한 필수 요건입니다.' },
+    { name: 'not_fit', label: '우리가 돕지 못하는 분들 (Not fit)', type: 'textarea', helpText: '줄바꿈으로 여러 개 작성. 상담을 미리 필터링하기 위한 필수 요건입니다.' },
     { name: 'expected_budget', label: '예상 소요 예산/단가', type: 'text', placeholder: '예: 월 300만원 ~ 500만원 선' },
     { name: 'prerequisites', label: '사전 준비/요구 사항', type: 'textarea', placeholder: '상담 전 고객이 파악해야 할 지점' },
     { name: 'body', label: '세부 안내 사항 (RichText)', type: 'richtext' }

@@ -54,25 +54,41 @@ export default async function TenantLayout(props: { children: React.ReactNode, p
        creator: '크리에이터 프로필/랜딩 (Creator)',
        offer: '공동구매/오퍼 랜딩 (Offer)',
        product: '제품 디테일 (Product)',
-       portfolio: '포트폴리오 (Portfolio)'
+       portfolio: '포트폴리오 (Portfolio)',
+       fit_label: '적합성 진단 (Fit)',
+       fit_slug: 'product_fit',
+       routine_label: '뷰티/건강 루틴 (Routine)',
+       routine_slug: 'routine'
      },
      clinic: {
        creator: '원장/의료진 전용 랜딩 (Doctor)',
        offer: '진료 과목/시술 패키지 (Treatments)',
        product: '원내 판매 코스메틱 (Product)',
-       portfolio: '치료/시술 전후 사례 (Cases)'
+       portfolio: '치료/시술 전후 사례 (Cases)',
+       fit_label: '시술 적합/부작용 진단 (Fit)',
+       fit_slug: 'treatment_fit',
+       routine_label: '시술 전후 관리 워크플로우 (Care)',
+       routine_slug: 'workflow'
      },
      real_estate: {
        creator: '책임 중개인 프로필 (Agent)',
        offer: '프리미엄 중개 매물 (Listings)',
        product: '자산 관리 솔루션 (Services)',
-       portfolio: '계약 완료 레퍼런스 (Records)'
+       portfolio: '계약 완료 레퍼런스 (Records)',
+       fit_label: '매물 구매/투자 적합도 (Fit)',
+       fit_slug: 'investment_fit',
+       routine_label: '계약/입주 워크플로우 (Workflow)',
+       routine_slug: 'workflow'
      },
      consulting: {
        creator: '자문 파트너 프로필 (Partner)',
        offer: '컨설팅 패키지 (Consulting)',
        product: '유료 보고서/웨비나 (Commodity)',
-       portfolio: '성공 사례/케이스 (Cases)'
+       portfolio: '성공 사례/케이스 (Cases)',
+       fit_label: '프로젝트 자문 적합성 (Readiness)',
+       fit_slug: 'readiness_checker',
+       routine_label: '진단/실행 워크플로우 (Workflow)',
+       routine_slug: 'workflow'
      }
   };
 
@@ -99,8 +115,8 @@ export default async function TenantLayout(props: { children: React.ReactNode, p
               <a href={`/tenant/${currentSlug}/studio/brand_ssot/topic_hub`} style={{ color: '#4b5563', textDecoration: 'none' }}>Topic Hub</a>
               <a href={`/tenant/${currentSlug}/studio/brand_ssot/answer`} style={{ color: '#4b5563', textDecoration: 'none' }}>공식 답변 (Answer)</a>
               <a href={`/tenant/${currentSlug}/studio/brand_ssot/compare`} style={{ color: '#4b5563', textDecoration: 'none' }}>비교 분석 (Compare)</a>
-              <a href={`/tenant/${currentSlug}/studio/brand_ssot/routine`} style={{ color: '#4b5563', textDecoration: 'none' }}>뷰티/건강 루틴 (Routine)</a>
-              <a href={`/tenant/${currentSlug}/studio/brand_ssot/product_fit`} style={{ color: '#4b5563', textDecoration: 'none' }}>적합성 진단 (Fit)</a>
+              <a href={`/tenant/${currentSlug}/studio/brand_ssot/${labels.routine_slug}`} style={{ color: '#4b5563', textDecoration: 'none' }}>{labels.routine_label}</a>
+              <a href={`/tenant/${currentSlug}/studio/brand_ssot/${labels.fit_slug}`} style={{ color: '#4b5563', textDecoration: 'none' }}>{labels.fit_label}</a>
               <a href={`/tenant/${currentSlug}/studio/brand_ssot/product`} style={{ color: '#4b5563', textDecoration: 'none' }}>{labels.product}</a>
               <a href={`/tenant/${currentSlug}/studio/brand_ssot/expert`} style={{ color: '#4b5563', textDecoration: 'none' }}>전문가 위원회 (Experts)</a>
               <a href={`/tenant/${currentSlug}/studio/brand_ssot/trust`} style={{ color: '#4b5563', textDecoration: 'none' }}>신뢰/보증 (Trust)</a>
