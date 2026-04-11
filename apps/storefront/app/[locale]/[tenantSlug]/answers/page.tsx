@@ -41,7 +41,7 @@ export default async function AnswersIndexPage(props: { params: Promise<{ tenant
   // Fetch true universal assets of type 'answers'
   const { data: assets } = await supabaseAdmin
     .from('universal_content_assets')
-    .select('id, title, updated_at, created_at, json_payload')
+    .select('id, title, updated_at, created_at, json_payload, translations')
     .eq('tenant_id', tenantId)
     .eq('type', 'answer')
     .order('created_at', { ascending: false });

@@ -61,7 +61,7 @@ export default async function TenantB2CHomepage(props: { params: Promise<{ tenan
   const { data: dbAnswerCards } = await supabaseAdmin.from('answer_cards').select('*, topics(title)').eq('tenant_id', tenantId);
 
   // Fetch Brand Hero injected separately
-  let { data: dbBrandHero } = await supabaseAdmin.from('universal_content_assets').select('*, json_payload').eq('tenant_id', tenantId).eq('type', 'brand_hero').single();
+  let { data: dbBrandHero } = await supabaseAdmin.from('universal_content_assets').select('*, json_payload, translations').eq('tenant_id', tenantId).eq('type', 'brand_hero').single();
 
   function applyTranslations(record: any, currentLocale: string) {
     if (!record || !record.translations || !record.translations[currentLocale]) return record;
@@ -95,7 +95,7 @@ export default async function TenantB2CHomepage(props: { params: Promise<{ tenan
   }
 
   // Fetch Curation Config (Overrides logic using two-track template layouts)
-  let { data: dbCuration } = await supabaseAdmin.from('universal_content_assets').select('json_payload').eq('tenant_id', tenantId).eq('type', 'curation_config').single();
+  let { data: dbCuration } = await supabaseAdmin.from('universal_content_assets').select('json_payload, translations').eq('tenant_id', tenantId).eq('type', 'curation_config').single();
   
   if (dbCuration && dbCuration.json_payload) {
       dbCuration = applyTranslations(dbCuration, locale);

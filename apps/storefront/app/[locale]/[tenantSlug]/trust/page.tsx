@@ -14,7 +14,7 @@ export default async function TrustIndexPage(props: { params: Promise<{ tenantSl
 
   const { data: assets } = await supabaseAdmin
     .from('universal_content_assets')
-    .select('id, title, updated_at, created_at, json_payload')
+    .select('id, title, updated_at, created_at, json_payload, translations')
     .eq('tenant_id', tenantId)
     .eq('type', 'trust')
     .order('created_at', { ascending: false });
