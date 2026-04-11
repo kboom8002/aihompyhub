@@ -1,3 +1,4 @@
+import { t } from '@/lib/i18n';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { supabaseAdmin } from '@/lib/supabase';
@@ -40,7 +41,7 @@ export default async function AnswersIndexPage(props: { params: Promise<{ tenant
   // Fetch true universal assets of type 'answers'
   const { data: assets } = await supabaseAdmin
     .from('universal_content_assets')
-    .select('id, title, updated_at, created_at, json_payload')
+    .select('id, title, updated_at, created_at, json_payload, translations')
     .eq('tenant_id', tenantId)
     .eq('type', 'answer')
     .order('created_at', { ascending: false });
@@ -60,24 +61,24 @@ export default async function AnswersIndexPage(props: { params: Promise<{ tenant
 
   return (
     <div className="container mx-auto py-16 px-4 max-w-4xl">
-      <Link href={`/${params.tenantSlug}`} className="text-sm font-medium mb-12 inline-block hover:opacity-70 transition-opacity">
-        &larr; 홈으로 돌아가기
+      <Link href={`/${locale}/${params.tenantSlug}`} className="text-sm font-medium mb-12 inline-block hover:opacity-70 transition-opacity">
+        &larr; {t(locale, '홈으로 돌아가기')}
       </Link>
       
       <div className="mb-12 border-b border-[var(--theme-border)] pb-8">
-        <h1 className="text-4xl font-light tracking-tight font-[family-name:var(--theme-font)] mb-4">공식 답변 허브</h1>
-        <p className="opacity-70">브랜드에서 직접 검증하고 서명한 Canonical Answer 리스트입니다.</p>
+        <h1 className="text-4xl font-light tracking-tight font-[family-name:var(--theme-font)] mb-4">{t(locale, '공식 답변 허브')}</h1>
+        <p className="opacity-70">{t(locale, '브랜드에서 직접 검증하고 서명한 Canonical Answer 리스트입니다.')}</p>
       </div>
 
       <div className="flex flex-col gap-4">
         {(!localizedAssets || localizedAssets.length === 0) && (
            <div className="py-12 text-center border rounded-lg bg-[var(--theme-surface)]">
-             <p className="opacity-60">아직 작성된 공식 답변이 없습니다.</p>
+             <p className="opacity-60">{t(locale, '아직 작성된 항목이 없습니다.')}</p>
            </div>
         )}
         
         {localizedAssets?.map((answer) => (
-          <Link href={`/${params.tenantSlug}/answers/${answer.id}`} key={answer.id}>
+          <Link href={`/${locale}/${params.tenantSlug}/answers/${answer.id}`} key={answer.id}>
              <div className="group bg-[var(--theme-surface)] p-6 rounded-[var(--theme-radius)] border border-[var(--theme-border)] shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5 cursor-pointer flex flex-col gap-2">
                  <div className="text-xs font-bold text-[var(--theme-primary)] tracking-widest uppercase mb-1">
                     {answer.json_payload?.category || 'Answer SSoT'}
@@ -86,7 +87,7 @@ export default async function AnswersIndexPage(props: { params: Promise<{ tenant
                    {answer.title}
                  </h2>
                  <p className="text-sm opacity-60 mt-2">
-                   {new Date(answer.updated_at || answer.created_at).toLocaleDateString()} 업데이트됨
+                   {new Date(answer.updated_at || answer.created_at).toLocaleDateString()} {t(locale, '업데이트됨')}
                  </p>
              </div>
           </Link>

@@ -1,3 +1,4 @@
+import { t } from '@/lib/i18n';
 import React from 'react';
 import { notFound } from 'next/navigation';
 import { ReadinessChecker } from '@/components/store/ReadinessChecker';
@@ -7,15 +8,16 @@ import { Metadata } from 'next';
 
 export const revalidate = 0;
 
-export async function generateMetadata(props: { params: Promise<{ tenantSlug: string }> }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ tenantSlug: string, locale?: string }> }): Promise<Metadata> {
   const params = await props.params;
+  const locale = params.locale || 'ko';
   return {
     title: `${params.tenantSlug.toUpperCase()} Consultation Readiness`,
     description: 'Verify your fit before booking a consultation.'
   };
 }
 
-export default async function TenantConsultationPage(props: { params: Promise<{ tenantSlug: string }> }) {
+export default async function TenantConsultationPage(props: { params: Promise<{ tenantSlug: string, locale?: string }> }) {
   const params = await props.params;
   const { tenantSlug } = params;
   

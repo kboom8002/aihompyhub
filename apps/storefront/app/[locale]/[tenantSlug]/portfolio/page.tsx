@@ -1,3 +1,4 @@
+import { t } from '@/lib/i18n';
 import { notFound } from 'next/navigation';
 import { resolveTenantId } from '@/lib/tenant';
 import { supabaseAdmin } from '@/lib/supabase';
@@ -6,15 +7,16 @@ import { Metadata } from 'next';
 
 export const revalidate = 0;
 
-export async function generateMetadata(props: { params: Promise<{ tenantSlug: string }> }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ tenantSlug: string, locale?: string }> }): Promise<Metadata> {
   const params = await props.params;
+  const locale = params.locale || 'ko';
   return {
     title: `${params.tenantSlug.toUpperCase()} Portfolio & Cases`,
     description: 'Expert Case Studies & Records'
   };
 }
 
-export default async function TenantPortfolioPage(props: { params: Promise<{ tenantSlug: string }> }) {
+export default async function TenantPortfolioPage(props: { params: Promise<{ tenantSlug: string, locale?: string }> }) {
   const params = await props.params;
   const { tenantSlug } = params;
   
