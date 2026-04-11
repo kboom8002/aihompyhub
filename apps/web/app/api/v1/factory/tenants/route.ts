@@ -20,6 +20,7 @@ export async function GET() {
      tenantId: t.id,
      tenantName: t.name,
      slug: t.slug,
+     industryType: t.industry_type || 'skincare',
      status: t.status,
      trustScore: 100, // Mock metric mapping
      activeIncidents: 0,
@@ -32,14 +33,14 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const { name, slug } = await request.json();
+    const { name, slug, industryType = 'skincare' } = await request.json();
     if (!name) return NextResponse.json({ error: 'Name is required' }, { status: 400 });
 
     const generatedSlug = slug || name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-]/g, '') + '-' + Math.floor(Math.random() * 10000);
 
     const { data: newTenant, error: tenantErr } = await supabaseAdmin
       .from('tenants')
-      .insert([{ name, slug: generatedSlug, status: 'active' }])
+      .insert([{ name, slug: generatedSlug, industry_type: industryType, status: 'active' }])
       .select()
       .single();
       

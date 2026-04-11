@@ -8,6 +8,7 @@ export default function BrandSettingsPage({ params }: { params: { tenantId: stri
   const [tenantId, setTenantId] = useState<string>('');
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
+  const [industryType, setIndustryType] = useState('skincare');
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null);
 
@@ -23,6 +24,7 @@ export default function BrandSettingsPage({ params }: { params: { tenantId: stri
             if (tenant) {
                setName(tenant.tenantName || '');
                setSlug(tenant.slug || '');
+               if(tenant.industryType) setIndustryType(tenant.industryType);
             }
          }
       });
@@ -37,6 +39,7 @@ export default function BrandSettingsPage({ params }: { params: { tenantId: stri
     formData.append('tenantId', tenantId);
     formData.append('name', name);
     formData.append('slug', slug);
+    formData.append('industryType', industryType);
 
     try {
       const res = await updateTenantIdentity(formData);
@@ -90,6 +93,21 @@ export default function BrandSettingsPage({ params }: { params: { tenantId: stri
             />
           </div>
           <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.25rem' }}>소비자용 프론트엔드 접속 주소입니다. 영문 소문자, 숫자, 하이픈(-)만 가능합니다.</p>
+        </div>
+
+        <div style={{ marginBottom: '2rem' }}>
+          <label style={{ display: 'block', fontWeight: 600, marginBottom: '0.5rem', fontSize: '0.9rem' }}>비즈니스 업종 (Industry Type)</label>
+          <select 
+             value={industryType}
+             onChange={e => setIndustryType(e.target.value)}
+             style={{ width: '100%', padding: '0.75rem', borderRadius: '4px', border: '1px solid #cbd5e1', backgroundColor: '#fff' }}
+          >
+             <option value="skincare">스킨케어 / 코스메틱 (기본값)</option>
+             <option value="clinic">의원 / 병원 / 메디컬 (Clinic)</option>
+             <option value="real_estate">부동산 중개법인 (Real Estate)</option>
+             <option value="consulting">전문 컨설팅 / B2B 자문 (Consulting)</option>
+          </select>
+          <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.25rem' }}>선택한 업종에 따라 어드민 메뉴명과 홈페이지(웹사이트)의 텍스트가 자동으로 특화되어 적용됩니다.</p>
         </div>
 
         <button 

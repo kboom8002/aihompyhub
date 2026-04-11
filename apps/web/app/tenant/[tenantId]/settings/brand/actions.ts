@@ -8,6 +8,7 @@ export async function updateTenantIdentity(formData: FormData) {
   const tenantId = formData.get('tenantId') as string;
   const name = formData.get('name') as string;
   const slug = formData.get('slug') as string;
+  const industryType = formData.get('industryType') as string;
 
   if (!tenantId || !name || !slug) {
     return { error: 'Missing required fields' };
@@ -28,9 +29,14 @@ export async function updateTenantIdentity(formData: FormData) {
      return { error: 'Tenant not found' };
   }
 
+  const updatePayload: any = { name, slug };
+  if (industryType) {
+     updatePayload.industry_type = industryType;
+  }
+
   const { error } = await supabase
     .from('tenants')
-    .update({ name, slug })
+    .update(updatePayload)
     .eq('id', realId);
 
   if (error) {
