@@ -16,6 +16,7 @@ export interface DesignConfig {
   primary_color: string;
   font_family: string;
   radius: string;
+  logo_url?: string;
   homeTemplate?: string;
   layout?: {
     homepage?: { type: string; props?: any }[];
@@ -99,7 +100,8 @@ export async function getTenantDesignConfig(tenantSlug: string): Promise<DesignC
            homeTemplate: overrides.homeTemplate || 'universal',
            layout: overrides.layout || parsed.layout || undefined,
            hero: overrides.hero || undefined,
-           semanticHero: overrides.semanticHero || undefined
+           semanticHero: overrides.semanticHero || undefined,
+           logo_url: overrides.logo_url || undefined
         };
      }
   } catch (err) {

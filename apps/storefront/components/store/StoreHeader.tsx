@@ -8,6 +8,7 @@ interface StoreHeaderProps {
   tenantName: string;
   tenantSlug: string;
   customNodes?: { id: string, label: string, enabled: boolean }[];
+  logoUrl?: string;
 }
 
 const INDUSTRY_NODES: Record<string, { id: string, label: string, enabled: boolean }[]> = {
@@ -46,7 +47,7 @@ const INDUSTRY_NODES: Record<string, { id: string, label: string, enabled: boole
   ]
 };
 
-export function StoreHeader({ tenantName, tenantSlug, customNodes }: StoreHeaderProps) {
+export function StoreHeader({ tenantName, tenantSlug, customNodes, logoUrl }: StoreHeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const industry = useIndustry();
   const defaultNodes = INDUSTRY_NODES[industry] || INDUSTRY_NODES['skincare'];
@@ -68,7 +69,11 @@ export function StoreHeader({ tenantName, tenantSlug, customNodes }: StoreHeader
           
           <div className="flex items-center">
             <Link href={`/${tenantSlug}`} className="font-bold tracking-tight text-lg mr-8 flex items-center">
-              {tenantName} 
+              {logoUrl ? (
+                <img src={logoUrl} alt={tenantName} className="h-10 w-auto mr-1 object-contain dark:invert-0" style={{ maxWidth: '180px' }} />
+              ) : (
+                tenantName
+              )}
               <span className="text-muted-foreground font-normal ml-2 text-sm hidden sm:inline">| 공식 홈</span>
             </Link>
           </div>

@@ -31,7 +31,7 @@ export default async function TenantLayout(props: { children: React.ReactNode, p
   return (
     <ThemeProvider config={designConfig} industryType={industryType}>
       {/* Global GNB Navigation for Storefront */}
-      <StoreHeader tenantName={tenantName} tenantSlug={tenantSlug} customNodes={iaNodes} />
+      <StoreHeader tenantName={tenantName} tenantSlug={tenantSlug} customNodes={iaNodes} logoUrl={designConfig.logo_url} />
       
       {/* Analytics Provider (App-wide) */}
       {tenantId && <AnalyticsProvider tenantId={tenantId} />}
