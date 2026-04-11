@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { resolveTenantId } from '../../../../lib/tenant';
 import { supabaseAdmin } from '../../../../lib/supabase';
 import { BlockRenderer } from '../../../../components/store/blocks/BlockRenderer';
+import { TrackedLink } from '../../../../components/store/TrackedUI';
 
 export const revalidate = 0;
 
@@ -81,12 +82,26 @@ export default async function CreatorLandingPage(props: { params: Promise<{ tena
 
        {/* CTA */}
        <div className="text-center mt-12 flex flex-col gap-4 items-center">
-          <a href={`/${tenantSlug}`} className="inline-block px-8 py-4 bg-indigo-600 text-white rounded-full font-bold shadow-lg shadow-indigo-200 w-full max-w-sm">
+          <TrackedLink 
+             tenantId={tenantId}
+             eventName="click_view_offers"
+             category="sns"
+             payload={{ creator_id: creatorId, context: 'creator_landing' }}
+             href={`/${tenantSlug}`} 
+             className="inline-block px-8 py-4 bg-indigo-600 text-white rounded-full font-bold shadow-lg shadow-indigo-200 w-full max-w-sm"
+          >
              진행 중인 스페셜 오퍼 보기
-          </a>
-          <a href={`/${tenantSlug}/contact/dm?context=creator&creatorId=${creatorId}`} className="inline-block px-8 py-3 bg-white text-indigo-600 border border-indigo-200 rounded-full font-bold shadow-sm w-full max-w-sm">
+          </TrackedLink>
+          <TrackedLink 
+             tenantId={tenantId}
+             eventName="click_dm"
+             category="sns"
+             payload={{ creator_id: creatorId, context: 'creator_landing' }}
+             href={`/${tenantSlug}/contact/dm?context=creator&creatorId=${creatorId}`} 
+             className="inline-block px-8 py-3 bg-white text-indigo-600 border border-indigo-200 rounded-full font-bold shadow-sm w-full max-w-sm"
+          >
              이 크리에이터 관련 1:1 피부 상담
-          </a>
+          </TrackedLink>
        </div>
     </div>
   );

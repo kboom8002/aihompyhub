@@ -9,7 +9,7 @@ interface AnswerCardGridProps {
   tenantSlug?: string;
 }
 
-import Link from 'next/link';
+import { TrackedLink } from './TrackedUI';
 
 export function AnswerCardGrid({ cards, tenantSlug }: AnswerCardGridProps) {
   if (!cards || cards.length === 0) {
@@ -28,8 +28,12 @@ export function AnswerCardGrid({ cards, tenantSlug }: AnswerCardGridProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
       {cards.map((card, idx) => (
-        <Link 
-          key={idx} 
+        <TrackedLink 
+          key={idx}
+          tenantId={tenantSlug || 'unknown'}
+          eventName="click_answer_card"
+          category="semantic_search"
+          payload={{ answer_id: card.id, index: idx }}
           href={`/${tenantSlug || 'skincare-brand'}/answers/${card.id}`}
           className="group relative flex flex-col md:flex-row bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-slate-100"
         >
@@ -96,7 +100,7 @@ export function AnswerCardGrid({ cards, tenantSlug }: AnswerCardGridProps) {
               )}
             </div>
           </div>
-        </Link>
+        </TrackedLink>
       ))}
     </div>
   );

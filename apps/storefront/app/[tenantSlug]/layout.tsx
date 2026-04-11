@@ -2,6 +2,7 @@ import { StoreHeader } from '../../components/store/StoreHeader';
 
 import { getTenantDesignConfig } from '../../lib/designConfig';
 import { ThemeProvider } from '../../components/store/ThemeProvider';
+import { AnalyticsProvider } from '../../components/store/AnalyticsProvider';
 
 import { supabaseAdmin } from '../../lib/supabase';
 import { resolveTenantId } from '../../lib/tenant';
@@ -29,6 +30,9 @@ export default async function TenantLayout(props: { children: React.ReactNode, p
       {/* Global GNB Navigation for Storefront */}
       <StoreHeader tenantName={tenantName} tenantSlug={tenantSlug} customNodes={iaNodes} />
       
+      {/* Analytics Provider (App-wide) */}
+      {tenantId && <AnalyticsProvider tenantId={tenantId} />}
+
       {/* Page Content */}
       <div className="flex-1">
         {props.children}
