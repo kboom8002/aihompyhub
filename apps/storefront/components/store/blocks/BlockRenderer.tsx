@@ -11,6 +11,7 @@ interface BlockRendererProps {
   layoutSettings: { type: string; props?: any }[];
   context: {
     tenantSlug: string;
+    locale?: string;
     brandProfile: any;
     answerCards: any[];
     heroConfig?: {

@@ -1,0 +1,45 @@
+# 인스타그램 채널 연동 (Phase 1) 결과 리포트
+
+사용자께서 승인해주신 **[AI Homepage ↔ Instagram Integration 파이프라인]** 의 핵심 파운데이션인 Phase 1 구축을 성공적으로 완료했습니다!
+
+## 1. 🏗️ Database DDL 신설 (Creator Workspace)
+- **Supabase 마이그레이션 적용 완료:** `20260411000001_instagram_creator_tables.sql`
+- 생성된 테이블 (테넌트 완벽 격리 적용 / RLS):
+  - `creators`: 인플루언서 / 협업자 프로필 및 권한 상태
+  - `creator_requests`: 인플루언서의 콘텐츠 제작 및 제휴 요청 인테이크
+  - `content_drafts`: AI가 생성한 최종 릴스/게시물 캡션 초안 및 UTM 내장 데이터 관리
+
+## 2. 🤖 AI 기반 자동 기획 파이프라인 개통
+- **Server Action 생성:** `apps/web/app/actions/instagram-actions.ts`
+- **로직 요약:** 
+  1. Factory Admin에서 특정 `topic_id`나 `service`를 선택 후 버튼을 누릅니다.
+  2. Vercel AI SDK가 백그라운드에서 SSoT 원본 텍스트를 인스타그램 문법(`content-generation-guidelines` 엄수)에 맞춰 **Hook 5개 / 기획 Angle 3개 / 최종 Caption 2개**로 찢어냅니다.
+  3. 가장 중요한 기능으로서 `utm-governance` 스펙에 맞춰 `utm_source`, `utm_medium`, `utm_campaign`, `utm_content`가 적용된 **고유 랜딩 URL을 강제 생성 및 탑재**시킵니다.
+
+## 3. 💬 DM Handoff 챗봇 튜닝 (문맥 유지 인텐트 라우팅)
+- **수정된 파일:** `apps/storefront/app/[tenantSlug]/contact/dm/page.tsx`
+- **구현 내용:** 이제 사용자가 인스타그램 DM을 통해 AI 홈페이지의 챗봇 상담소로 넘어올 때 URL에 담긴 `?contextType=dm_offer` 파라미터를 읽어냅니다. 
+- "안녕하세요!" 라고 단순 응답하던 실장 페르소나가 **"인스타그램 DM으로 제휴 오퍼 관련해서 문의 주셨죠? 구체적으로 어떤 옵션이 궁금하신가요?"** 라고 이전 문맥을 100% 흡수하여 클로징을 시도합니다.
+
+## 4. 👓 Factory Admin: Instagram Studio 
+- 어드민의 UI(`apps/web/app/tenant/[tenantId]/instagram/page.tsx`)에 Instagram 전용 대시보드를 구축해 `content_drafts` 상태 (Draft / Review / Scheduled / Published) 현황과 UTM 배포 링크를 한 눈에 확인할 수 있게 세팅했습니다.
+
+## 5. 🤝 Creator Co-creation Workspace (Phase 2 신규)
+- **추가된 UI:** `apps/web/app/tenant/[tenantId]/creators/page.tsx`
+- **구현 기능 요약:** 브랜드 테넌트 관리자가 크리에이터들의 *진행 중인 협업 요청(Request Intake)* 목록과 *활동 중인 파트너십* 목록을 한눈에 관리하는 워크스페이스입니다.
+- **AI 릴레이션 워크플로:** 요청된 'Goal'과 'Topic Interest'를 토대로 **"AI 초안 기획 (Approve)"** 버튼을 클릭하면, 즉시 백엔드 서버 액션(`acceptCreatorRequestAction`)이 작동하여 해당 Request를 AI 릴스/게시물로 즉석 기획해주고 상태를 `ready_for_creator` (전달 대기 상태)로 변경합니다. (Server Action & Form 완벽 연동)
+
+## 6. 🔗 Meta Webhook 및 통합 로깅 파이프라인 (Phase 3 신규)
+- **Instagram Webhook 수신부 (`apps/web/app/api/webhooks/instagram/route.ts`)**: 
+  - 페이스북 그래프 API에서 전달하는 이벤트를 검증(`hub.verify_token`)하고 수신합니다.
+  - 사용자가 입력한 메시지(예: `할인`, `예약`, `크리에이터`)를 자연어 정규식으로 판별해 `S1/S2/S3` 인텐트로 라우팅하고 각 목적에 맞는 AI 홈페이지의 딥링크(`utm_source=instagram` 포함)를 전달하는 시스템을 구축했습니다.
+- **Deal Room 통합 (UTM - CRM 연동)**:
+  - 브라우저 인메모리에 머물지 않도록 `apps/storefront/app/[tenantSlug]/contact/dm/page.tsx`에 최초 유입 시 `utm_*` 파라미터를 `sessionStorage`에 캡처하는 로직을 삽입했습니다.
+  - 챗봇 상담 종료 후 실행되는 `finalizeInquiryAction`에 이 `utmBundle`을 주입하여, 최종적으로 DB(`inquiries` 테이블)의 `ai_structured_brief.attribution` 항목에 기획되었던 랜딩 URL 출처가 정확히 맵핑되도록 만들었습니다.
+
+---
+
+> [!IMPORTANT]
+> **마스터 통합 완료 요약**
+> 이번 Phase 1 ~ Phase 3 작업을 통해 단순한 콘텐츠 배포를 넘어 **[AEO/GEO 역산출형 콘텐츠 기획] ➡ [DM 기반 Webhook 라우팅] ➡ [문맥형 Edge Streaming Chatbot] ➡ [UTM 성과 추적형 CRM 데이터 로깅]** 으로 이어지는 압도적인 소셜 마케팅 팩토리 엔진이 가동되었습니다. 
+> SSoT 기반의 이 순환 파이프라인 덕분에 테넌트는 콘텐츠가 실제로 '어떤 고객의 예약'으로 직결되었는지 QIS 시스템 내에서 즉각적으로 확인할 수 있습니다.

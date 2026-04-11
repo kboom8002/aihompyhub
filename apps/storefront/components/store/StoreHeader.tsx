@@ -7,6 +7,7 @@ import { useIndustry } from './ThemeProvider';
 interface StoreHeaderProps {
   tenantName: string;
   tenantSlug: string;
+  locale?: string;
   customNodes?: { id: string, label: string, enabled: boolean }[];
   logoUrl?: string;
 }
@@ -47,8 +48,9 @@ const INDUSTRY_NODES: Record<string, { id: string, label: string, enabled: boole
   ]
 };
 
-export function StoreHeader({ tenantName, tenantSlug, customNodes, logoUrl }: StoreHeaderProps) {
+export function StoreHeader({ tenantName, tenantSlug, locale = 'ko', customNodes, logoUrl }: StoreHeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
   const industry = useIndustry();
   const defaultNodes = INDUSTRY_NODES[industry] || INDUSTRY_NODES['skincare'];
 
@@ -62,13 +64,23 @@ export function StoreHeader({ tenantName, tenantSlug, customNodes, logoUrl }: St
   // Filter out disabled nodes
   activeNodes = activeNodes.filter(n => n.enabled);
 
+  const SUPPORTED_LOCALES = [
+    { code: 'ko', label: '🇰🇷 한국어' },
+    { code: 'en', label: '🇺🇸 English' },
+    { code: 'ja', label: '🇯🇵 日本語' },
+    { code: 'zh', label: '🇨🇳 中文' },
+    { code: 'es', label: '🇪🇸 Español' }
+  ];
+
+  const currentLocaleObj = SUPPORTED_LOCALES.find(l => l.code === locale) || SUPPORTED_LOCALES[0];
+
   return (
     <>
       <header className="sticky top-0 z-50 w-full backdrop-blur supports-[backdrop-filter]:bg-[var(--theme-surface)]/60" style={{ borderBottom: '1px solid var(--theme-border)', backgroundColor: 'var(--theme-surface)' }}>
         <div className="container mx-auto flex h-[70px] items-center px-4 justify-between">
           
           <div className="flex items-center">
-            <Link href={`/${tenantSlug}`} className="font-bold tracking-tight text-lg mr-8 flex items-center">
+            <Link href={`/${locale}/${tenantSlug}`} className="font-bold tracking-tight text-lg mr-8 flex items-center">
               {logoUrl ? (
                 <img src={logoUrl} alt={tenantName} className="h-10 w-auto mr-1 object-contain dark:invert-0" style={{ maxWidth: '180px' }} />
               ) : (
@@ -83,7 +95,7 @@ export function StoreHeader({ tenantName, tenantSlug, customNodes, logoUrl }: St
             {activeNodes.map(node => (
               <Link 
                  key={node.id}
-                 href={`/${tenantSlug}/${node.id}`} 
+                 href={`/${locale}/${tenantSlug}/${node.id}`} 
                  className={`hover:text-primary transition-colors ${node.id === 'trust' ? 'flex items-center gap-1 hover:text-green-600' : ''} ${node.id === 'routines' ? 'text-blue-600 font-semibold' : ''}`}
               >
                  {node.id === 'trust' && (
@@ -99,7 +111,33 @@ export function StoreHeader({ tenantName, tenantSlug, customNodes, logoUrl }: St
 
           {/* Utilities & Mobile Toggle */}
           <div className="flex gap-3 items-center ml-auto">
-            <Link href={`/${tenantSlug}/search`} className="text-sm font-medium hover:text-primary bg-muted px-3 py-1.5 rounded-full flex gap-2 items-center">
+            {/* Language Switcher */}
+            <div className="relative">
+              <button 
+                onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
+                className="flex items-center gap-1 text-sm font-medium hover:text-primary bg-muted px-3 py-1.5 rounded-full"
+              >
+                {currentLocaleObj.label}
+              </button>
+              {isLangMenuOpen && (
+                <div className="absolute right-0 top-full mt-2 w-32 bg-background border border-border rounded-md shadow-lg outline-none z-50 overflow-hidden">
+                  <div className="py-1">
+                    {SUPPORTED_LOCALES.map((l) => (
+                      <Link
+                        key={l.code}
+                        href={`/${l.code}/${tenantSlug}`}
+                        onClick={() => setIsLangMenuOpen(false)}
+                        className={`block px-4 py-2 text-sm hover:bg-muted ${locale === l.code ? 'font-bold bg-muted/50' : ''}`}
+                      >
+                        {l.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <Link href={`/${locale}/${tenantSlug}/search`} className="text-sm font-medium hover:text-primary bg-muted px-3 py-1.5 rounded-full flex gap-2 items-center">
                <span>🔍</span> <span className="hidden sm:inline">검색</span>
             </Link>
             <button className="hidden sm:block text-sm border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 rounded-md font-medium">
@@ -129,7 +167,7 @@ export function StoreHeader({ tenantName, tenantSlug, customNodes, logoUrl }: St
             {activeNodes.map(node => (
               <Link 
                  key={node.id}
-                 href={`/${tenantSlug}/${node.id}`} 
+                 href={`/${locale}/${tenantSlug}/${node.id}`} 
                  onClick={() => setIsMobileMenuOpen(false)}
                  className={`text-lg font-medium border-b border-[var(--theme-border)] pb-4 hover:text-primary transition-colors ${node.id === 'trust' ? 'flex items-center gap-2 hover:text-green-600' : ''} ${node.id === 'routines' ? 'text-blue-600 font-bold' : ''}`}
               >
